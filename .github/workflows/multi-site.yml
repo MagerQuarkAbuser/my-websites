@@ -6,7 +6,7 @@ on:
 
 jobs:
   generate-website:
-    if: contains(github.event.issue.labels.*.name, 'website-generator')
+    if: startsWith(github.event.issue.title, '[Website]:')
     runs-on: ubuntu-latest
     permissions:
       contents: write
