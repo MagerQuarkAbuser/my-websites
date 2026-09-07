@@ -64,6 +64,36 @@ jobs:
               with open(file_path, "r", encoding="utf-8") as f:
                   existing_code = f.read()
 
+          # 1. Live-Modellliste direkt von Google abrufen
+          models_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
+          try:
+              req_models = urllib.request.Request(models_url)
+              with urllib.request.urlopen(req_models) as resp:
+                  models_data = json.loads(resp.read().decode("utf-8"))
+          except urllib.error.HTTPError as e:
+              print(f"Fehler beim Laden der Google-Modelle ({e.code}): {e.read().decode('utf-8')}")
+              exit(1)
+
+          available_models = [
+              m["name"] for m in models_data.get("models", [])
+              if "generateContent" in m.get("supportedGenerationMethods", [])
+          ]
+
+          print("Verfügbare Modelle für diesen API-Key:")
+          for m in available_models:
+              print(f" - {m}")
+
+          # Intelligente Sortierung: Neueste Versionen & Pro-Modelle zuerst
+          def model_priority(name):
+              score = 0
+              if "3" in name: score += 100
+              elif "2" in name: score += 50
+              if "pro" in name: score += 20
+              elif "flash" in name: score += 10
+              return score
+
+          sorted_models = sorted(available_models, key=model_priority, reverse=True)
+
           system_prompt = (
               "Du bist ein professioneller Web-Entwickler. Erstelle eine vollständige, "
               "moderne, responsive Single-File-Website (HTML5 mit integriertem <style> und <script>). "
@@ -101,46 +131,33 @@ jobs:
               }
           }
 
-          # Prioritätsliste aktueller Modelle
-          candidate_models = [
-              "gemini-3.1-pro-preview",
-              "gemini-2.5-flash",
-              "gemini-2.0-flash",
-              "gemini-1.5-pro",
-              "gemini-1.5-flash"
-          ]
-
           generated_html = None
-          last_error = ""
 
-          for model in candidate_models:
-              model_id = model if model.startswith("models/") else f"models/{model}"
-              print(f"Versuche Modell: {model_id}...")
-              
-              url = f"https://generativelanguage.googleapis.com/v1beta/{model_id}:generateContent?key={api_key}"
+          # Modelle der Reihe nach durchprobieren, bis eines erfolgreich generiert
+          for model_name in sorted_models:
+              print(f"Versuche Modellanfrage an: {model_name}...")
+              url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={api_key}"
               req = urllib.request.Request(
                   url,
                   data=json.dumps(payload).encode("utf-8"),
                   headers={"Content-Type": "application/json"}
               )
-              
               try:
                   with urllib.request.urlopen(req) as response:
                       res_data = json.loads(response.read().decode("utf-8"))
                       generated_html = res_data["candidates"][0]["content"]["parts"][0]["text"]
-                      print(f"Erfolg mit Modell: {model_id}")
+                      print(f"Erfolg! Website generiert mit: {model_name}")
                       break
               except urllib.error.HTTPError as e:
-                  err_msg = e.read().decode("utf-8")
-                  last_error = f"{e.code}: {err_msg}"
-                  print(f"Modell {model_id} nicht abrufbar, probiere Alternative...")
+                  err_body = e.read().decode("utf-8")
+                  print(f"-> {model_name} fehlgeschlagen ({e.code}). Probiere nächstes Modell...")
                   continue
               except Exception as e:
-                  last_error = str(e)
+                  print(f"-> Fehler bei {model_name}: {e}")
                   continue
 
           if not generated_html:
-              print(f"FEHLER: Kein Modell konnte erreicht werden. Letzte Meldung: {last_error}")
+              print("FEHLER: Keines der verfügbaren Modelle konnte die Website generieren.")
               exit(1)
 
           cleaned_html = re.sub(r"^```(?:html)?\s*", "", generated_html.strip(), flags=re.MULTILINE)
