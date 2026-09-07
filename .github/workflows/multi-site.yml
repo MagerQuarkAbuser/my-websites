@@ -53,7 +53,6 @@ jobs:
           color_scheme = extract_field("Farbschema", body)
           description = extract_field("Detaillierte Wünsche & Funktionen", body)
 
-          # Ordnernamen URL-sicher bereinigen
           clean_name = re.sub(r'[^a-z0-9_-]', '', raw_project_name.lower())
           if not clean_name:
               clean_name = "website-projekt"
@@ -61,10 +60,59 @@ jobs:
           file_path = os.path.join(clean_name, "index.html")
           existing_code = ""
 
-          # Prüfen, ob bestehende Datei aktualisiert werden soll
           if "aktualisieren" in action_type.lower() and os.path.exists(file_path):
               with open(file_path, "r", encoding="utf-8") as f:
                   existing_code = f.read()
+
+          # 1. Verfügbare Modelle dynamisch von Google abfragen
+          models_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
+          try:
+              req_models = urllib.request.Request(models_url)
+              with urllib.request.urlopen(req_models) as resp:
+                  models_data = json.loads(resp.read().decode("utf-8"))
+          except urllib.error.HTTPError as e:
+              print(f"API Fehler beim Abrufen der Modell-Liste ({e.code}): {e.read().decode('utf-8')}")
+              exit(1)
+
+          available_models = [
+              m["name"] for m in models_data.get("models", [])
+              if "generateContent" in m.get("supportedGenerationMethods", [])
+          ]
+
+          # Bevorzuge Pro-Modelle (stärkste Code-Qualität)
+          selected_model = None
+          preferred_pro = [
+              "gemini-1.5-pro-latest",
+              "gemini-1.5-pro-002",
+              "gemini-1.5-pro-001",
+              "gemini-1.5-pro",
+              "gemini-pro"
+          ]
+
+          for pref in preferred_pro:
+              match = [m for m in available_models if m.endswith(pref)]
+              if match:
+                  selected_model = match[0]
+                  break
+
+          if not selected_model:
+              pro_candidates = [m for m in available_models if "pro" in m.lower()]
+              if pro_candidates:
+                  selected_model = pro_candidates[0]
+
+          if not selected_model:
+              flash_candidates = [m for m in available_models if "flash" in m.lower()]
+              if flash_candidates:
+                  selected_model = flash_candidates[0]
+
+          if not selected_model and available_models:
+              selected_model = available_models[0]
+
+          if not selected_model:
+              print("FEHLER: Kein passendes Modell für generateContent gefunden.")
+              exit(1)
+
+          print(f"--> Verwende Modell: {selected_model}")
 
           system_prompt = (
               "Du bist ein professioneller Web-Entwickler. Erstelle eine vollständige, "
@@ -103,7 +151,10 @@ jobs:
               }
           }
 
-          url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={api_key}"
+          if not selected_model.startswith("models/"):
+              selected_model = f"models/{selected_model}"
+
+          url = f"https://generativelanguage.googleapis.com/v1beta/{selected_model}:generateContent?key={api_key}"
           req = urllib.request.Request(
               url,
               data=json.dumps(payload).encode("utf-8"),
@@ -122,16 +173,13 @@ jobs:
               print(f"Allgemeiner Fehler: {e}")
               exit(1)
 
-          # Eventuelle Markdown-Codeblöcke bereinigen
           cleaned_html = re.sub(r"^```(?:html)?\s*", "", generated_html.strip(), flags=re.MULTILINE)
           cleaned_html = re.sub(r"```\s*$", "", cleaned_html, flags=re.MULTILINE).strip()
 
-          # Ordner erstellen und index.html speichern
           os.makedirs(clean_name, exist_ok=True)
           with open(file_path, "w", encoding="utf-8") as f:
               f.write(cleaned_html)
 
-          # Umgebungsvariablen für Folgeschritte exportieren
           with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
               env_file.write(f"PROJECT_FOLDER={clean_name}\n")
               env_file.write(f"PAGE_TITLE={page_title}\n")
