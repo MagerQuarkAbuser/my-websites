@@ -1,0 +1,22 @@
+name: "Website bearbeiten / Update"
+description: "Bestehendes Projekt anpassen, ohne Stile oder Farbcodes neu wählen zu müssen"
+title: "[Update]: "
+labels: ["website-update"]
+body:
+  - type: input
+    id: project_name
+    attributes:
+      label: "Projektname"
+      description: "Der genaue Ordnername des Projekts (z. B. taschenrechner oder sparplan-rechner)"
+      placeholder: "Ordnername des Projekts"
+    validations:
+      required: true
+
+  - type: textarea
+    id: update_description
+    attributes:
+      label: "Gewünschte Änderungen"
+      description: "Was soll hinzugefügt, repariert oder verändert werden? Farben, Design und bestehende Funktionen bleiben automatisch erhalten."
+      placeholder: "Füge einen Button für ... hinzu / Ändere die Berechnung von ..."
+    validations:
+      required: true
