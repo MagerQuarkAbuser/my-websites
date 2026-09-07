@@ -3,12 +3,13 @@ description: "Bestehendes Projekt anpassen, ohne Stile oder Farbcodes neu wähle
 title: "[Update]: "
 labels: ["website-update"]
 body:
-  - type: input
+  - type: dropdown
     id: project_name
     attributes:
       label: "Projektname"
-      description: "Der genaue Ordnername des Projekts (z. B. taschenrechner oder sparplan-rechner)"
-      placeholder: "taschenrechner"
+      description: "Wähle das bestehende Projekt aus der Liste aus"
+      options:
+        - "taschenrechner"
     validations:
       required: true
 
