@@ -8,7 +8,7 @@ body:
     attributes:
       label: "Projektname"
       description: "Der genaue Ordnername des Projekts (z. B. taschenrechner oder sparplan-rechner)"
-      placeholder: "Ordnername des Projekts"
+      placeholder: "taschenrechner"
     validations:
       required: true
 
