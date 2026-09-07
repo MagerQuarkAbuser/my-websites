@@ -8,9 +8,7 @@ body:
     attributes:
       label: "Projektname"
       description: "Wähle das bestehende Projekt aus der Liste aus"
-                  options:
-        - "planer"
-        - "sparplan-rechner"
+      options:
         - "taschenrechner"
     validations:
       required: true
