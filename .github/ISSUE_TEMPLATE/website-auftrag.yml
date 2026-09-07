@@ -32,26 +32,32 @@ body:
       required: true
 
   - type: dropdown
-    id: site_type
+    id: display_mode
     attributes:
-      label: "Art der Website"
+      label: "Basis-Modus"
+      description: "Wähle das grundlegende Erscheinungsbild"
       options:
-        - "Interaktives Tool / Rechner"
-        - "Landingpage / Visitenkarte"
-        - "Mini-Spiel"
-        - "Informations- / Textseite"
+        - "Dark Mode"
+        - "Light Mode"
     validations:
       required: true
 
   - type: dropdown
-    id: color_scheme
+    id: color_palette
     attributes:
-      label: "Farbschema"
+      label: "Farbpalette / Akzent-Stil"
+      description: "Wähle eines der 10 Farbschemata für Akzente, Buttons und Verläufe"
       options:
-        - "Dark Mode"
-        - "Light Mode"
-        - "Modern & Bunt"
-        - "Minimalistisch Monochrom"
+        - "1. Minimalistisch Monochrom (Schwarz, Weiß & neutrale Grautöne)"
+        - "2. Modern Tech Indigo (Royalblau, Violett & saubere Akzente)"
+        - "3. Cyberpunk Neon (Leuchtendes Pink, Türkis & Cyber-Cyan)"
+        - "4. Nordic Ice (Kühles Schiefergrau, Eisblau & Polarweiß)"
+        - "5. Smaragd & Natur (Edles Waldgrün, Salbei & Minz-Akzente)"
+        - "6. Sunset Glow (Warme Verläufe aus Koralle, Pfirsich & Amber)"
+        - "7. Midnight Navy (Tiefes Nachtblau, Indigo & Silber-Details)"
+        - "8. Retro Synthwave (80er-Jahre Lila, Neon-Magenta & Dunkelviolett)"
+        - "9. Warme Erde & Terracotta (Sanftes Sandbeige, Warmbraun & Ziegelrot)"
+        - "10. Pastell Dream (Sanfte Töne wie Lavendel, Buttergelb & Babyblau)"
     validations:
       required: true
 
