@@ -31,12 +31,14 @@ jobs:
           import re
           import json
           import urllib.request
+          import urllib.error
 
-          api_key = os.environ.get("GEMINI_API_KEY")
+          raw_api_key = os.environ.get("GEMINI_API_KEY", "")
+          api_key = raw_api_key.strip()
           body = os.environ.get("ISSUE_BODY", "")
 
           if not api_key:
-              print("FEHLER: Kein GEMINI_API_KEY hinterlegt.")
+              print("FEHLER: Kein GEMINI_API_KEY als Secret hinterlegt.")
               exit(1)
 
           def extract_field(label, text):
@@ -59,7 +61,7 @@ jobs:
           file_path = os.path.join(clean_name, "index.html")
           existing_code = ""
 
-          # Prüfen, ob eine bestehende Seite aktualisiert werden soll
+          # Prüfen, ob bestehende Datei aktualisiert werden soll
           if "aktualisieren" in action_type.lower() and os.path.exists(file_path):
               with open(file_path, "r", encoding="utf-8") as f:
                   existing_code = f.read()
@@ -112,8 +114,12 @@ jobs:
               with urllib.request.urlopen(req) as response:
                   res_data = json.loads(response.read().decode("utf-8"))
                   generated_html = res_data["candidates"][0]["content"]["parts"][0]["text"]
+          except urllib.error.HTTPError as e:
+              error_details = e.read().decode("utf-8")
+              print(f"API Fehler ({e.code}): {error_details}")
+              exit(1)
           except Exception as e:
-              print(f"API Fehler: {e}")
+              print(f"Allgemeiner Fehler: {e}")
               exit(1)
 
           # Eventuelle Markdown-Codeblöcke bereinigen
@@ -125,7 +131,7 @@ jobs:
           with open(file_path, "w", encoding="utf-8") as f:
               f.write(cleaned_html)
 
-          # Variablen für nachfolgende Workflow-Schritte bereitstellen
+          # Umgebungsvariablen für Folgeschritte exportieren
           with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
               env_file.write(f"PROJECT_FOLDER={clean_name}\n")
               env_file.write(f"PAGE_TITLE={page_title}\n")
