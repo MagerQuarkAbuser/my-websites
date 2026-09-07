@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vanessa & Fabian 🤍</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #2D5A27;
+            --sage: #87A96B;
+            --mint: #D5EDDA;
+            --light-blue: #E3F2FD;
+            --accent-blue: #90CAF9;
+            --cream: #FCFDFB;
+            --text: #333;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--cream);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- Typography --- */
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: var(--emerald);
+            text-align: center;
+            font-size: 2.5rem;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* --- Security & Profile Modals --- */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--cream);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 350px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        button {
+            background: var(--emerald);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        button:active { transform: scale(0.95); }
+
+        /* --- Header Elements --- */
+        .header-tools {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        #capybara-trigger {
+            font-size: 1.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .profile-btn {
+            background: var(--mint);
+            color: var(--emerald);
+            border-radius: 50%;
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- Navigation --- */
+        .nav-bar {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 900;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .nav-item.active { color: var(--emerald); }
+        .nav-item svg { width: 24px; height: 24px; margin-bottom: 4px; }
+
+        /* --- Tabs Content --- */
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- List Styles --- */
+        .list-item {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+        }
+
+        .list-item.done { opacity: 0.6; text-decoration: line-through; background: #f9f9f9; }
+
+        /* --- ToDo Columns --- */
+        .todo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 500px) { .todo-grid { grid-template-columns: 1fr; } }
+
+        .todo-col { border-radius: 15px; padding: 10px; }
+        .vanessa-bg { background: var(--mint); }
+        .fabian-bg { background: var(--light-blue); }
+        .both-bg { background: linear-gradient(135deg, var(--mint), var(--light-blue)); }
+
+        /* --- Date Invitation --- */
+        #no-btn { position: relative; transition: 0.1s; }
+
+        /* --- Easter Egg --- */
+        .flying-capy {
+            position: fixed;
+            font-size: 2rem;
+            z-index: 2000;
+            pointer-events: none;
+            animation: fly linear forwards;
+        }
+
+        @keyframes fly {
+            from { transform: translate(-100px, -100px) rotate(0deg); }
+            to { transform: translate(120vw, 120vh) rotate(720deg); }
+        }
+
+        /* --- Confetti --- */
+        .confetti {
+            position: fixed;
+            width: 10px; height: 10px;
+            z-index: 1500;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        /* --- Audio Control --- */
+        .audio-control {
+            position: fixed;
+            top: 15px;
+            right: 70px;
+            z-index: 950;
+            cursor: pointer;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Security Modal -->
+    <div id="security-modal" class="overlay">
+        <div class="card">
+            <h3>Sicherheitsabfrage</h3>
+            <p>Wann sind wir zusammengekommen?</p>
+            <input type="text" id="security-input" placeholder="dd.mm.yyyy">
+            <button onclick="checkSecurity()">Prüfen</button>
+            <p id="security-error" style="color:red; display:none; margin-top:10px;">Identität fragwürdig!</p>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="overlay" style="display:none;">
+        <div class="card">
+            <h3>Wer bist du?</h3>
+            <button onclick="setProfile('Vanessa')" style="background:var(--sage); margin-bottom:10px; width:100%;">Ich bin Vanessa</button>
+            <button onclick="setProfile('Fabian')" style="background:var(--accent-blue); width:100%;">Ich bin Fabian</button>
+        </div>
+    </div>
+
+    <!-- Main UI -->
+    <div class="header-tools">
+        <div id="capybara-trigger" ondblclick="triggerChillgriff()">🦫</div>
+        <div class="audio-control" onclick="toggleMusic()">🎵 <span id="music-status">Play</span></div>
+        <div class="profile-btn" onclick="showProfileSwitch()" id="profile-indicator">?</div>
+    </div>
+
+    <h1 id="main-title">Vanessa & Fabian 🤍</h1>
+
+    <div class="container">
+        <!-- Shopping List -->
+        <div id="tab-shopping" class="tab-content active">
+            <h3>🛒 Einkaufsliste</h3>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="shop-input" placeholder="Was brauchen wir?">
+                <button onclick="addItem('shopping')">+</button>
+            </div>
+            <div id="shopping-list-container"></div>
+            <hr>
+            <div id="shopping-done-container"></div>
+        </div>
+
+        <!-- ToDos -->
+        <div id="tab-todos" class="tab-content">
+            <h3>✅ Aufgaben</h3>
+            <div class="card" style="margin-bottom:20px;">
+                <input type="text" id="todo-input" placeholder="Neue Aufgabe...">
+                <select id="todo-owner">
+                    <option value="Vanessa">Für Vanessa</option>
+                    <option value="Fabian">Für Fabian</option>
+                    <option value="Beide">Für Beide</option>
+                </select>
+                <button onclick="addItem('todo')" style="width:100%;">Hinzufügen</button>
+            </div>
+            <div class="todo-grid">
+                <div class="todo-col vanessa-bg">
+                    <small>Vanessas Aufgaben</small>
+                    <div id="todo-vanessa"></div>
+                </div>
+                <div id="todo-fabian-col" class="todo-col fabian-bg">
+                    <small>Fabians Aufgaben</small>
+                    <div id="todo-fabian"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar -->
+        <div id="tab-calendar" class="tab-content">
+            <h3>📅 Termine</h3>
+            <div class="card" style="margin-bottom:20px;">
+                <input type="date" id="cal-date">
+                <input type="time" id="cal-time">
+                <input type="text" id="cal-title" placeholder="Was steht an?">
+                <button onclick="addItem('calendar')" style="width:100%;">Termin speichern</button>
+            </div>
+            <div id="calendar-container"></div>
+        </div>
+
+        <!-- Date (Fabian) -->
+        <div id="tab-date" class="tab-content">
+            <h3>❤️ Date Einladung</h3>
+            <div id="fabian-date-view" style="display:none;">
+                <div class="card">
+                    <p>Lade Vanessa zu etwas Besonderem ein:</p>
+                    <input type="date" id="date-invite-date">
+                    <input type="time" id="date-invite-time">
+                    <textarea id="date-invite-note" placeholder="Kleine Notiz..."></textarea>
+                    <button onclick="sendDateInvite()" style="width:100%;">Einladung abschicken</button>
+                </div>
+                <div id="date-status-msg" style="margin-top:20px; text-align:center; font-style:italic;"></div>
+            </div>
+            <div id="vanessa-date-view" style="display:none;">
+                <p>Aktuell keine neuen Einladungen.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Popup (Vanessa) -->
+    <div id="date-popup" class="overlay" style="display:none; background: rgba(255,255,255,0.95);">
+        <div class="card" style="position:relative;">
+            <h2 style="font-family:'Dancing Script'">Eine Einladung! ❤️</h2>
+            <p id="date-popup-text"></p>
+            <div style="display:flex; justify-content: space-around; margin-top:20px; height: 50px;">
+                <button onclick="acceptDate()" style="background:var(--emerald);">JA!</button>
+                <button id="no-btn" onmouseover="flee(this)" ontouchstart="flee(this)">Nein</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('shopping', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            Einkauf
+        </div>
+        <div class="nav-item" onclick="switchTab('todos', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            ToDos
+        </div>
+        <div class="nav-item" onclick="switchTab('calendar', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Termine
+        </div>
+        <div class="nav-item" id="nav-date" style="display:none;" onclick="switchTab('date', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Date
+        </div>
+    </nav>
+
+    <audio id="bg-music-1" src="song1.mp3"></audio>
+    <audio id="bg-music-2" src="song2.mp3"></audio>
+    <audio id="bg-music-3" src="song3.mp3"></audio>
+    <audio id="bg-music-4" src="song4.mp3"></audio>
+    <audio id="date-song" src="date-song.mp3"></audio>
+
+    <script>
+        // --- Configuration & State ---
+        const GOOGLE_SCRIPT_URL = ""; 
+        let state = {
+            user: null,
+            shopping: [],
+            todos: [],
+            calendar: [],
+            dateInvite: { active: false, date: '', time: '', note: '', status: 'open' }
+        };
+
+        const songs = ["bg-music-1", "bg-music-2", "bg-music-3", "bg-music-4"];
+        let currentSongIdx = 0;
+        let isMusicPlaying = false;
+
+        // --- Initialization ---
+        window.onload = () => {
+            loadData();
+            setupMusic();
+        };
+
+        function checkSecurity() {
+            const input = document.getElementById('security-input').value;
+            if (input === "25.09.2025") {
+                document.getElementById('security-modal').style.display = 'none';
+                document.getElementById('profile-modal').style.display = 'flex';
+            } else {
+                document.getElementById('security-error').style.display = 'block';
+            }
+        }
+
+        function setProfile(name) {
+            state.user = name;
+            document.getElementById('profile-modal').style.display = 'none';
+            document.getElementById('profile-indicator').innerText = name[0];
+            document.getElementById('nav-date').style.display = (name === 'Fabian') ? 'flex' : 'none';
+            
+            if (name === 'Fabian') {
+                document.getElementById('fabian-date-view').style.display = 'block';
+                document.getElementById('vanessa-date-view').style.display = 'none';
+            } else {
+                document.getElementById('fabian-date-view').style.display = 'none';
+                document.getElementById('vanessa-date-view').style.display = 'block';
+                checkDateInvite();
+            }
+            saveData();
+            renderAll();
+        }
+
+        function showProfileSwitch() {
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+
+        // --- Data Management ---
+        function saveData() {
+            localStorage.setItem('v_f_planner_data', JSON.stringify(state));
+            if (GOOGLE_SCRIPT_URL) {
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(state)
+                });
+            }
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('v_f_planner_data');
+            if (saved) {
+                state = JSON.parse(saved);
+                if (state.user) {
+                    document.getElementById('security-modal').style.display = 'none';
+                    setProfile(state.user);
+                }
+            }
+        }
+
+        // --- UI Logic ---
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            el.classList.add('active');
+        }
+
+        function addItem(type) {
+            if (type === 'shopping') {
+                const val = document.getElementById('shop-input').value;
+                if (!val) return;
+                state.shopping.push({ id: Date.now(), text: val, done: false });
+                document.getElementById('shop-input').value = '';
+            } else if (type === 'todo') {
+                const val = document.getElementById('todo-input').value;
+                const owner = document.getElementById('todo-owner').value;
+                if (!val) return;
+                state.todos.push({ id: Date.now(), text: val, owner: owner, done: false });
+                document.getElementById('todo-input').value = '';
+            } else if (type === 'calendar') {
+                const d = document.getElementById('cal-date').value;
+                const t = document.getElementById('cal-time').value;
+                const title = document.getElementById('cal-title').value;
+                if (!d || !title) return;
+                state.calendar.push({ id: Date.now(), date: d, time: t, title: title });
+                document.getElementById('cal-date').value = '';
+                document.getElementById('cal-time').value = '';
+                document.getElementById('cal-title').value = '';
+            }
+            saveData();
+            renderAll();
+        }
+
+        function toggleItem(type, id) {
+            if (type === 'shopping') {
+                const item = state.shopping.find(i => i.id === id);
+                item.done = !item.done;
+            } else if (type === 'todo') {
+                const item = state.todos.find(i => i.id === id);
+                item.done = !item.done;
+            }
+            saveData();
+            renderAll();
+        }
+
+        function deleteItem(type, id) {
+            state[type] = state[type].filter(i => i.id !== id);
+            saveData();
+            renderAll();
+        }
+
+        function editItem(type, id) {
+            const list = state[type];
+            const item = list.find(i => i.id === id);
+            const newText = prompt("Eintrag bearbeiten:", item.text || item.title);
+            if (newText) {
+                if (item.text !== undefined) item.text = newText;
+                else item.title = newText;
+                saveData();
+                renderAll();
+            }
+        }
+
+        // Long Press Logic
+        let pressTimer;
+        function startPress(type, id) {
+            pressTimer = window.setTimeout(() => editItem(type, id), 600);
+        }
+        function endPress() { clearTimeout(pressTimer); }
+
+        function renderAll() {
+            // Shopping
+            const shopCont = document.getElementById('shopping-list-container');
+            const shopDoneCont = document.getElementById('shopping-done-container');
+            shopCont.innerHTML = ''; shopDoneCont.innerHTML = '';
+            state.shopping.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `list-item ${item.done ? 'done' : ''}`;
+                div.innerHTML = `
+                    <span onclick="toggleItem('shopping', ${item.id})" 
+                          onmousedown="startPress('shopping', ${item.id})" 
+                          onmouseup="endPress()" 
+                          ontouchstart="startPress('shopping', ${item.id})" 
+                          ontouchend="endPress()">${item.text}</span>
+                    <button onclick="deleteItem('shopping', ${item.id})" style="background:none; color:red; padding:5px;">✕</button>
+                `;
+                if (item.done) shopDoneCont.appendChild(div);
+                else shopCont.appendChild(div);
+            });
+
+            // ToDos
+            const vTodo = document.getElementById('todo-vanessa');
+            const fTodo = document.getElementById('todo-fabian');
+            vTodo.innerHTML = ''; fTodo.innerHTML = '';
+            state.todos.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `list-item ${item.done ? 'done' : ''} ${item.owner === 'Beide' ? 'both-bg' : ''}`;
+                div.innerHTML = `<span onclick="toggleItem('todo', ${item.id})">${item.text}</span>`;
+                if (item.owner === 'Vanessa' || item.owner === 'Beide') vTodo.appendChild(div.cloneNode(true));
+                if (item.owner === 'Fabian' || item.owner === 'Beide') fTodo.appendChild(div);
+            });
+
+            // Calendar
+            const calCont = document.getElementById('calendar-container');
+            calCont.innerHTML = '';
+            state.calendar.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${new Date(item.date).toLocaleDateString('de-DE')} ${item.time}</strong><br>
+                        ${item.title}
+                    </div>
+                    <button onclick="deleteItem('calendar', ${item.id})" style="background:none; color:red; padding:5px;">✕</button>
+                `;
+                calCont.appendChild(div);
+            });
+
+            // Date Status for Fabian
+            if (state.user === 'Fabian') {
+                const statusMsg = document.getElementById('date-status-msg');
+                if (state.dateInvite.active) {
+                    statusMsg.innerText = state.dateInvite.status === 'open' ? "Warten auf Antwort... ⏳" : "Einladung wurde angenommen! ❤️";
+                } else {
+                    statusMsg.innerText = "";
+                }
+            }
+        }
+
+        // --- Date Logic ---
+        function sendDateInvite() {
+            state.dateInvite = {
+                active: true,
+                date: document.getElementById('date-invite-date').value,
+                time: document.getElementById('date-invite-time').value,
+                note: document.getElementById('date-invite-note').value,
+                status: 'open'
+            };
+            saveData();
+            renderAll();
+            alert("Einladung verschickt!");
+        }
+
+        function checkDateInvite() {
+            if (state.user === 'Vanessa' && state.dateInvite.active && state.dateInvite.status === 'open') {
+                document.getElementById('date-popup-text').innerText = 
+                    `Am ${state.dateInvite.date} um ${state.dateInvite.time} Uhr.\n\n"${state.dateInvite.note}"`;
+                document.getElementById('date-popup').style.display = 'flex';
+            }
+        }
+
+        function acceptDate() {
+            state.dateInvite.status = 'accepted';
+            state.calendar.push({
+                id: Date.now(),
+                date: state.dateInvite.date,
+                time: state.dateInvite.time,
+                title: "❤️ DATE: " + state.dateInvite.note
+            });
+            document.getElementById('date-popup').style.display = 'none';
+            saveData();
+            renderAll();
+            confettiRain();
+            playDateSong();
+        }
+
+        function flee(btn) {
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 50);
+            btn.style.position = 'fixed';
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+        }
+
+        // --- Easter Egg ---
+        function triggerChillgriff() {
+            const title = document.getElementById('main-title');
+            title.innerText = "Chillgriff!";
+            title.style.color = "#A0522D";
+            
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const capy = document.createElement('div');
+                    capy.className = 'flying-capy';
+                    capy.innerText = '🦫';
+                    capy.style.left = Math.random() * 100 + 'vw';
+                    capy.style.top = '-50px';
+                    capy.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                    document.body.appendChild(capy);
+                    setTimeout(() => capy.remove(), 3000);
+                }, i * 100);
+            }
+
+            setTimeout(() => {
+                title.innerText = "Vanessa & Fabian 🤍";
+                title.style.color = "var(--emerald)";
+            }, 8000);
+        }
+
+        // --- Effects ---
+        function confettiRain() {
+            for (let i = 0; i < 100; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.top = '-10px';
+                c.style.backgroundColor = ['#ff0000', '#ff69b4', '#ff1493', '#ffd700'][Math.floor(Math.random()*4)];
+                c.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                c.innerText = ['❤️', '✨', '🌸', '💖'][Math.floor(Math.random()*4)];
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 5000);
+            }
+        }
+
+        // --- Music ---
+        function setupMusic() {
+            songs.forEach((id, idx) => {
+                const audio = document.getElementById(id);
+                audio.onended = () => {
+                    currentSongIdx = (currentSongIdx + 1) % songs.length;
+                    playMusic();
+                };
+            });
+        }
+
+        function playMusic() {
+            songs.forEach(id => document.getElementById(id).pause());
+            const current = document.getElementById(songs[currentSongIdx]);
+            current.play().catch(() => { /* Autoplay block */ });
+            isMusicPlaying = true;
+            document.getElementById('music-status').innerText = "Pause";
+        }
+
+        function toggleMusic() {
+            const current = document.getElementById(songs[currentSongIdx]);
+            if (isMusicPlaying) {
+                current.pause();
+                isMusicPlaying = false;
+                document.getElementById('music-status').innerText = "Play";
+            } else {
+                current.play();
+                isMusicPlaying = true;
+                document.getElementById('music-status').innerText = "Pause";
+            }
+        }
+
+        function playDateSong() {
+            songs.forEach(id => document.getElementById(id).pause());
+            const ds = document.getElementById('date-song');
+            ds.play();
+            setTimeout(() => {
+                if (isMusicPlaying) playMusic();
+            }, 30000); // Play date song for 30s then back to loop
+        }
+
+    </script>
+</body>
+</html>
