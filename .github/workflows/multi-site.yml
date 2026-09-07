@@ -59,7 +59,7 @@ jobs:
           existing_code = ""
           if is_update:
               if not os.path.exists(file_path):
-                  print(f"FEHLER: Das Projekt '{clean_name}' existiert noch nicht. Bitte erstelle es zuerst.")
+                  print(f"FEHLER: Das Projekt '{clean_name}' existiert noch nicht.")
                   exit(1)
               with open(file_path, "r", encoding="utf-8") as f:
                   existing_code = f.read()
@@ -100,7 +100,6 @@ jobs:
               - Anforderungen: {description}
               """
 
-          # Modelle dynamisch ermitteln
           models_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
           try:
               req_models = urllib.request.Request(models_url)
@@ -126,16 +125,9 @@ jobs:
           sorted_models = sorted(available_models, key=model_priority, reverse=True)
 
           payload = {
-              "systemInstruction": {
-                  "parts": [{"text": system_prompt}]
-              },
-              "contents": [{
-                  "role": "user",
-                  "parts": [{"text": user_prompt}]
-              }],
-              "generationConfig": {
-                  "temperature": 0.3
-              }
+              "systemInstruction": {"parts": [{"text": system_prompt}]},
+              "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
+              "generationConfig": {"temperature": 0.3}
           }
 
           generated_html = None
@@ -171,6 +163,23 @@ jobs:
           with open(file_path, "w", encoding="utf-8") as f:
               f.write(cleaned_html)
 
+          # Dropdown in website-update.yml automatisch mit allen existierenden Projekten synchronisieren
+          projects = sorted([
+              d for d in os.listdir(".")
+              if os.path.isdir(d) and not d.startswith(".") and os.path.exists(os.path.join(d, "index.html"))
+          ])
+
+          update_tpl_path = os.path.join(".github", "ISSUE_TEMPLATE", "website-update.yml")
+          if os.path.exists(update_tpl_path) and projects:
+              with open(update_tpl_path, "r", encoding="utf-8") as f:
+                  tpl_content = f.read()
+
+              options_block = "      options:\n" + "\n".join([f'        - "{p}"' for p in projects])
+              updated_tpl = re.sub(r"options:\s*\n(?:\s*-\s*.*?\n)+", options_block + "\n", tpl_content, count=1)
+
+              with open(update_tpl_path, "w", encoding="utf-8") as f:
+                  f.write(updated_tpl)
+
           with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
               env_file.write(f"PROJECT_FOLDER={clean_name}\n")
               env_file.write(f"IS_UPDATE={'true' if is_update else 'false'}\n")
@@ -181,7 +190,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Deploy: Update für /${{ env.PROJECT_FOLDER }}/" || echo "Keine Änderungen vorhanden."
+          git commit -m "Deploy: Update für /${{ env.PROJECT_FOLDER }}/ und Vorlagen-Sync" || echo "Keine Änderungen vorhanden."
           git push
 
       - name: Issue kommentieren und schließen
