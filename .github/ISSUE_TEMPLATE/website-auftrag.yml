@@ -1,0 +1,65 @@
+name: "Website-Auftrag"
+description: "Erstelle oder aktualisiere eine Website per Google Gemini"
+title: "[Website]: "
+labels: ["website-generator"]
+body:
+  - type: input
+    id: project_name
+    attributes:
+      label: "Projektname"
+      description: "URL-tauglicher Ordnername (nur Kleinbuchstaben, Zahlen, Bindestriche, z. B. taschenrechner)"
+      placeholder: "taschenrechner"
+    validations:
+      required: true
+
+  - type: input
+    id: page_title
+    attributes:
+      label: "Seitentitel / Vorschau-Überschrift"
+      description: "Der sichtbare Titel auf der Website"
+      placeholder: "Mein minimalistischer Taschenrechner"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: action_type
+    attributes:
+      label: "Aktion"
+      options:
+        - "Neues Projekt erstellen"
+        - "Bestehendes Projekt aktualisieren"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: site_type
+    attributes:
+      label: "Art der Website"
+      options:
+        - "Interaktives Tool / Rechner"
+        - "Landingpage / Visitenkarte"
+        - "Mini-Spiel"
+        - "Informations- / Textseite"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: color_scheme
+    attributes:
+      label: "Farbschema"
+      options:
+        - "Dark Mode"
+        - "Light Mode"
+        - "Modern & Bunt"
+        - "Minimalistisch Monochrom"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Detaillierte Wünsche & Funktionen"
+      description: "Was soll die Seite konkret können? Welche Berechnungen, Buttons, Features oder Inhalte werden benötigt?"
+      placeholder: "Beschreibe die Logik und das Aussehen so detailliert wie möglich..."
+    validations:
+      required: true
