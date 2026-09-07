@@ -1,5 +1,5 @@
-name: "Website-Auftrag"
-description: "Erstelle oder aktualisiere eine Website per Google Gemini"
+name: "Neue Website erstellen"
+description: "Erstelle ein neues Website-Projekt mit individuellem Design"
 title: "[Website]: "
 labels: ["website-generator"]
 body:
@@ -17,17 +17,7 @@ body:
     attributes:
       label: "Seitentitel / Vorschau-Überschrift"
       description: "Der sichtbare Titel auf der Website"
-      placeholder: "Mein minimalistischer Taschenrechner"
-    validations:
-      required: true
-
-  - type: dropdown
-    id: action_type
-    attributes:
-      label: "Aktion"
-      options:
-        - "Neues Projekt erstellen"
-        - "Bestehendes Projekt aktualisieren"
+      placeholder: "Mein persönliches Dashboard"
     validations:
       required: true
 
@@ -65,7 +55,7 @@ body:
     id: description
     attributes:
       label: "Detaillierte Wünsche & Funktionen"
-      description: "Was soll die Seite konkret können? Welche Berechnungen, Buttons, Features oder Inhalte werden benötigt?"
-      placeholder: "Beschreibe die Logik und das Aussehen so detailliert wie möglich..."
+      description: "Was soll die Seite konkret können? Welche Berechnungen, Buttons oder Inhalte werden benötigt?"
+      placeholder: "Beschreibe die Logik und das Aussehen..."
     validations:
       required: true
