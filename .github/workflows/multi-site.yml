@@ -6,7 +6,7 @@ on:
 
 jobs:
   generate-website:
-    if: startsWith(github.event.issue.title, '[Website]:')
+    if: startsWith(github.event.issue.title, '[Website]:') || startsWith(github.event.issue.title, '[Update]:')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -25,6 +25,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
           python - << 'EOF'
           import os
@@ -36,6 +37,7 @@ jobs:
           raw_api_key = os.environ.get("GEMINI_API_KEY", "")
           api_key = raw_api_key.strip()
           body = os.environ.get("ISSUE_BODY", "")
+          title = os.environ.get("ISSUE_TITLE", "")
 
           if not api_key:
               print("FEHLER: Kein GEMINI_API_KEY als Secret hinterlegt.")
@@ -47,24 +49,58 @@ jobs:
               return match.group(1).strip() if match else ""
 
           raw_project_name = extract_field("Projektname", body)
-          page_title = extract_field("Seitentitel / Vorschau-Überschrift", body)
-          action_type = extract_field("Aktion", body)
-          display_mode = extract_field("Basis-Modus", body)
-          color_palette = extract_field("Farbpalette / Akzent-Stil", body)
-          description = extract_field("Detaillierte Wünsche & Funktionen", body)
-
           clean_name = re.sub(r'[^a-z0-9_-]', '', raw_project_name.lower())
           if not clean_name:
               clean_name = "website-projekt"
 
           file_path = os.path.join(clean_name, "index.html")
-          existing_code = ""
+          is_update = title.startswith("[Update]:")
 
-          if "aktualisieren" in action_type.lower() and os.path.exists(file_path):
+          existing_code = ""
+          if is_update:
+              if not os.path.exists(file_path):
+                  print(f"FEHLER: Das Projekt '{clean_name}' existiert noch nicht. Bitte erstelle es zuerst.")
+                  exit(1)
               with open(file_path, "r", encoding="utf-8") as f:
                   existing_code = f.read()
+              
+              update_requests = extract_field("Gewünschte Änderungen", body)
+              system_prompt = (
+                  "Du bist ein professioneller Web-Entwickler. Du bearbeitest den bestehenden Code einer Single-File-Website. "
+                  "WICHTIGSTE REGEL: Behalte das bisherige Farbschema, das Layout, alle Schriften und alle bestehenden Funktionen "
+                  "vollständig und unverändert bei, es sei denn der Nutzer fordert ausdrücklich eine optische Änderung! "
+                  "Integriere die neuen Wünsche nahtlos in den bestehenden HTML-, CSS- und JavaScript-Code. "
+                  "Gib AUSSCHLIESSLICH den vollständigen neuen HTML-Code zurück. Keine Markdown-Backticks, keine Erklärungen."
+              )
+              user_prompt = f"""
+              BESTEHENDER CODE:
+              {existing_code}
 
-          # Live-Modellliste von Google abrufen
+              GEWÜNSCHTE ÄNDERUNGEN:
+              {update_requests}
+              """
+              page_title = clean_name
+          else:
+              page_title = extract_field("Seitentitel / Vorschau-Überschrift", body)
+              display_mode = extract_field("Basis-Modus", body)
+              color_palette = extract_field("Farbpalette / Akzent-Stil", body)
+              description = extract_field("Detaillierte Wünsche & Funktionen", body)
+
+              system_prompt = (
+                  "Du bist ein professioneller Web-Entwickler. Erstelle eine vollständige, "
+                  "moderne, responsive Single-File-Website (HTML5 mit integriertem <style> und <script>). "
+                  "Verwende keine externen Frameworks, sondern sauberes Vanilla-HTML, CSS und JavaScript. "
+                  "Gib AUSSCHLIESSLICH den rohen HTML-Code zurück. Keine Markdown-Backticks, keine Erklärungen davor oder danach."
+              )
+              user_prompt = f"""
+              PROJEKT-DATEN:
+              - Titel: {page_title}
+              - Basis-Modus: {display_mode}
+              - Gewähltes Farbschema: {color_palette}
+              - Anforderungen: {description}
+              """
+
+          # Modelle dynamisch ermitteln
           models_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
           try:
               req_models = urllib.request.Request(models_url)
@@ -89,30 +125,6 @@ jobs:
 
           sorted_models = sorted(available_models, key=model_priority, reverse=True)
 
-          system_prompt = (
-              "Du bist ein professioneller Web-Entwickler. Erstelle eine vollständige, "
-              "moderne, responsive Single-File-Website (HTML5 mit integriertem <style> und <script>). "
-              "Verwende keine externen Frameworks, sondern sauberes Vanilla-HTML, CSS und JavaScript. "
-              "Gib AUSSCHLIESSLICH den rohen HTML-Code zurück. Keine Markdown-Backticks, keine Erklärungen davor oder danach."
-          )
-
-          user_prompt = f"""
-          PROJEKT-DATEN:
-          - Titel: {page_title}
-          - Basis-Modus: {display_mode}
-          - Gewähltes Farbschema: {color_palette}
-          - Anforderungen: {description}
-          """
-
-          if existing_code:
-              user_prompt += f"""
-          - AKTION: Aktualisiere den bestehenden Code zielgerichtet anhand der Anforderungen.
-          - BESTEHENDER CODE:
-          {existing_code}
-          """
-          else:
-              user_prompt += "\n- AKTION: Erstelle ein komplett neues Projekt von Grund auf."
-
           payload = {
               "systemInstruction": {
                   "parts": [{"text": system_prompt}]
@@ -127,9 +139,8 @@ jobs:
           }
 
           generated_html = None
-
           for model_name in sorted_models:
-              print(f"Versuche Modellanfrage an: {model_name}...")
+              print(f"Sende Anfrage an: {model_name}...")
               url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={api_key}"
               req = urllib.request.Request(
                   url,
@@ -140,17 +151,17 @@ jobs:
                   with urllib.request.urlopen(req) as response:
                       res_data = json.loads(response.read().decode("utf-8"))
                       generated_html = res_data["candidates"][0]["content"]["parts"][0]["text"]
-                      print(f"Erfolg! Website generiert mit: {model_name}")
+                      print(f"Erfolg mit: {model_name}")
                       break
               except urllib.error.HTTPError as e:
-                  print(f"-> {model_name} fehlgeschlagen ({e.code}). Probiere nächstes...")
+                  print(f"-> Modell {model_name} meldet {e.code}, probiere nächstes...")
                   continue
               except Exception as e:
-                  print(f"-> Fehler bei {model_name}: {e}")
+                  print(f"-> Fehler: {e}")
                   continue
 
           if not generated_html:
-              print("FEHLER: Keines der verfügbaren Modelle konnte die Website generieren.")
+              print("FEHLER: Website konnte nicht generiert werden.")
               exit(1)
 
           cleaned_html = re.sub(r"^```(?:html)?\s*", "", generated_html.strip(), flags=re.MULTILINE)
@@ -162,7 +173,7 @@ jobs:
 
           with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
               env_file.write(f"PROJECT_FOLDER={clean_name}\n")
-              env_file.write(f"PAGE_TITLE={page_title}\n")
+              env_file.write(f"IS_UPDATE={'true' if is_update else 'false'}\n")
           EOF
 
       - name: Änderungen committen und pushen
@@ -170,7 +181,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Deploy: Website '${{ env.PAGE_TITLE }}' in /${{ env.PROJECT_FOLDER }}/" || echo "Keine Änderungen vorhanden."
+          git commit -m "Deploy: Update für /${{ env.PROJECT_FOLDER }}/" || echo "Keine Änderungen vorhanden."
           git push
 
       - name: Issue kommentieren und schließen
@@ -181,7 +192,12 @@ jobs:
           REPO: ${{ github.event.repository.name }}
         run: |
           LIVE_URL="https://${OWNER}.github.io/${REPO}/${PROJECT_FOLDER}/"
-          COMMENT="### Website erfolgreich bereitgestellt! 🎉\n\n- **Projekt:** \`${PROJECT_FOLDER}\`\n- **Live-URL:** [${LIVE_URL}](${LIVE_URL})\n\n*(Hinweis: GitHub Pages benötigt beim allerersten Aufruf ca. 1 bis 2 Minuten für die Bereitstellung.)*"
+          
+          if [ "${IS_UPDATE}" = "true" ]; then
+            COMMENT="### Update erfolgreich aufgespielt! 🚀\n\nDie Änderungen für **\`${PROJECT_FOLDER}\`** sind live:\n👉 [${LIVE_URL}](${LIVE_URL})"
+          else
+            COMMENT="### Website erfolgreich bereitgestellt! 🎉\n\n- **Projekt:** \`${PROJECT_FOLDER}\`\n- **Live-URL:** [${LIVE_URL}](${LIVE_URL})\n\n*(Hinweis: GitHub Pages benötigt beim allerersten Aufruf ca. 1 bis 2 Minuten für die Bereitstellung.)*"
+          fi
           
           gh issue comment "$ISSUE_NUMBER" --body "$COMMENT"
           gh issue close "$ISSUE_NUMBER"
