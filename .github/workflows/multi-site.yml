@@ -1,0 +1,153 @@
+name: "Multi-Site Generator"
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  generate-website:
+    if: contains(github.event.issue.labels.*.name, 'website-generator')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Quellcode auschecken
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Gemini Code generieren
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python - << 'EOF'
+          import os
+          import re
+          import json
+          import urllib.request
+
+          api_key = os.environ.get("GEMINI_API_KEY")
+          body = os.environ.get("ISSUE_BODY", "")
+
+          if not api_key:
+              print("FEHLER: Kein GEMINI_API_KEY hinterlegt.")
+              exit(1)
+
+          def extract_field(label, text):
+              pattern = rf"###\s+{re.escape(label)}\s*\n\n([\s\S]*?)(?=\n###|\Z)"
+              match = re.search(pattern, text)
+              return match.group(1).strip() if match else ""
+
+          raw_project_name = extract_field("Projektname", body)
+          page_title = extract_field("Seitentitel / Vorschau-Überschrift", body)
+          action_type = extract_field("Aktion", body)
+          site_type = extract_field("Art der Website", body)
+          color_scheme = extract_field("Farbschema", body)
+          description = extract_field("Detaillierte Wünsche & Funktionen", body)
+
+          # Ordnernamen URL-sicher bereinigen
+          clean_name = re.sub(r'[^a-z0-9_-]', '', raw_project_name.lower())
+          if not clean_name:
+              clean_name = "website-projekt"
+
+          file_path = os.path.join(clean_name, "index.html")
+          existing_code = ""
+
+          # Prüfen, ob eine bestehende Seite aktualisiert werden soll
+          if "aktualisieren" in action_type.lower() and os.path.exists(file_path):
+              with open(file_path, "r", encoding="utf-8") as f:
+                  existing_code = f.read()
+
+          system_prompt = (
+              "Du bist ein professioneller Web-Entwickler. Erstelle eine vollständige, "
+              "moderne, responsive Single-File-Website (HTML5 mit integriertem <style> und <script>). "
+              "Verwende keine externen Frameworks, sondern sauberes Vanilla-HTML, CSS und JavaScript. "
+              "Gib AUSSCHLIESSLICH den rohen HTML-Code zurück. Keine Markdown-Backticks, keine Erklärungen davor oder danach."
+          )
+
+          user_prompt = f"""
+          PROJEKT-DATEN:
+          - Titel: {page_title}
+          - Typ: {site_type}
+          - Farbschema: {color_scheme}
+          - Anforderungen: {description}
+          """
+
+          if existing_code:
+              user_prompt += f"""
+          - AKTION: Aktualisiere den bestehenden Code zielgerichtet anhand der Anforderungen.
+          - BESTEHENDER CODE:
+          {existing_code}
+          """
+          else:
+              user_prompt += "\n- AKTION: Erstelle ein komplett neues Projekt von Grund auf."
+
+          payload = {
+              "systemInstruction": {
+                  "parts": [{"text": system_prompt}]
+              },
+              "contents": [{
+                  "role": "user",
+                  "parts": [{"text": user_prompt}]
+              }],
+              "generationConfig": {
+                  "temperature": 0.3
+              }
+          }
+
+          url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+          req = urllib.request.Request(
+              url,
+              data=json.dumps(payload).encode("utf-8"),
+              headers={"Content-Type": "application/json"}
+          )
+
+          try:
+              with urllib.request.urlopen(req) as response:
+                  res_data = json.loads(response.read().decode("utf-8"))
+                  generated_html = res_data["candidates"][0]["content"]["parts"][0]["text"]
+          except Exception as e:
+              print(f"API Fehler: {e}")
+              exit(1)
+
+          # Eventuelle Markdown-Codeblöcke bereinigen
+          cleaned_html = re.sub(r"^```(?:html)?\s*", "", generated_html.strip(), flags=re.MULTILINE)
+          cleaned_html = re.sub(r"```\s*$", "", cleaned_html, flags=re.MULTILINE).strip()
+
+          # Ordner erstellen und index.html speichern
+          os.makedirs(clean_name, exist_ok=True)
+          with open(file_path, "w", encoding="utf-8") as f:
+              f.write(cleaned_html)
+
+          # Variablen für nachfolgende Workflow-Schritte bereitstellen
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+              env_file.write(f"PROJECT_FOLDER={clean_name}\n")
+              env_file.write(f"PAGE_TITLE={page_title}\n")
+          EOF
+
+      - name: Änderungen committen und pushen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Deploy: Website '${{ env.PAGE_TITLE }}' in /${{ env.PROJECT_FOLDER }}/" || echo "Keine Änderungen vorhanden."
+          git push
+
+      - name: Issue kommentieren und schließen
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          LIVE_URL="https://${OWNER}.github.io/${REPO}/${PROJECT_FOLDER}/"
+          COMMENT="### Website erfolgreich bereitgestellt! 🎉\n\n- **Projekt:** \`${PROJECT_FOLDER}\`\n- **Live-URL:** [${LIVE_URL}](${LIVE_URL})\n\n*(Hinweis: GitHub Pages benötigt beim allerersten Aufruf ca. 1 bis 2 Minuten für die Bereitstellung.)*"
+          
+          gh issue comment "$ISSUE_NUMBER" --body "$COMMENT"
+          gh issue close "$ISSUE_NUMBER"
