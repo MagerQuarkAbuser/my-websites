@@ -49,8 +49,8 @@ jobs:
           raw_project_name = extract_field("Projektname", body)
           page_title = extract_field("Seitentitel / Vorschau-Überschrift", body)
           action_type = extract_field("Aktion", body)
-          site_type = extract_field("Art der Website", body)
-          color_scheme = extract_field("Farbschema", body)
+          display_mode = extract_field("Basis-Modus", body)
+          color_palette = extract_field("Farbpalette / Akzent-Stil", body)
           description = extract_field("Detaillierte Wünsche & Funktionen", body)
 
           clean_name = re.sub(r'[^a-z0-9_-]', '', raw_project_name.lower())
@@ -64,7 +64,7 @@ jobs:
               with open(file_path, "r", encoding="utf-8") as f:
                   existing_code = f.read()
 
-          # 1. Live-Modellliste direkt von Google abrufen
+          # Live-Modellliste von Google abrufen
           models_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
           try:
               req_models = urllib.request.Request(models_url)
@@ -79,11 +79,6 @@ jobs:
               if "generateContent" in m.get("supportedGenerationMethods", [])
           ]
 
-          print("Verfügbare Modelle für diesen API-Key:")
-          for m in available_models:
-              print(f" - {m}")
-
-          # Intelligente Sortierung: Neueste Versionen & Pro-Modelle zuerst
           def model_priority(name):
               score = 0
               if "3" in name: score += 100
@@ -104,8 +99,8 @@ jobs:
           user_prompt = f"""
           PROJEKT-DATEN:
           - Titel: {page_title}
-          - Typ: {site_type}
-          - Farbschema: {color_scheme}
+          - Basis-Modus: {display_mode}
+          - Gewähltes Farbschema: {color_palette}
           - Anforderungen: {description}
           """
 
@@ -133,7 +128,6 @@ jobs:
 
           generated_html = None
 
-          # Modelle der Reihe nach durchprobieren, bis eines erfolgreich generiert
           for model_name in sorted_models:
               print(f"Versuche Modellanfrage an: {model_name}...")
               url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={api_key}"
@@ -149,8 +143,7 @@ jobs:
                       print(f"Erfolg! Website generiert mit: {model_name}")
                       break
               except urllib.error.HTTPError as e:
-                  err_body = e.read().decode("utf-8")
-                  print(f"-> {model_name} fehlgeschlagen ({e.code}). Probiere nächstes Modell...")
+                  print(f"-> {model_name} fehlgeschlagen ({e.code}). Probiere nächstes...")
                   continue
               except Exception as e:
                   print(f"-> Fehler bei {model_name}: {e}")
