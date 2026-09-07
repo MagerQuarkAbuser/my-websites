@@ -64,56 +64,6 @@ jobs:
               with open(file_path, "r", encoding="utf-8") as f:
                   existing_code = f.read()
 
-          # 1. Verfügbare Modelle dynamisch von Google abfragen
-          models_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
-          try:
-              req_models = urllib.request.Request(models_url)
-              with urllib.request.urlopen(req_models) as resp:
-                  models_data = json.loads(resp.read().decode("utf-8"))
-          except urllib.error.HTTPError as e:
-              print(f"API Fehler beim Abrufen der Modell-Liste ({e.code}): {e.read().decode('utf-8')}")
-              exit(1)
-
-          available_models = [
-              m["name"] for m in models_data.get("models", [])
-              if "generateContent" in m.get("supportedGenerationMethods", [])
-          ]
-
-          # Bevorzuge Pro-Modelle (stärkste Code-Qualität)
-          selected_model = None
-          preferred_pro = [
-              "gemini-1.5-pro-latest",
-              "gemini-1.5-pro-002",
-              "gemini-1.5-pro-001",
-              "gemini-1.5-pro",
-              "gemini-pro"
-          ]
-
-          for pref in preferred_pro:
-              match = [m for m in available_models if m.endswith(pref)]
-              if match:
-                  selected_model = match[0]
-                  break
-
-          if not selected_model:
-              pro_candidates = [m for m in available_models if "pro" in m.lower()]
-              if pro_candidates:
-                  selected_model = pro_candidates[0]
-
-          if not selected_model:
-              flash_candidates = [m for m in available_models if "flash" in m.lower()]
-              if flash_candidates:
-                  selected_model = flash_candidates[0]
-
-          if not selected_model and available_models:
-              selected_model = available_models[0]
-
-          if not selected_model:
-              print("FEHLER: Kein passendes Modell für generateContent gefunden.")
-              exit(1)
-
-          print(f"--> Verwende Modell: {selected_model}")
-
           system_prompt = (
               "Du bist ein professioneller Web-Entwickler. Erstelle eine vollständige, "
               "moderne, responsive Single-File-Website (HTML5 mit integriertem <style> und <script>). "
@@ -151,26 +101,46 @@ jobs:
               }
           }
 
-          if not selected_model.startswith("models/"):
-              selected_model = f"models/{selected_model}"
+          # Prioritätsliste aktueller Modelle
+          candidate_models = [
+              "gemini-3.1-pro-preview",
+              "gemini-2.5-flash",
+              "gemini-2.0-flash",
+              "gemini-1.5-pro",
+              "gemini-1.5-flash"
+          ]
 
-          url = f"https://generativelanguage.googleapis.com/v1beta/{selected_model}:generateContent?key={api_key}"
-          req = urllib.request.Request(
-              url,
-              data=json.dumps(payload).encode("utf-8"),
-              headers={"Content-Type": "application/json"}
-          )
+          generated_html = None
+          last_error = ""
 
-          try:
-              with urllib.request.urlopen(req) as response:
-                  res_data = json.loads(response.read().decode("utf-8"))
-                  generated_html = res_data["candidates"][0]["content"]["parts"][0]["text"]
-          except urllib.error.HTTPError as e:
-              error_details = e.read().decode("utf-8")
-              print(f"API Fehler ({e.code}): {error_details}")
-              exit(1)
-          except Exception as e:
-              print(f"Allgemeiner Fehler: {e}")
+          for model in candidate_models:
+              model_id = model if model.startswith("models/") else f"models/{model}"
+              print(f"Versuche Modell: {model_id}...")
+              
+              url = f"https://generativelanguage.googleapis.com/v1beta/{model_id}:generateContent?key={api_key}"
+              req = urllib.request.Request(
+                  url,
+                  data=json.dumps(payload).encode("utf-8"),
+                  headers={"Content-Type": "application/json"}
+              )
+              
+              try:
+                  with urllib.request.urlopen(req) as response:
+                      res_data = json.loads(response.read().decode("utf-8"))
+                      generated_html = res_data["candidates"][0]["content"]["parts"][0]["text"]
+                      print(f"Erfolg mit Modell: {model_id}")
+                      break
+              except urllib.error.HTTPError as e:
+                  err_msg = e.read().decode("utf-8")
+                  last_error = f"{e.code}: {err_msg}"
+                  print(f"Modell {model_id} nicht abrufbar, probiere Alternative...")
+                  continue
+              except Exception as e:
+                  last_error = str(e)
+                  continue
+
+          if not generated_html:
+              print(f"FEHLER: Kein Modell konnte erreicht werden. Letzte Meldung: {last_error}")
               exit(1)
 
           cleaned_html = re.sub(r"^```(?:html)?\s*", "", generated_html.strip(), flags=re.MULTILINE)
