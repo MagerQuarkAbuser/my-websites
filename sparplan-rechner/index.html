@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktiver Zinseszins- & Vermögensrechner</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #a855f7;
+            --accent: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --input-bg: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-muted);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .kpi-label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .kpi-value.highlight {
+            color: var(--primary);
+        }
+
+        /* Main Content Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Controls */
+        .controls {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-header label {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .input-header input[type="number"] {
+            width: 100px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 5px 10px;
+            border-radius: 6px;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Chart */
+        .chart-wrapper {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-container {
+            flex-grow: 1;
+            position: relative;
+            width: 100%;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            cursor: crosshair;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        /* Table Section */
+        .table-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .table-header:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .table-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .table-content.open {
+            max-height: 1000px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 25px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: rgba(0,0,0,0.2);
+            color: var(--text-muted);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .btn-export {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .btn-export:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Tooltip */
+        #chart-tooltip {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--primary);
+            padding: 10px;
+            border-radius: 8px;
+            pointer-events: none;
+            display: none;
+            z-index: 100;
+            font-size: 0.85rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        .tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Vermögensplaner</h1>
+            <p>Visualisiere die Kraft des Zinseszins-Effekts</p>
+        </header>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <span class="kpi-label">Endkapital</span>
+                <div id="kpi-total" class="kpi-value highlight">0,00 €</div>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">Eigene Einzahlungen</span>
+                <div id="kpi-invested" class="kpi-value">0,00 €</div>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">Zinsgewinn</span>
+                <div id="kpi-interest" class="kpi-value" style="color: var(--secondary);">0,00 €</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="controls">
+                <div class="input-group">
+                    <div class="input-header">
+                        <label>Startkapital</label>
+                        <input type="number" id="start-val" value="5000" step="500">
+                    </div>
+                    <input type="range" id="start-range" min="0" max="50000" step="500" value="5000">
+                </div>
+
+                <div class="input-group">
+                    <div class="input-header">
+                        <label>Monatl. Sparrate</label>
+                        <input type="number" id="rate-val" value="250" step="50">
+                    </div>
+                    <input type="range" id="rate-range" min="0" max="2000" step="50" value="250">
+                </div>
+
+                <div class="input-group">
+                    <div class="input-header">
+                        <label>Laufzeit (Jahre)</label>
+                        <input type="number" id="years-val" value="20" min="1" max="40">
+                    </div>
+                    <input type="range" id="years-range" min="1" max="40" step="1" value="20">
+                </div>
+
+                <div class="input-group">
+                    <div class="input-header">
+                        <label>Rendite (% p.a.)</label>
+                        <input type="number" id="interest-val" value="7" step="0.1">
+                    </div>
+                    <input type="range" id="interest-range" min="0" max="15" step="0.1" value="7">
+                </div>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="chart-container" id="canvas-parent">
+                    <canvas id="mainChart"></canvas>
+                    <div id="chart-tooltip"></div>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="dot" style="background: var(--primary);"></div>
+                        <span>Einzahlungen</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="dot" style="background: var(--secondary);"></div>
+                        <span>Zinsgewinn</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-section">
+            <div class="table-header" onclick="toggleTable()">
+                <h3 id="table-toggle-text">▼ Detaillierte Jahrestabelle anzeigen</h3>
+                <button class="btn-export" onclick="exportCSV(event)">CSV Export</button>
+            </div>
+            <div class="table-content" id="table-container">
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <th>Jahr</th>
+                            <th>Einzahlungen (kum.)</th>
+                            <th>Zinsen (Jahr)</th>
+                            <th>Gesamtsaldo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let yearlyData = [];
+        const canvas = document.getElementById('mainChart');
+        const ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('chart-tooltip');
+        
+        // Inputs
+        const inputs = [
+            { id: 'start', range: 'start-range', val: 'start-val' },
+            { id: 'rate', range: 'rate-range', val: 'rate-val' },
+            { id: 'years', range: 'years-range', val: 'years-val' },
+            { id: 'interest', range: 'interest-range', val: 'interest-val' }
+        ];
+
+        function init() {
+            inputs.forEach(input => {
+                const r = document.getElementById(input.range);
+                const v = document.getElementById(input.val);
+
+                r.addEventListener('input', () => {
+                    v.value = r.value;
+                    calculate();
+                });
+
+                v.addEventListener('input', () => {
+                    r.value = v.value;
+                    calculate();
+                });
+            });
+
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                drawChart();
+            });
+
+            resizeCanvas();
+            calculate();
+        }
+
+        function resizeCanvas() {
+            const parent = document.getElementById('canvas-parent');
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = parent.clientWidth * dpr;
+            canvas.height = parent.clientHeight * dpr;
+            ctx.scale(dpr, dpr);
+        }
+
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(num);
+        }
+
+        function calculate() {
+            const startCapital = parseFloat(document.getElementById('start-val').value) || 0;
+            const monthlyRate = parseFloat(document.getElementById('rate-val').value) || 0;
+            const years = parseInt(document.getElementById('years-val').value) || 1;
+            const annualInterest = (parseFloat(document.getElementById('interest-val').value) || 0) / 100;
+
+            yearlyData = [];
+            let currentBalance = startCapital;
+            let totalInvested = startCapital;
+
+            for (let y = 1; y <= years; y++) {
+                let yearlyInterest = 0;
+                for (let m = 1; m <= 12; m++) {
+                    const interestThisMonth = currentBalance * (annualInterest / 12);
+                    yearlyInterest += interestThisMonth;
+                    currentBalance += interestThisMonth + monthlyRate;
+                    totalInvested += monthlyRate;
+                }
+                
+                yearlyData.push({
+                    year: y,
+                    invested: totalInvested,
+                    interestTotal: currentBalance - totalInvested,
+                    yearlyInterest: yearlyInterest,
+                    balance: currentBalance
+                });
+            }
+
+            updateKPIs(yearlyData[yearlyData.length - 1]);
+            updateTable();
+            drawChart();
+        }
+
+        function updateKPIs(lastYear) {
+            document.getElementById('kpi-total').innerText = formatCurrency(lastYear.balance);
+            document.getElementById('kpi-invested').innerText = formatCurrency(lastYear.invested);
+            document.getElementById('kpi-interest').innerText = formatCurrency(lastYear.interestTotal);
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            yearlyData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>Jahr ${row.year}</td>
+                    <td>${formatCurrency(row.invested)}</td>
+                    <td>${formatCurrency(row.yearlyInterest)}</td>
+                    <td style="font-weight:bold; color:var(--primary)">${formatCurrency(row.balance)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleTable() {
+            const content = document.getElementById('table-container');
+            const text = document.getElementById('table-toggle-text');
+            content.classList.toggle('open');
+            text.innerText = content.classList.contains('open') ? '▲ Tabelle einklappen' : '▼ Detaillierte Jahrestabelle anzeigen';
+        }
+
+        function drawChart() {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            const padding = 40;
+            const chartW = w - padding * 2;
+            const chartH = h - padding * 2;
+
+            ctx.clearRect(0, 0, w, h);
+
+            if (yearlyData.length === 0) return;
+
+            const maxVal = yearlyData[yearlyData.length - 1].balance;
+            const barWidth = (chartW / yearlyData.length) * 0.8;
+            const gap = (chartW / yearlyData.length) * 0.2;
+
+            // Draw Grid Lines
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for(let i=0; i<=4; i++) {
+                const yPos = padding + chartH - (chartH * (i/4));
+                ctx.moveTo(padding, yPos);
+                ctx.lineTo(padding + chartW, yPos);
+            }
+            ctx.stroke();
+
+            // Draw Bars
+            yearlyData.forEach((data, i) => {
+                const x = padding + i * (barWidth + gap);
+                
+                const investedH = (data.invested / maxVal) * chartH;
+                const interestH = (data.interestTotal / maxVal) * chartH;
+
+                // Invested Part
+                ctx.fillStyle = '#6366f1';
+                ctx.fillRect(x, padding + chartH - investedH, barWidth, investedH);
+
+                // Interest Part
+                ctx.fillStyle = '#a855f7';
+                ctx.fillRect(x, padding + chartH - investedH - interestH, barWidth, interestH);
+                
+                // Year Label (every few years if many)
+                if (yearlyData.length < 15 || i % 5 === 0 || i === yearlyData.length - 1) {
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '10px Inter';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(data.year, x + barWidth/2, padding + chartH + 15);
+                }
+            });
+        }
+
+        // Tooltip Logic
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const w = rect.width;
+            const padding = 40;
+            const chartW = w - padding * 2;
+            
+            const step = chartW / yearlyData.length;
+            const index = Math.floor((x - padding) / step);
+
+            if (index >= 0 && index < yearlyData.length) {
+                const data = yearlyData[index];
+                tooltip.style.display = 'block';
+                tooltip.style.left = (x + 15) + 'px';
+                tooltip.style.top = (y - 15) + 'px';
+                tooltip.innerHTML = `
+                    <div style="font-weight:bold; margin-bottom:5px; border-bottom:1px solid #334155">Jahr ${data.year}</div>
+                    <div class="tooltip-row"><span>Einzahlungen:</span> <span>${formatCurrency(data.invested)}</span></div>
+                    <div class="tooltip-row"><span>Zinsgewinn:</span> <span>${formatCurrency(data.interestTotal)}</span></div>
+                    <div class="tooltip-row" style="color:var(--primary); font-weight:bold"><span>Gesamt:</span> <span>${formatCurrency(data.balance)}</span></div>
+                `;
+            } else {
+                tooltip.style.display = 'none';
+            }
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            tooltip.style.display = 'none';
+        });
+
+        function exportCSV(event) {
+            event.stopPropagation();
+            let csv = 'Jahr;Einzahlungen Kumuliert;Zinsen Jahr;Gesamtsaldo\n';
+            yearlyData.forEach(row => {
+                csv += `${row.year};${row.invested.toFixed(2)};${row.yearlyInterest.toFixed(2)};${row.balance.toFixed(2)}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'vermoegensplanung.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Run
+        init();
+    </script>
+</body>
+</html>
