@@ -14,14 +14,14 @@
       --blue-dark: #0284c7;
       --blue-border: #7dd3fc;
       --bg: #f8fafc;
-      --card-bg: rgba(255, 255, 255, 0.85);
-      --text: #1e293b;
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --text: #0f172a;
       --text-muted: #64748b;
-      --vanessa-card: #f0fdf4;
+      --vanessa-card: rgba(240, 253, 244, 0.92);
       --vanessa-border: #4ade80;
-      --fabian-card: #f0f9ff;
+      --fabian-card: rgba(240, 249, 255, 0.92);
       --fabian-border: #38bdf8;
-      --both-card: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%);
+      --both-card: linear-gradient(135deg, rgba(240, 253, 244, 0.95) 0%, rgba(240, 249, 255, 0.95) 100%);
       --both-border: #a7f3d0;
     }
 
@@ -34,8 +34,7 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at 10% 20%, #e0f2fe 0%, #dcfce7 40%, #f8fafc 80%);
-      background-attachment: fixed;
+      background-color: #f1f5f9;
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -43,6 +42,26 @@
       align-items: center;
       overflow-x: hidden;
       position: relative;
+    }
+
+    /* Foto-Hintergrund (hintergrund.jpeg) */
+    #bg-photo {
+      position: fixed;
+      inset: 0;
+      background: url('hintergrund.jpeg') center center / cover no-repeat;
+      opacity: 0.22;
+      filter: saturate(1.05);
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* Weicher Farbverlauf über dem Foto */
+    #bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 10% 20%, rgba(224, 242, 254, 0.45) 0%, rgba(220, 252, 231, 0.45) 45%, rgba(248, 250, 252, 0.65) 85%);
+      z-index: -1;
+      pointer-events: none;
     }
 
     #app-container {
@@ -57,9 +76,9 @@
     .bg-blob {
       position: fixed;
       border-radius: 50%;
-      filter: blur(80px);
+      filter: blur(90px);
       z-index: -1;
-      opacity: 0.6;
+      opacity: 0.35;
       animation: floatSlow 18s ease-in-out infinite alternate;
     }
     .blob-1 { width: 320px; height: 320px; background: #bae6fd; top: -50px; left: -50px; }
@@ -80,10 +99,11 @@
       position: sticky;
       top: 0;
       z-index: 40;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      background: rgba(255, 255, 255, 0.6);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(255, 255, 255, 0.85);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     }
 
     .capy-btn {
@@ -105,7 +125,7 @@
       border-radius: 50%;
       object-fit: cover;
       border: 2.5px solid var(--blue-border);
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
     }
 
     .header-controls {
@@ -115,7 +135,7 @@
     }
 
     .icon-btn {
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.95);
       border: 1px solid rgba(0, 0, 0, 0.08);
       border-radius: 999px;
       padding: 6px 12px;
@@ -148,8 +168,10 @@
     .nav-tab {
       padding: 8px 16px;
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
       font-size: 0.9rem;
       font-weight: 600;
       color: var(--text-muted);
@@ -185,6 +207,7 @@
       background: linear-gradient(135deg, #166534 0%, #0369a1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.8));
       line-height: 1.1;
       transition: all 0.3s;
     }
@@ -203,11 +226,12 @@
     }
     .dash-card {
       background: var(--card-bg);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border-radius: 18px;
       padding: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
       cursor: pointer;
       transition: all 0.25s;
       text-align: center;
@@ -248,14 +272,14 @@
     /* Beziehungsticker */
     .ticker-card {
       margin-top: 20px;
-      background: rgba(255, 255, 255, 0.75);
+      background: var(--card-bg);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border-radius: 22px;
       padding: 20px 24px;
       text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -279,7 +303,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1.2px;
-      color: #94a3b8;
+      color: #64748b;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -297,11 +321,11 @@
     .ticker-subtext {
       font-size: 0.95rem;
       font-weight: 600;
-      color: #475569;
+      color: #334155;
     }
     .ticker-since {
       font-size: 0.82rem;
-      color: #94a3b8;
+      color: #64748b;
     }
 
     /* Bok-Vollbild */
@@ -345,12 +369,13 @@
     /* Listen & Formulare */
     .section-card {
       background: var(--card-bg);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
     }
     .section-title {
       font-size: 1.25rem;
@@ -372,7 +397,7 @@
       border-radius: 12px;
       border: 1px solid #cbd5e1;
       font-size: 0.95rem;
-      background: white;
+      background: rgba(255, 255, 255, 0.95);
       outline: none;
       transition: border 0.2s;
     }
@@ -395,7 +420,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 12px 14px;
-      background: white;
+      background: rgba(255, 255, 255, 0.95);
       border-radius: 12px;
       margin-bottom: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
@@ -474,7 +499,7 @@
     /* Termine: Kategorien */
     .termin-item {
       border-left: 5px solid #a855f7;
-      background: white;
+      background: rgba(255, 255, 255, 0.95);
     }
     .termin-geburtstag { border-left-color: #3b82f6 !important; background: #f0f7ff !important; }
     .termin-date { border-left-color: #ef4444 !important; background: #fff1f2 !important; }
@@ -496,9 +521,7 @@
     .badge-arzt { background: #fef9c3; color: #854d0e; }
     .badge-sonstiges { background: #f3e8ff; color: #7e22ce; }
 
-    /* =========================================================
-       EASTER EGG: PONY BUTTON (Ganz unten bei Einkaufsliste)
-       ========================================================= */
+    /* Easter Egg: Pony Button */
     .pony-container {
       display: flex;
       justify-content: center;
@@ -506,8 +529,8 @@
       padding-bottom: 12px;
     }
     .pony-btn {
-      background: rgba(255, 255, 255, 0.65);
-      border: 1px solid rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.95);
       border-radius: 999px;
       padding: 8px 16px;
       cursor: pointer;
@@ -515,7 +538,7 @@
       align-items: center;
       gap: 8px;
       font-size: 1.25rem;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
       user-select: none;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -524,9 +547,7 @@
       background: white;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
     }
-    .pony-btn:active {
-      transform: scale(0.94);
-    }
+    .pony-btn:active { transform: scale(0.94); }
     .pony-text {
       font-size: 0.95rem;
       font-weight: 700;
@@ -547,7 +568,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(15, 23, 42, 0.65);
       backdrop-filter: blur(8px);
       z-index: 100;
       display: flex;
@@ -561,7 +582,7 @@
       padding: 28px;
       max-width: 420px;
       width: 100%;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
       text-align: center;
       animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
@@ -601,7 +622,7 @@
       z-index: 9998;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle, rgba(240, 253, 250, 0.5) 0%, rgba(15, 23, 42, 0.4) 100%);
+      background: radial-gradient(circle, rgba(240, 253, 250, 0.6) 0%, rgba(15, 23, 42, 0.5) 100%);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
     }
@@ -673,7 +694,7 @@
     .party-glow-overlay {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(254, 205, 211, 0.35), rgba(186, 230, 253, 0.35), rgba(220, 252, 231, 0.35));
+      background: radial-gradient(circle at 50% 50%, rgba(254, 205, 211, 0.4), rgba(186, 230, 253, 0.4), rgba(220, 252, 231, 0.4));
       animation: smoothColorGlow 6s ease-in-out infinite alternate;
       mix-blend-mode: multiply;
       opacity: 0.8;
@@ -767,6 +788,10 @@
   </style>
 </head>
 <body>
+
+  <!-- Foto-Hintergrund & Overlay -->
+  <div id="bg-photo"></div>
+  <div id="bg-overlay"></div>
 
   <!-- Bok-Vollbild-Overlay -->
   <div id="bok-overlay" onclick="closeBokOverlay()">
@@ -1132,7 +1157,7 @@
       const display = document.getElementById('pony-display');
       display.textContent = `Pony ${ponyCounter}`;
       display.classList.remove('visible');
-      void display.offsetWidth; // Reflow für Animation
+      void display.offsetWidth;
       display.classList.add('visible');
     }
 
