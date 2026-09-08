@@ -1,16 +1,22 @@
 {
-  "name": "Vanessa & Fabian 🤍",
-  "short_name": "Planer 🤍",
+  "name": "CoupleApp",
+  "short_name": "CoupleApp",
   "description": "Persönlicher Paar-Planer für Vanessa & Fabian",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#bbf7d0",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "geheimmodus.png",
-      "sizes": "192x192 512x512",
+      "src": "./image1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./image1.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     }
