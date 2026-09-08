@@ -109,7 +109,7 @@
       100% { transform: translate(40px, 50px) scale(1.1); }
     }
 
-    /* Sauberer Header & Avatar */
+    /* Header & Avatar */
     header {
       width: 100%;
       max-width: 720px;
@@ -122,7 +122,7 @@
       z-index: 40;
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
-      background: rgba(255, 255, 255, 0.94);
+      background: rgba(255, 255, 255, 0.92);
       border-bottom: 1.5px solid rgba(226, 232, 240, 0.8);
       box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
     }
@@ -177,7 +177,7 @@
     .icon-btn:hover { background: white; transform: translateY(-1px); }
     .icon-btn:active { transform: translateY(1px); }
 
-    /* Saubere Navigation */
+    /* Navigation */
     nav {
       width: 100%;
       max-width: 720px;
@@ -223,7 +223,6 @@
       width: 100%;
       max-width: 720px;
       padding: 10px 16px 24px 16px;
-      touch-action: pan-y;
     }
 
     /* Moderne Seitenübergänge */
@@ -295,7 +294,7 @@
       color: white;
       border: 1.5px solid rgba(255, 255, 255, 0.85);
       border-radius: 999px;
-      padding: 14px 34px;
+      padding: 15px 36px;
       font-size: 1.15rem;
       font-weight: 700;
       letter-spacing: 0.5px;
@@ -352,7 +351,7 @@
     .ticker-subtext { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
     .ticker-since { font-size: 0.82rem; color: #64748b; font-weight: 500; }
 
-    /* Mülltermine Upload-Box */
+    /* Mülltermine Upload & Zoom */
     .muell-upload-box {
       border: 2px dashed #94a3b8;
       border-radius: 18px;
@@ -383,15 +382,58 @@
     }
     .muell-preview-img {
       width: 100%;
-      max-height: 600px;
+      max-height: 350px;
       object-fit: contain;
       border-radius: 10px;
+      cursor: zoom-in;
+      transition: transform 0.2s;
     }
+    .muell-preview-img:hover { transform: scale(1.01); }
+
+    /* Vollbild Zoom Overlay für Müllkalender */
+    #muell-zoom-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10020;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      cursor: zoom-out;
+    }
+    #muell-zoom-modal.active { display: flex; }
+    #muell-zoom-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .muell-zoom-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .muell-zoom-close:hover { background: rgba(255, 255, 255, 0.4); }
 
     /* Bok-Vollbild */
     #bok-overlay {
-      display: none;
-      position: fixed; inset: 0; z-index: 10005; background: black;
+      display: none; position: fixed; inset: 0; z-index: 10005; background: black;
       align-items: center; justify-content: center; overflow: hidden; cursor: pointer;
     }
     #bok-overlay.active { display: flex; }
@@ -673,6 +715,12 @@
   <div id="bg-photo"></div>
   <div id="bg-overlay"></div>
 
+  <!-- Vollbild-Zoom Modal für Mülltermine -->
+  <div id="muell-zoom-modal" onclick="closeMuellZoom()">
+    <button class="muell-zoom-close" onclick="closeMuellZoom()">✕</button>
+    <img id="muell-zoom-img" src="" alt="Vergrößerter Kalender">
+  </div>
+
   <!-- Toast Benachrichtigung -->
   <div id="toast-notification" class="toast-notification"></div>
 
@@ -722,7 +770,7 @@
     </nav>
 
     <!-- Content -->
-    <main id="main-swipe-area">
+    <main>
       <!-- TAB 1: STARTSEITE -->
       <div id="tab-home" class="tab-content active">
         <h1 class="brand-title" id="main-brand-title">Vanessa & Fabian 🤍</h1>
@@ -864,7 +912,7 @@
           <div id="muell-display-area" style="display: none;">
             <div class="muell-preview-container">
               <div id="muell-file-name" style="font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; color: var(--blue-dark);"></div>
-              <img id="muell-img-preview" class="muell-preview-img" style="display: none;" alt="Müllkalender Vorschau">
+              <img id="muell-img-preview" class="muell-preview-img" style="display: none;" alt="Müllkalender Vorschau" onclick="openMuellZoom()" title="Zum Vergrößern antippen">
               <iframe id="muell-pdf-preview" style="width: 100%; height: 500px; border: none; display: none; border-radius: 8px;"></iframe>
               <button type="button" class="icon-btn" style="margin-top: 12px; background: #fee2e2; color: #991b1b; border-color: #fecaca;" onclick="clearMuellFile()">🗑️ Kalender löschen</button>
             </div>
@@ -1063,7 +1111,7 @@
     }
 
     // ==========================================
-    // MÜLLTERMINE LOKAL SPEICHERN
+    // MÜLLTERMINE LOKAL SPEICHERN & ZOOM
     // ==========================================
     function handleMuellUpload(event) {
       const file = event.target.files[0];
@@ -1121,29 +1169,47 @@
       }
     }
 
+    function openMuellZoom() {
+      const imgPreview = document.getElementById('muell-img-preview');
+      const zoomModal = document.getElementById('muell-zoom-modal');
+      const zoomImg = document.getElementById('muell-zoom-img');
+      if (imgPreview && imgPreview.src) {
+        zoomImg.src = imgPreview.src;
+        zoomModal.classList.add('active');
+      }
+    }
+
+    function closeMuellZoom() {
+      document.getElementById('muell-zoom-modal').classList.remove('active');
+    }
+
     // ==========================================
-    // TOUCH WISCHGESTEN (SWIPE NAVIGATION)
+    // TOUCH WISCHGESTEN (GLOBAL AUF GANZEN BILDSCHIRM)
     // ==========================================
     function setupSwipeGestures() {
-      const swipeArea = document.getElementById('main-swipe-area');
-      if (!swipeArea) return;
-
       let touchStartX = 0;
       let touchStartY = 0;
 
-      swipeArea.addEventListener('touchstart', e => {
+      window.addEventListener('touchstart', e => {
+        // Nicht auslösen wenn Modal oder Overlay offen ist
+        if (document.querySelector('.modal-overlay[style*="display: flex"]') || 
+            document.getElementById('bok-overlay').classList.contains('active') ||
+            document.getElementById('chillgriff-overlay').classList.contains('active') ||
+            document.getElementById('muell-zoom-modal').classList.contains('active')) {
+          return;
+        }
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
       }, { passive: true });
 
-      swipeArea.addEventListener('touchend', e => {
+      window.addEventListener('touchend', e => {
         const touchEndX = e.changedTouches[0].screenX;
         const touchEndY = e.changedTouches[0].screenY;
         
         const diffX = touchEndX - touchStartX;
         const diffY = touchEndY - touchStartY;
 
-        if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+        if (Math.abs(diffX) > 65 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
           const tabs = ['home', 'einkauf', 'todos', 'termine', 'muell'];
           if (currentUser === 'fabian') {
             tabs.push('date');
@@ -1809,7 +1875,6 @@
             lastKnownInviteStatus = incomingStatus;
             isFirstFetch = false;
 
-            // Wir behalten den Pony-Counter lokal synchron, überschreiben aber nicht die Müll-Datei aus dem Cloud-Fetch
             const localPony = appData.ponyCounter;
             appData = data;
             if (appData.ponyCounter === undefined) appData.ponyCounter = localPony;
