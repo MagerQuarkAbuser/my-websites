@@ -205,7 +205,7 @@
     .dash-card h3 { font-size: 1.1rem; margin-bottom: 4px; }
     .dash-card p { font-size: 0.85rem; color: var(--text-muted); }
 
-    /* Listen & Karten */
+    /* Listen & Formulare */
     .section-card {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
@@ -252,7 +252,7 @@
     }
     .primary-btn:active { transform: scale(0.97); }
 
-    /* Durchstreich-Animation */
+    /* Listen-Elemente & Durchstreichen */
     .list-item {
       display: flex;
       align-items: center;
@@ -288,15 +288,24 @@
     .list-item.striking { opacity: 0.6; }
     .list-item.done { background: #f1f5f9; opacity: 0.65; }
     .list-item.done .item-text::after { transform: scaleX(1); }
-    .del-btn {
+    
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .icon-action-btn {
       background: none;
       border: none;
-      color: #94a3b8;
-      font-size: 1.1rem;
+      font-size: 1rem;
       cursor: pointer;
-      padding: 4px;
+      padding: 6px;
+      border-radius: 8px;
+      color: #94a3b8;
+      transition: color 0.2s, background-color 0.2s;
     }
-    .del-btn:hover { color: #ef4444; }
+    .icon-action-btn:hover { background-color: #f1f5f9; color: #1e293b; }
+    .icon-action-btn.del-btn:hover { color: #ef4444; }
 
     /* ToDos */
     .todo-grid {
@@ -325,6 +334,33 @@
     .todo-fabian { background: var(--fabian-card); border-color: var(--fabian-border); }
     .todo-both { background: var(--both-card); border-color: var(--both-border); }
 
+    /* =========================================================
+       TERMINE: FARBCODIERUNG NACH KATEGORIEN
+       ========================================================= */
+    .termin-item {
+      border-left: 5px solid #a855f7; /* Standard Lila */
+      background: white;
+    }
+    .termin-geburtstag { border-left-color: #3b82f6 !important; background: #f0f7ff !important; }
+    .termin-date { border-left-color: #ef4444 !important; background: #fff1f2 !important; }
+    .termin-event { border-left-color: #22c55e !important; background: #f0fdf4 !important; }
+    .termin-arzt { border-left-color: #eab308 !important; background: #fefce8 !important; }
+    .termin-sonstiges { border-left-color: #a855f7 !important; background: #faf5ff !important; }
+
+    .cat-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-bottom: 4px;
+    }
+    .badge-geburtstag { background: #dbeafe; color: #1d4ed8; }
+    .badge-date { background: #ffe4e6; color: #b91c1c; }
+    .badge-event { background: #dcfce7; color: #15803d; }
+    .badge-arzt { background: #fef9c3; color: #854d0e; }
+    .badge-sonstiges { background: #f3e8ff; color: #7e22ce; }
+
     /* Modals */
     .modal-overlay {
       position: fixed;
@@ -341,7 +377,7 @@
       background: white;
       border-radius: 24px;
       padding: 28px;
-      max-width: 400px;
+      max-width: 420px;
       width: 100%;
       box-shadow: 0 20px 40px rgba(0,0,0,0.15);
       text-align: center;
@@ -350,7 +386,7 @@
     }
     @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    /* Ausweichender Nein-Button */
+    /* Fliehender Nein-Button */
     .date-btn-container {
       position: relative;
       min-height: 80px;
@@ -389,7 +425,7 @@
     }
 
     /* =========================================================
-       PARTYMODUS (30 SEKUNDEN - EPILEPSIE-FREUNDLICH & SANFT)
+       PARTYMODUS (30 SEKUNDEN - SANFT)
        ========================================================= */
     #party-stage {
       display: none;
@@ -400,7 +436,6 @@
       overflow: hidden;
     }
 
-    /* Sanfter, fließender Farbglow statt Stroboskop */
     .party-glow-overlay {
       position: absolute;
       inset: 0;
@@ -416,7 +451,6 @@
       100% { filter: hue-rotate(180deg); opacity: 0.6; }
     }
 
-    /* Bouncendes Party-Banner */
     .party-banner-container {
       position: absolute;
       top: 18%;
@@ -460,7 +494,6 @@
       box-shadow: 0 4px 18px rgba(0,0,0,0.1);
     }
 
-    /* Sanft tanzende UI-Karten */
     body.party-celebration .dash-card,
     body.party-celebration .section-card {
       animation: cardGroove 1.6s infinite alternate ease-in-out;
@@ -471,7 +504,6 @@
       100% { transform: translateY(-6px) rotate(0.5deg); }
     }
 
-    /* Konfetti & Party-Partikel (sanfter Flug) */
     .party-particle {
       position: fixed;
       top: -10vh;
@@ -608,14 +640,21 @@
         </div>
       </div>
 
-      <!-- TAB 4: TERMINE -->
+      <!-- TAB 4: TERMINE (Mit Kategorien & Bearbeiten) -->
       <div id="tab-termine" class="tab-content">
         <div class="section-card">
           <div class="section-title">Neuer Termin 📅</div>
           <form class="input-bar" onsubmit="addTermin(event)" style="flex-wrap: wrap;">
             <input type="date" id="termin-date" required style="min-width: 130px;">
             <input type="time" id="termin-time" required style="min-width: 100px;">
-            <input type="text" id="termin-title" placeholder="Was steht an?" required style="min-width: 200px;">
+            <select id="termin-category" style="min-width: 150px;">
+              <option value="geburtstag">Geburtstag 🎂 (Blau)</option>
+              <option value="date">Date ❤️ (Rot)</option>
+              <option value="event">Veranstaltung 🎟️ (Grün)</option>
+              <option value="arzt">Arzt / Pflichttermin 🩺 (Gelb)</option>
+              <option value="sonstiges" selected>Sonstiges 📌 (Lila)</option>
+            </select>
+            <input type="text" id="termin-title" placeholder="Was steht an?" required style="min-width: 180px;">
             <button type="submit" class="primary-btn">Eintragen</button>
           </form>
           <div id="termine-list"></div>
@@ -667,6 +706,36 @@
         <button class="primary-btn" style="flex: 1; background: #22c55e;" onclick="selectUser('vanessa')">Ich bin Vanessa 🌸</button>
         <button class="primary-btn" style="flex: 1; background: #0284c7;" onclick="selectUser('fabian')">Ich bin Fabian 💙</button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TERMIN BEARBEITEN -->
+  <div class="modal-overlay" id="edit-termin-modal" style="display: none;">
+    <div class="modal-box">
+      <h3 style="font-size: 1.3rem; margin-bottom: 16px; font-weight: 700;">Termin bearbeiten ✏️</h3>
+      <form onsubmit="saveEditedTermin(event)">
+        <input type="hidden" id="edit-termin-index">
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <input type="date" id="edit-termin-date" required style="flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+          <input type="time" id="edit-termin-time" required style="width: 110px; padding: 10px 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <select id="edit-termin-category" style="width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+            <option value="geburtstag">Geburtstag 🎂 (Blau)</option>
+            <option value="date">Date ❤️ (Rot)</option>
+            <option value="event">Veranstaltung 🎟️ (Grün)</option>
+            <option value="arzt">Arzt / Pflichttermin 🩺 (Gelb)</option>
+            <option value="sonstiges">Sonstiges 📌 (Lila)</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <input type="text" id="edit-termin-title" placeholder="Beschreibung..." required style="width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="icon-btn" style="flex: 1; justify-content: center; padding: 10px;" onclick="closeEditTerminModal()">Abbrechen</button>
+          <button type="submit" class="primary-btn" style="flex: 1; padding: 10px;">Speichern</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -869,10 +938,10 @@
         el.className = 'list-item' + (item.done ? ' done' : '');
         el.innerHTML = `
           <span class="item-text">${item.text}</span>
-          <button class="del-btn" onclick="deleteEinkauf(event, ${idx})">✕</button>
+          <button class="icon-action-btn del-btn" onclick="deleteEinkauf(event, ${idx})">✕</button>
         `;
         el.onclick = (e) => {
-          if (e.target.classList.contains('del-btn')) return;
+          if (e.target.closest('.icon-action-btn')) return;
           toggleEinkauf(el, idx);
         };
 
@@ -933,11 +1002,11 @@
         el.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <span class="item-text">${t.text}</span>
-            <button class="del-btn" onclick="deleteTodo(event, ${t.originalIndex})">✕</button>
+            <button class="icon-action-btn del-btn" onclick="deleteTodo(event, ${t.originalIndex})">✕</button>
           </div>
         `;
         el.onclick = (e) => {
-          if (e.target.classList.contains('del-btn')) return;
+          if (e.target.closest('.icon-action-btn')) return;
           toggleTodo(el, t.originalIndex);
         };
 
@@ -977,20 +1046,40 @@
     }
 
     // ==========================================
-    // TERMINE
+    // TERMINE: FARBEN, SORTIERUNG & EDITIEREN
     // ==========================================
+    const categoryConfig = {
+      geburtstag: { name: 'Geburtstag 🎂', class: 'termin-geburtstag', badgeClass: 'badge-geburtstag' },
+      date: { name: 'Date ❤️', class: 'termin-date', badgeClass: 'badge-date' },
+      event: { name: 'Veranstaltung 🎟️', class: 'termin-event', badgeClass: 'badge-event' },
+      arzt: { name: 'Arzt / Termin 🩺', class: 'termin-arzt', badgeClass: 'badge-arzt' },
+      sonstiges: { name: 'Sonstiges 📌', class: 'termin-sonstiges', badgeClass: 'badge-sonstiges' }
+    };
+
     function renderTermine() {
       const cont = document.getElementById('termine-list');
       cont.innerHTML = '';
+
+      // Chronologische Sortierung nach Datum & Zeit
       appData.termine.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+
       appData.termine.forEach((t, idx) => {
+        const catKey = t.category || 'sonstiges';
+        const catInfo = categoryConfig[catKey] || categoryConfig.sonstiges;
+
         const el = document.createElement('div');
-        el.className = 'list-item';
+        el.className = `list-item termin-item ${catInfo.class}`;
         el.innerHTML = `
-          <div>
-            <strong>${t.date.split('-').reverse().join('.')} um ${t.time} Uhr</strong>: ${t.title}
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <span class="cat-badge ${catInfo.badgeClass}">${catInfo.name}</span>
+            <div>
+              <strong>${t.date.split('-').reverse().join('.')} um ${t.time} Uhr</strong>: ${t.title}
+            </div>
           </div>
-          <button class="del-btn" onclick="deleteTermin(event, ${idx})">✕</button>
+          <div class="action-group">
+            <button class="icon-action-btn" title="Termin bearbeiten" onclick="openEditTerminModal(event, ${idx})">✏️</button>
+            <button class="icon-action-btn del-btn" title="Löschen" onclick="deleteTermin(event, ${idx})">✕</button>
+          </div>
         `;
         cont.appendChild(el);
       });
@@ -1001,9 +1090,11 @@
       e.preventDefault();
       const date = document.getElementById('termin-date').value;
       const time = document.getElementById('termin-time').value;
+      const category = document.getElementById('termin-category').value;
       const title = document.getElementById('termin-title').value.trim();
       if (!title) return;
-      appData.termine.push({ date, time, title });
+
+      appData.termine.push({ date, time, category, title });
       document.getElementById('termin-title').value = '';
       renderTermine();
       syncData();
@@ -1012,6 +1103,39 @@
     function deleteTermin(e, idx) {
       e.stopPropagation();
       appData.termine.splice(idx, 1);
+      renderTermine();
+      syncData();
+    }
+
+    function openEditTerminModal(e, idx) {
+      e.stopPropagation();
+      const t = appData.termine[idx];
+      if (!t) return;
+
+      document.getElementById('edit-termin-index').value = idx;
+      document.getElementById('edit-termin-date').value = t.date;
+      document.getElementById('edit-termin-time').value = t.time;
+      document.getElementById('edit-termin-category').value = t.category || 'sonstiges';
+      document.getElementById('edit-termin-title').value = t.title;
+
+      document.getElementById('edit-termin-modal').style.display = 'flex';
+    }
+
+    function closeEditTerminModal() {
+      document.getElementById('edit-termin-modal').style.display = 'none';
+    }
+
+    function saveEditedTermin(e) {
+      e.preventDefault();
+      const idx = parseInt(document.getElementById('edit-termin-index').value, 10);
+      if (isNaN(idx) || !appData.termine[idx]) return;
+
+      appData.termine[idx].date = document.getElementById('edit-termin-date').value;
+      appData.termine[idx].time = document.getElementById('edit-termin-time').value;
+      appData.termine[idx].category = document.getElementById('edit-termin-category').value;
+      appData.termine[idx].title = document.getElementById('edit-termin-title').value.trim();
+
+      closeEditTerminModal();
       renderTermine();
       syncData();
     }
@@ -1068,7 +1192,7 @@
       if (!appData.dateEinladung) return;
       const inv = appData.dateEinladung;
       inv.status = 'accepted';
-      appData.termine.push({ date: inv.date, time: inv.time, title: `Date: ${inv.text} ❤️` });
+      appData.termine.push({ date: inv.date, time: inv.time, title: `Date: ${inv.text} ❤️`, category: 'date' });
 
       const partyKey = inv.date + '_' + inv.time;
       localStorage.setItem('party_celebrated_key', partyKey);
@@ -1076,29 +1200,25 @@
       syncData();
       renderAll();
 
-      // Startet die 30-sekündige Feier
       startGentlePartyMode();
     }
 
     // ==========================================
-    // 30-SEKUNDEN PARTYMODUS (Epilepsie-sicher)
+    // 30-SEKUNDEN PARTYMODUS (Sanft)
     // ==========================================
     function startGentlePartyMode() {
       clearTimeout(partyTimeout);
       clearInterval(partyParticleInterval);
 
-      // Musik wechseln
       bgAudio.pause();
       dateAudio.currentTime = 0;
       dateAudio.play().catch(err => console.log('Date Audio Playblock:', err));
 
-      // Visuelle Effekte aktivieren (ohne Flackern)
       document.getElementById('party-stage').style.display = 'block';
       document.body.classList.add('party-celebration');
 
       const partyEmojis = ['🍾', '🥂', '🎉', '💖', '✨', '💃', '🕺', '🍰', '🌸', '🎈', '💍', '🍕', '🦫'];
 
-      // Sanfte Konfetti-Regendusche
       partyParticleInterval = setInterval(() => {
         for (let i = 0; i < 2; i++) {
           const p = document.createElement('div');
@@ -1113,7 +1233,6 @@
         }
       }, 280);
 
-      // Nach exakt 30 Sekunden alles beenden und normale Musik starten
       partyTimeout = setTimeout(() => {
         stopGentlePartyMode();
       }, 30000);
@@ -1130,7 +1249,6 @@
       dateAudio.pause();
       dateAudio.currentTime = 0;
 
-      // Normale Musik wieder starten
       bgAudio.play().catch(() => {});
       updatePlayIcon(true);
     }
@@ -1174,7 +1292,6 @@
             renderAll();
             checkPendingDateForVanessa();
 
-            // Wenn Vanessa auf ihrem Gerät annimmt, feiert Fabians Gerät automatisch 30s mit
             if (appData.dateEinladung && appData.dateEinladung.status === 'accepted') {
               const partyKey = appData.dateEinladung.date + '_' + appData.dateEinladung.time;
               if (localStorage.getItem('party_celebrated_key') !== partyKey) {
