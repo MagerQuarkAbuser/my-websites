@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>CoupleApp 🤍</title>
 
-  <!-- Web-App / PWA Einstellungen mit image1.png als Icon -->
+  <!-- Web-App / PWA Einstellungen -->
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" type="image/png" href="./image1.png">
   <link rel="shortcut icon" href="./image1.png">
@@ -889,6 +889,34 @@
       85% { opacity: 1; }
       100% { transform: translate(var(--endX), 115vh) scale(1.1) rotate(var(--rot)); opacity: 0; }
     }
+
+    /* Dezenter Toast für Fabian */
+    .toast-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(255, 255, 255, 0.98);
+      border: 2px solid #22c55e;
+      color: #0f172a;
+      padding: 12px 22px;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+      font-weight: 700;
+      font-size: 0.95rem;
+      z-index: 10010;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s;
+      opacity: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .toast-notification.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -897,12 +925,15 @@
   <div id="bg-photo"></div>
   <div id="bg-overlay"></div>
 
+  <!-- Toast Benachrichtigung -->
+  <div id="toast-notification" class="toast-notification"></div>
+
   <!-- Bok-Vollbild-Overlay -->
   <div id="bok-overlay" onclick="closeBokOverlay()">
     <img id="bok-image" src="" alt="Bok">
   </div>
 
-  <!-- Chillgriff Secret Overlay (Mobil optimiert) -->
+  <!-- Chillgriff Secret Overlay -->
   <div id="chillgriff-overlay">
     <div class="chillgriff-huge-text">CHILLGRIFF!</div>
   </div>
@@ -1179,6 +1210,10 @@
     let bokTimeout = null;
     let cursedTimeout = null;
 
+    // Sync-Status-Tracker (verhindert das Aufpoppen beim Öffnen eines neuen Browsers)
+    let isFirstFetch = true;
+    let lastKnownInviteStatus = null;
+
     let appData = {
       einkauf: [],
       todos: [],
@@ -1245,6 +1280,19 @@
     }
 
     // ==========================================
+    // TOAST BENACHRICHTIGUNG
+    // ==========================================
+    function showToast(message, duration = 4500) {
+      const toast = document.getElementById('toast-notification');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    // ==========================================
     // BEZIEHUNGSTICKER (Seit 25.09.2025)
     // ==========================================
     function updateLoveTicker() {
@@ -1261,7 +1309,7 @@
     }
 
     // ==========================================
-    // EASTER EGG: PONY ZÄHLER (Cloud-Synchronisiert)
+    // EASTER EGG: PONY ZÄHLER
     // ==========================================
     function triggerPony() {
       appData.ponyCounter = (parseInt(appData.ponyCounter, 10) || 0) + 1;
@@ -1707,6 +1755,7 @@
       const time = document.getElementById('date-invite-time').value;
       const text = document.getElementById('date-invite-text').value.trim();
       appData.dateEinladung = { date, time, text, status: 'open' };
+      lastKnownInviteStatus = 'open';
       renderDateStatus();
       syncData();
       alert('Date-Einladung wurde losgeschickt! ❤️');
@@ -1750,15 +1799,16 @@
       if (!appData.dateEinladung) return;
       const inv = appData.dateEinladung;
       inv.status = 'accepted';
+      lastKnownInviteStatus = 'accepted';
       appData.termine.push({ date: inv.date, time: inv.time, title: `Date: ${inv.text} ❤️`, category: 'date' });
-
-      const partyKey = inv.date + '_' + inv.time;
-      localStorage.setItem('party_celebrated_key', partyKey);
 
       syncData();
       renderAll();
 
-      startGentlePartyMode();
+      // Partymodus startet AUSSCHLIESSLICH hier für Vanessa beim Klick:
+      if (currentUser === 'vanessa') {
+        startGentlePartyMode();
+      }
     }
 
     // ==========================================
@@ -1830,6 +1880,7 @@
           if (appData.ponyCounter === undefined) {
             appData.ponyCounter = parseInt(localStorage.getItem('planer_pony_counter'), 10) || 0;
           }
+          lastKnownInviteStatus = appData.dateEinladung ? appData.dateEinladung.status : null;
         } catch(e){}
       }
     }
@@ -1852,18 +1903,23 @@
         .then(res => res.json())
         .then(data => {
           if (data && data.einkauf) {
+            const incomingInvite = data.dateEinladung;
+            const incomingStatus = incomingInvite ? incomingInvite.status : null;
+
+            // Benachrichtigung NUR für Fabian, wenn das Date LIVE von 'open' auf 'accepted' wechselt:
+            if (!isFirstFetch && lastKnownInviteStatus === 'open' && incomingStatus === 'accepted') {
+              if (currentUser === 'fabian') {
+                showToast('💌 Vanessa hat die Date-Einladung angenommen! ❤️');
+              }
+            }
+
+            lastKnownInviteStatus = incomingStatus;
+            isFirstFetch = false;
+
             appData = data;
             if (appData.ponyCounter === undefined) appData.ponyCounter = 0;
             renderAll();
             checkPendingDateForVanessa();
-
-            if (appData.dateEinladung && appData.dateEinladung.status === 'accepted') {
-              const partyKey = appData.dateEinladung.date + '_' + appData.dateEinladung.time;
-              if (localStorage.getItem('party_celebrated_key') !== partyKey) {
-                localStorage.setItem('party_celebrated_key', partyKey);
-                startGentlePartyMode();
-              }
-            }
           }
         }).catch(() => {});
     }
