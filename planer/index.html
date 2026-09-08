@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Vanessa & Fabian 🤍</title>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@900&display=swap" rel="stylesheet">
   <style>
     :root {
       --mint: #bbf7d0;
@@ -43,6 +43,14 @@
       align-items: center;
       overflow-x: hidden;
       position: relative;
+    }
+
+    #app-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.1s;
     }
 
     /* Schwebende Hintergrund-Blobs */
@@ -197,7 +205,7 @@
     .dash-card h3 { font-size: 1.1rem; margin-bottom: 4px; }
     .dash-card p { font-size: 0.85rem; color: var(--text-muted); }
 
-    /* Listen-Elemente & Karten */
+    /* Listen & Karten */
     .section-card {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
@@ -290,7 +298,7 @@
     }
     .del-btn:hover { color: #ef4444; }
 
-    /* ToDo-Spalten & Farben */
+    /* ToDos */
     .todo-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -342,7 +350,7 @@
     }
     @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    /* Fliehender Nein-Button */
+    /* Ausweichender Nein-Button */
     .date-btn-container {
       position: relative;
       min-height: 80px;
@@ -379,138 +387,272 @@
       90% { opacity: 1; }
       100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)) scale(1.1); opacity: 0; }
     }
+
+    /* =========================================================
+       PARTYMODUS ESKALATION (15 SEKUNDEN)
+       ========================================================= */
+    #party-stage {
+      display: none;
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    .disco-overlay {
+      position: absolute;
+      inset: 0;
+      animation: discoStrobe 0.18s infinite alternate;
+      mix-blend-mode: color-burn;
+      opacity: 0.45;
+    }
+
+    @keyframes discoStrobe {
+      0% { background-color: #ff0055; }
+      25% { background-color: #00e5ff; }
+      50% { background-color: #ffe600; }
+      75% { background-color: #bd00ff; }
+      100% { background-color: #00ff66; }
+    }
+
+    .party-banner-container {
+      position: absolute;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%) rotate(-3deg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 90%;
+      max-width: 600px;
+      animation: bannerBounce 0.3s infinite alternate ease-in-out;
+    }
+
+    @keyframes bannerBounce {
+      0% { transform: translateX(-50%) rotate(-4deg) scale(0.95); }
+      100% { transform: translateX(-50%) rotate(4deg) scale(1.08); }
+    }
+
+    .party-banner-main {
+      background: linear-gradient(90deg, #ff007f, #7928ca, #0070f3, #00dfd8);
+      background-size: 200% 200%;
+      animation: gradientShift 1s infinite alternate;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 20px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(1.3rem, 5vw, 2.2rem);
+      font-weight: 900;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 30px #ff007f;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .party-banner-sub {
+      background: white;
+      color: #0f172a;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    /* Partikel / Konfetti */
+    .party-particle {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 10000;
+      font-size: clamp(2.2rem, 6vw, 4.2rem);
+      will-change: transform, opacity;
+      animation: particleFly 2.2s cubic-bezier(0.12, 0.8, 0.32, 1) forwards;
+    }
+
+    @keyframes particleFly {
+      0% {
+        transform: translate(var(--startX), var(--startY)) scale(0.3) rotate(0deg);
+        opacity: 1;
+      }
+      80% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--endX), var(--endY)) scale(1.5) rotate(var(--rot));
+        opacity: 0;
+      }
+    }
+
+    /* Screen-Shake für Hauptcontainer */
+    .insane-shake {
+      animation: earthquake 0.1s infinite !important;
+    }
+
+    @keyframes earthquake {
+      0% { transform: translate(3px, 2px) rotate(0.4deg); }
+      25% { transform: translate(-4px, -3px) rotate(-0.5deg); }
+      50% { transform: translate(4px, -2px) rotate(0.5deg); }
+      75% { transform: translate(-3px, 3px) rotate(-0.4deg); }
+      100% { transform: translate(2px, -3px) rotate(0.3deg); }
+    }
   </style>
 </head>
 <body>
 
+  <!-- Party-Bühne -->
+  <div id="party-stage">
+    <div class="disco-overlay"></div>
+    <div class="party-banner-container">
+      <div class="party-banner-main">🔥 DATE ANGENOMMEN! PARTY! 🔥</div>
+      <div class="party-banner-sub">15 SEKUNDEN VOLLGAS! 🍾🎉💃🕺</div>
+    </div>
+  </div>
+
   <div class="bg-blob blob-1"></div>
   <div class="bg-blob blob-2"></div>
 
-  <!-- Header -->
-  <header>
-    <button class="capy-btn" id="capy-trigger" title="Chillgriff!">🦫</button>
-    <div class="header-controls">
-      <button class="icon-btn" id="btn-toggle-play" title="Musik Pausieren / Abspielen">⏸️</button>
-      <button class="icon-btn" id="btn-next-song" title="Nächstes Lied">⏭️</button>
-      <button class="icon-btn" id="btn-switch-user">👤 <span id="current-user-name">...</span></button>
-    </div>
-  </header>
-
-  <!-- Navigation -->
-  <nav>
-    <button class="nav-tab active" onclick="showTab('home')">🏠 Startseite</button>
-    <button class="nav-tab" onclick="showTab('einkauf')">🛒 Einkaufsliste</button>
-    <button class="nav-tab" onclick="showTab('todos')">📋 ToDos</button>
-    <button class="nav-tab" onclick="showTab('termine')">📅 Termine</button>
-    <button class="nav-tab" id="tab-date-btn" style="display:none;" onclick="showTab('date')">❤️ Date</button>
-  </nav>
-
-  <!-- Content -->
-  <main>
-    <!-- TAB 1: STARTSEITE -->
-    <div id="tab-home" class="tab-content active">
-      <h1 class="brand-title" id="main-brand-title">Vanessa & Fabian 🤍</h1>
-      <p class="greeting-sub" id="user-greeting">Schön, dass du da bist! ✨</p>
-
-      <div class="dashboard-grid">
-        <div class="dash-card" onclick="showTab('einkauf')">
-          <div class="icon">🛒</div>
-          <h3>Einkaufsliste</h3>
-          <p id="dash-einkauf-count">0 offene Einträge</p>
-        </div>
-        <div class="dash-card" onclick="showTab('todos')">
-          <div class="icon">📋</div>
-          <h3>Aufgaben</h3>
-          <p id="dash-todos-count">0 Aufgaben warten</p>
-        </div>
-        <div class="dash-card" onclick="showTab('termine')">
-          <div class="icon">📅</div>
-          <h3>Termine</h3>
-          <p id="dash-termine-count">0 anstehende Dates</p>
-        </div>
+  <div id="app-container">
+    <!-- Header -->
+    <header>
+      <button class="capy-btn" id="capy-trigger" title="Chillgriff!">🦫</button>
+      <div class="header-controls">
+        <button class="icon-btn" id="btn-toggle-play" title="Musik Pausieren / Abspielen">⏸️</button>
+        <button class="icon-btn" id="btn-next-song" title="Nächstes Lied">⏭️</button>
+        <button class="icon-btn" id="btn-switch-user">👤 <span id="current-user-name">...</span></button>
       </div>
-    </div>
+    </header>
 
-    <!-- TAB 2: EINKAUFSLISTE -->
-    <div id="tab-einkauf" class="tab-content">
-      <div class="section-card">
-        <div class="section-title">Einkaufsliste 🛒</div>
-        <form class="input-bar" onsubmit="addEinkauf(event)">
-          <input type="text" id="einkauf-input" placeholder="Was brauchen wir? (z. B. Hafermilch)" required>
-          <button type="submit" class="primary-btn">Hinzufügen</button>
-        </form>
-        <div id="einkauf-list"></div>
-      </div>
+    <!-- Navigation -->
+    <nav>
+      <button class="nav-tab active" onclick="showTab('home')">🏠 Startseite</button>
+      <button class="nav-tab" onclick="showTab('einkauf')">🛒 Einkaufsliste</button>
+      <button class="nav-tab" onclick="showTab('todos')">📋 ToDos</button>
+      <button class="nav-tab" onclick="showTab('termine')">📅 Termine</button>
+      <button class="nav-tab" id="tab-date-btn" style="display:none;" onclick="showTab('date')">❤️ Date</button>
+    </nav>
 
-      <div class="section-card">
-        <div class="section-title" style="font-size: 1rem; color: var(--text-muted);">Erledigt ✔️</div>
-        <div id="einkauf-done-list"></div>
-      </div>
-    </div>
+    <!-- Content -->
+    <main>
+      <!-- TAB 1: STARTSEITE -->
+      <div id="tab-home" class="tab-content active">
+        <h1 class="brand-title" id="main-brand-title">Vanessa & Fabian 🤍</h1>
+        <p class="greeting-sub" id="user-greeting">Schön, dass du da bist! ✨</p>
 
-    <!-- TAB 3: TODOS -->
-    <div id="tab-todos" class="tab-content">
-      <div class="section-card">
-        <div class="section-title">Neue Aufgabe 📋</div>
-        <form class="input-bar" onsubmit="addTodo(event)">
-          <input type="text" id="todo-input" placeholder="Aufgabe eingeben..." required>
-          <select id="todo-assignee" style="max-width: 140px;">
-            <option value="both">Beide 🤍</option>
-            <option value="vanessa">Vanessa 🌸</option>
-            <option value="fabian">Fabian 💙</option>
-          </select>
-          <button type="submit" class="primary-btn">Speichern</button>
-        </form>
-      </div>
-
-      <div class="todo-grid">
-        <div class="section-card">
-          <div class="section-title" style="color: #166534;">Vanessa 🌸</div>
-          <div id="todos-vanessa"></div>
-        </div>
-        <div class="section-card">
-          <div class="section-title" style="color: #0369a1;">Fabian 💙</div>
-          <div id="todos-fabian"></div>
-        </div>
-      </div>
-      <div class="section-card" style="margin-top: 14px;">
-        <div class="section-title" style="color: #4f46e5;">Gemeinsam 🤝</div>
-        <div id="todos-both"></div>
-      </div>
-    </div>
-
-    <!-- TAB 4: TERMINE -->
-    <div id="tab-termine" class="tab-content">
-      <div class="section-card">
-        <div class="section-title">Neuer Termin 📅</div>
-        <form class="input-bar" onsubmit="addTermin(event)" style="flex-wrap: wrap;">
-          <input type="date" id="termin-date" required style="min-width: 130px;">
-          <input type="time" id="termin-time" required style="min-width: 100px;">
-          <input type="text" id="termin-title" placeholder="Was steht an?" required style="min-width: 200px;">
-          <button type="submit" class="primary-btn">Eintragen</button>
-        </form>
-        <div id="termine-list"></div>
-      </div>
-    </div>
-
-    <!-- TAB 5: DATE (NUR FABIAN) -->
-    <div id="tab-date" class="tab-content">
-      <div class="section-card">
-        <div class="section-title">Geheime Date-Einladung ❤️</div>
-        <form onsubmit="sendDateInvite(event)">
-          <div class="input-bar" style="margin-bottom: 10px;">
-            <input type="date" id="date-invite-date" required>
-            <input type="time" id="date-invite-time" required>
+        <div class="dashboard-grid">
+          <div class="dash-card" onclick="showTab('einkauf')">
+            <div class="icon">🛒</div>
+            <h3>Einkaufsliste</h3>
+            <p id="dash-einkauf-count">0 offene Einträge</p>
           </div>
-          <div class="input-bar">
-            <input type="text" id="date-invite-text" placeholder="Notiz für Vanessa..." required>
-            <button type="submit" class="primary-btn">Abschicken 💌</button>
+          <div class="dash-card" onclick="showTab('todos')">
+            <div class="icon">📋</div>
+            <h3>Aufgaben</h3>
+            <p id="dash-todos-count">0 Aufgaben warten</p>
           </div>
-        </form>
-        <div id="date-status-box" style="margin-top: 15px; font-size: 0.95rem; color: var(--text-muted);"></div>
+          <div class="dash-card" onclick="showTab('termine')">
+            <div class="icon">📅</div>
+            <h3>Termine</h3>
+            <p id="dash-termine-count">0 anstehende Dates</p>
+          </div>
+        </div>
       </div>
-    </div>
-  </main>
+
+      <!-- TAB 2: EINKAUFSLISTE -->
+      <div id="tab-einkauf" class="tab-content">
+        <div class="section-card">
+          <div class="section-title">Einkaufsliste 🛒</div>
+          <form class="input-bar" onsubmit="addEinkauf(event)">
+            <input type="text" id="einkauf-input" placeholder="Was brauchen wir? (z. B. Hafermilch)" required>
+            <button type="submit" class="primary-btn">Hinzufügen</button>
+          </form>
+          <div id="einkauf-list"></div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-title" style="font-size: 1rem; color: var(--text-muted);">Erledigt ✔️</div>
+          <div id="einkauf-done-list"></div>
+        </div>
+      </div>
+
+      <!-- TAB 3: TODOS -->
+      <div id="tab-todos" class="tab-content">
+        <div class="section-card">
+          <div class="section-title">Neue Aufgabe 📋</div>
+          <form class="input-bar" onsubmit="addTodo(event)">
+            <input type="text" id="todo-input" placeholder="Aufgabe eingeben..." required>
+            <select id="todo-assignee" style="max-width: 140px;">
+              <option value="both">Beide 🤍</option>
+              <option value="vanessa">Vanessa 🌸</option>
+              <option value="fabian">Fabian 💙</option>
+            </select>
+            <button type="submit" class="primary-btn">Speichern</button>
+          </form>
+        </div>
+
+        <div class="todo-grid">
+          <div class="section-card">
+            <div class="section-title" style="color: #166534;">Vanessa 🌸</div>
+            <div id="todos-vanessa"></div>
+          </div>
+          <div class="section-card">
+            <div class="section-title" style="color: #0369a1;">Fabian 💙</div>
+            <div id="todos-fabian"></div>
+          </div>
+        </div>
+        <div class="section-card" style="margin-top: 14px;">
+          <div class="section-title" style="color: #4f46e5;">Gemeinsam 🤝</div>
+          <div id="todos-both"></div>
+        </div>
+      </div>
+
+      <!-- TAB 4: TERMINE -->
+      <div id="tab-termine" class="tab-content">
+        <div class="section-card">
+          <div class="section-title">Neuer Termin 📅</div>
+          <form class="input-bar" onsubmit="addTermin(event)" style="flex-wrap: wrap;">
+            <input type="date" id="termin-date" required style="min-width: 130px;">
+            <input type="time" id="termin-time" required style="min-width: 100px;">
+            <input type="text" id="termin-title" placeholder="Was steht an?" required style="min-width: 200px;">
+            <button type="submit" class="primary-btn">Eintragen</button>
+          </form>
+          <div id="termine-list"></div>
+        </div>
+      </div>
+
+      <!-- TAB 5: DATE (FABIAN) -->
+      <div id="tab-date" class="tab-content">
+        <div class="section-card">
+          <div class="section-title">Geheime Date-Einladung ❤️</div>
+          <form onsubmit="sendDateInvite(event)">
+            <div class="input-bar" style="margin-bottom: 10px;">
+              <input type="date" id="date-invite-date" required>
+              <input type="time" id="date-invite-time" required>
+            </div>
+            <div class="input-bar">
+              <input type="text" id="date-invite-text" placeholder="Notiz für Vanessa..." required>
+              <button type="submit" class="primary-btn">Abschicken 💌</button>
+            </div>
+          </form>
+          <div id="date-status-box" style="margin-top: 15px; font-size: 0.95rem; color: var(--text-muted);"></div>
+
+          <!-- Test Button -->
+          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.85rem; color: var(--text-muted);">Vorschau testen:</span>
+            <button type="button" class="icon-btn" onclick="startInsanePartyMode()">🎉 Partymodus jetzt testen (15s)</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 
   <!-- MODAL: LOGIN -->
   <div class="modal-overlay" id="login-modal" style="display: none;">
@@ -557,6 +699,9 @@
     const bgAudio = new Audio();
     const dateAudio = new Audio('date-song.mp3');
     let isAudioUnlocked = false;
+
+    let partyTimeout = null;
+    let partyParticleInterval = null;
 
     let appData = {
       einkauf: [],
@@ -710,8 +855,8 @@
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
       document.getElementById('tab-' + name).classList.add('active');
-      if (event && event.target && event.target.classList) {
-        event.target.classList.add('active');
+      if (window.event && window.event.target && window.event.target.classList) {
+        window.event.target.classList.add('active');
       }
     }
 
@@ -771,7 +916,7 @@
     }
 
     // ==========================================
-    // TODOS (Sortiert: Erledigt immer unten)
+    // TODOS (Erledigte immer ganz unten)
     // ==========================================
     function renderTodos() {
       const vCont = document.getElementById('todos-vanessa');
@@ -780,11 +925,8 @@
       vCont.innerHTML = ''; fCont.innerHTML = ''; bCont.innerHTML = '';
 
       let openCount = 0;
-
-      // Original-Index mitführen, damit Löschen & Abhaken exakt bleibt
       const indexedTodos = appData.todos.map((t, index) => ({ ...t, originalIndex: index }));
       
-      // Sortierung: Offene Aufgaben oben, erledigte unten
       indexedTodos.sort((a, b) => {
         if (a.done === b.done) return 0;
         return a.done ? 1 : -1;
@@ -881,7 +1023,7 @@
     }
 
     // ==========================================
-    // DATE EINLADUNG & AUSWEICHENDER BUTTON
+    // DATE EINLADUNG & FLIEHENDER BUTTON
     // ==========================================
     function sendDateInvite(e) {
       e.preventDefault();
@@ -910,7 +1052,6 @@
         const inv = appData.dateEinladung;
         document.getElementById('date-popup-msg').textContent = 
           `Fabian lädt dich ein zum Date am ${inv.date.split('-').reverse().join('.')} um ${inv.time} Uhr!\n"${inv.text}"`;
-        // Button-Position bei jedem Öffnen zurücksetzen
         const btnNo = document.getElementById('btn-no');
         if (btnNo) btnNo.style.transform = 'translate(0, 0)';
         document.getElementById('date-popup-modal').style.display = 'flex';
@@ -930,15 +1071,76 @@
 
     function acceptDate() {
       document.getElementById('date-popup-modal').style.display = 'none';
+      if (!appData.dateEinladung) return;
       const inv = appData.dateEinladung;
       inv.status = 'accepted';
       appData.termine.push({ date: inv.date, time: inv.time, title: `Date: ${inv.text} ❤️` });
-      
-      bgAudio.pause();
-      dateAudio.play();
+
+      const partyKey = inv.date + '_' + inv.time;
+      localStorage.setItem('party_celebrated_key', partyKey);
+
       syncData();
       renderAll();
-      alert('Juhu! Date steht im Kalender! ❤️');
+
+      // Startet die 15-sekündige Eskalation
+      startInsanePartyMode();
+    }
+
+    // ==========================================
+    // 15-SEKUNDEN PARTYMODUS
+    // ==========================================
+    function startInsanePartyMode() {
+      clearTimeout(partyTimeout);
+      clearInterval(partyParticleInterval);
+
+      // Musik wechseln
+      bgAudio.pause();
+      dateAudio.currentTime = 0;
+      dateAudio.play().catch(err => console.log('Date Audio Playblock:', err));
+
+      // Visuelle Effekte aktivieren
+      document.getElementById('party-stage').style.display = 'block';
+      document.getElementById('app-container').classList.add('insane-shake');
+
+      const partyEmojis = ['🍾', '🥂', '🎉', '💃', '🕺', '💖', '🎆', '💥', '🍕', '✨', '💍', '🚀', '❤️', '🦫', '🔥'];
+
+      // Partikel-Kanone
+      partyParticleInterval = setInterval(() => {
+        for (let i = 0; i < 4; i++) {
+          const p = document.createElement('div');
+          p.className = 'party-particle';
+          p.textContent = partyEmojis[Math.floor(Math.random() * partyEmojis.length)];
+          p.style.setProperty('--startX', (Math.random() * 100) + 'vw');
+          p.style.setProperty('--startY', (Math.random() * 100) + 'vh');
+          p.style.setProperty('--endX', ((Math.random() - 0.5) * 160) + 'vw');
+          p.style.setProperty('--endY', ((Math.random() - 0.5) * 160) + 'vh');
+          p.style.setProperty('--rot', (Math.random() * 1080 - 540) + 'deg');
+          document.body.appendChild(p);
+
+          setTimeout(() => p.remove(), 2200);
+        }
+      }, 120);
+
+      // Exakt nach 15 Sekunden alles normalisieren
+      partyTimeout = setTimeout(() => {
+        stopInsanePartyMode();
+      }, 15000);
+    }
+
+    function stopInsanePartyMode() {
+      clearTimeout(partyTimeout);
+      clearInterval(partyParticleInterval);
+
+      document.getElementById('party-stage').style.display = 'none';
+      document.getElementById('app-container').classList.remove('insane-shake');
+      document.querySelectorAll('.party-particle').forEach(p => p.remove());
+
+      dateAudio.pause();
+      dateAudio.currentTime = 0;
+
+      // Normale Musik wieder starten
+      bgAudio.play().catch(() => {});
+      updatePlayIcon(true);
     }
 
     // ==========================================
@@ -979,6 +1181,15 @@
             appData = data;
             renderAll();
             checkPendingDateForVanessa();
+
+            // Wenn Vanessa auf ihrem Handy angenommen hat, feiert Fabians Handy mit!
+            if (appData.dateEinladung && appData.dateEinladung.status === 'accepted') {
+              const partyKey = appData.dateEinladung.date + '_' + appData.dateEinladung.time;
+              if (localStorage.getItem('party_celebrated_key') !== partyKey) {
+                localStorage.setItem('party_celebrated_key', partyKey);
+                startInsanePartyMode();
+              }
+            }
           }
         }).catch(() => {});
     }
