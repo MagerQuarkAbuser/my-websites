@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>CoupleApp 🤍</title>
 
-  <!-- Web-App / PWA Einstellungen -->
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" type="image/png" href="./image1.png">
   <link rel="shortcut icon" href="./image1.png">
@@ -20,795 +19,134 @@
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --mint: #bbf7d0;
-      --mint-dark: #22c55e;
-      --mint-border: #86efac;
-      --blue: #bae6fd;
-      --blue-dark: #0284c7;
-      --blue-border: #7dd3fc;
-      --bg: #f8fafc;
-      --card-bg: rgba(255, 255, 255, 0.94);
-      --text: #0f172a;
-      --text-muted: #475569;
-      --vanessa-card: rgba(240, 253, 244, 0.96);
-      --vanessa-border: #22c55e;
-      --fabian-card: rgba(240, 249, 255, 0.96);
-      --fabian-border: #0284c7;
+      --mint: #bbf7d0; --mint-dark: #22c55e; --mint-border: #86efac;
+      --blue: #bae6fd; --blue-dark: #0284c7; --blue-border: #7dd3fc;
+      --bg: #f8fafc; --card-bg: rgba(255, 255, 255, 0.94);
+      --text: #0f172a; --text-muted: #475569;
+      --vanessa-card: rgba(240, 253, 244, 0.96); --vanessa-border: #22c55e;
+      --fabian-card: rgba(240, 249, 255, 0.96); --fabian-border: #0284c7;
       --both-card: linear-gradient(135deg, rgba(240, 253, 244, 0.96) 0%, rgba(240, 249, 255, 0.96) 100%);
       --both-border: #38bdf8;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #e2e8f0;
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow-x: hidden;
-      position: relative;
-      padding-top: env(safe-area-inset-top, 0px);
-      padding-bottom: env(safe-area-inset-bottom, 20px);
-      padding-left: env(safe-area-inset-left, 0px);
-      padding-right: env(safe-area-inset-right, 0px);
+      background-color: #e2e8f0; color: var(--text); min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; overflow-x: hidden; position: relative;
     }
-
-    /* Foto-Hintergrund */
     #bg-photo {
-      position: fixed;
-      inset: 0;
-      background: url('hintergrund.jpeg') center center / cover no-repeat;
-      opacity: 0.42;
-      filter: saturate(1.1) contrast(1.02);
-      z-index: -2;
-      pointer-events: none;
-      transition: opacity 0.4s ease, filter 0.4s ease;
+      position: fixed; inset: 0; background: url('hintergrund.jpeg') center center / cover no-repeat;
+      opacity: 0.42; z-index: -2; pointer-events: none;
     }
-    #bg-photo.cursed-active {
-      opacity: 0.65;
-      filter: saturate(1.2) contrast(1.15);
-    }
-
     #bg-overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: radial-gradient(circle at 10% 20%, rgba(224, 242, 254, 0.35) 0%, rgba(220, 252, 231, 0.35) 45%, rgba(248, 250, 252, 0.5) 85%);
-      z-index: -1;
-      pointer-events: none;
+      z-index: -1; pointer-events: none;
     }
-
-    #app-container {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: transform 0.3s ease;
-    }
-
-    /* Schwebende Hintergrund-Blobs */
-    .bg-blob {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(90px);
-      z-index: -1;
-      opacity: 0.3;
-      animation: floatSlow 18s ease-in-out infinite alternate;
-    }
-    .blob-1 { width: 320px; height: 320px; background: #bae6fd; top: -50px; left: -50px; }
-    .blob-2 { width: 360px; height: 360px; background: #bbf7d0; bottom: -80px; right: -80px; animation-duration: 22s; }
-    @keyframes floatSlow {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(40px, 50px) scale(1.1); }
-    }
-
-    /* Header & Avatar */
+    #app-container { width: 100%; display: flex; flex-direction: column; align-items: center; }
     header {
-      width: 100%;
-      max-width: 720px;
-      padding: 12px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      background: rgba(255, 255, 255, 0.92);
-      border-bottom: 1.5px solid rgba(226, 232, 240, 0.8);
-      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+      width: 100%; max-width: 720px; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 40; backdrop-filter: blur(18px); background: rgba(255, 255, 255, 0.92);
+      border-bottom: 1.5px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
     }
-
-    .capy-btn {
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.2s;
-      min-width: 44px;
-      min-height: 44px;
-    }
-    .capy-btn:active { transform: scale(1.15) rotate(-8deg); }
-    
-    .fabian-header-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2.5px solid var(--blue-border);
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
-    }
-
-    .header-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
+    .capy-btn { background: none; border: none; padding: 0; cursor: pointer; min-width: 44px; min-height: 44px; }
+    .fabian-header-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2.5px solid var(--blue-border); }
+    .header-controls { display: flex; align-items: center; gap: 6px; }
     .icon-btn {
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 40px;
-      gap: 4px;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
-      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(148, 163, 184, 0.25); border-radius: 999px;
+      padding: 8px 12px; font-size: 0.88rem; font-weight: 600; color: var(--text); cursor: pointer; min-height: 40px; display: flex; align-items: center;
     }
-    .icon-btn:hover { background: white; transform: translateY(-1px); }
-    .icon-btn:active { transform: translateY(1px); }
-
-    /* Navigation */
     nav {
-      width: 100%;
-      max-width: 720px;
-      padding: 12px 16px 8px 16px;
-      display: flex;
-      justify-content: flex-start;
-      gap: 8px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      width: 100%; max-width: 720px; padding: 12px 16px 8px 16px; display: flex; justify-content: flex-start; gap: 8px;
+      overflow-x: auto; scrollbar-width: none;
     }
     nav::-webkit-scrollbar { display: none; }
-
     .nav-tab {
-      padding: 10px 16px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1.5px solid rgba(226, 232, 240, 0.9);
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      white-space: nowrap;
-      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04);
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 10px 16px; border-radius: 14px; background: rgba(255, 255, 255, 0.92); border: 1.5px solid rgba(226, 232, 240, 0.9);
+      font-size: 0.9rem; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; min-height: 42px;
     }
-    .nav-tab:active { transform: scale(0.95); }
-    .nav-tab.active {
-      background: white;
-      color: var(--text);
-      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
-      border-color: var(--blue-dark);
-      transform: translateY(-1px);
-    }
-
-    main {
-      width: 100%;
-      max-width: 720px;
-      padding: 10px 16px 24px 16px;
-    }
-
-    /* Moderne Seitenübergänge */
+    .nav-tab.active { background: white; color: var(--text); border-color: var(--blue-dark); }
+    main { width: 100%; max-width: 720px; padding: 10px 16px 24px 16px; }
     .tab-content { display: none; }
-    .tab-content.active {
-      display: block;
-      animation: tabEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @keyframes tabEnter {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Startseite */
+    .tab-content.active { display: block; }
     .brand-title {
-      font-family: 'Dancing Script', cursive;
-      font-size: clamp(2.8rem, 8.5vw, 4.4rem);
-      font-weight: 700;
-      text-align: center;
-      margin: 12px 0 4px 0;
-      background: linear-gradient(135deg, #14532d 0%, #0369a1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 2px 10px rgba(255, 255, 255, 0.95)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
-      line-height: 1.1;
+      font-family: 'Dancing Script', cursive; font-size: clamp(2.8rem, 8.5vw, 4.4rem); font-weight: 700; text-align: center;
+      margin: 12px 0 4px 0; background: linear-gradient(135deg, #14532d 0%, #0369a1 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .greeting-sub {
-      text-align: center;
-      font-size: 1.05rem;
-      font-weight: 500;
-      color: var(--text);
-      text-shadow: 0 1px 4px rgba(255, 255, 255, 0.9);
-      margin-bottom: 18px;
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 8px;
-    }
+    .greeting-sub { text-align: center; font-size: 1.05rem; font-weight: 500; margin-bottom: 18px; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 8px; }
     .dash-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 20px;
-      padding: 16px 12px;
-      border: 1.5px solid rgba(255, 255, 255, 0.95);
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      text-align: center;
+      background: var(--card-bg); border-radius: 20px; padding: 16px 12px; border: 1.5px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07); cursor: pointer; text-align: center;
     }
-    .dash-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1); }
-    .dash-card:active { transform: scale(0.97); }
     .dash-card .icon { font-size: 2rem; margin-bottom: 6px; }
-    .dash-card h3 { font-size: 1rem; margin-bottom: 3px; font-weight: 700; }
-    .dash-card p { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; }
-
-    /* Bok-Button */
-    .bok-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 22px;
-    }
+    .bok-container { display: flex; justify-content: center; margin-top: 22px; }
     .bok-btn {
-      background: linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #8b5cf6 100%);
-      color: white;
-      border: 1.5px solid rgba(255, 255, 255, 0.85);
-      border-radius: 999px;
-      padding: 15px 36px;
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      box-shadow: 0 10px 28px rgba(244, 63, 94, 0.4);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 52px;
+      background: linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #8b5cf6 100%); color: white; border-radius: 999px;
+      padding: 15px 36px; font-size: 1.15rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
     }
-    .bok-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 14px 32px rgba(244, 63, 94, 0.48); }
-    .bok-btn:active { transform: scale(0.95); }
-
-    /* Beziehungsticker */
     .ticker-card {
-      margin-top: 20px;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 24px;
-      padding: 20px 22px;
-      text-align: center;
-      border: 1.5px solid rgba(255, 255, 255, 0.98);
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      position: relative;
-      overflow: hidden;
-    }
-    .ticker-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 4px;
-      background: linear-gradient(90deg, #22c55e, #0284c7, #ec4899, #22c55e);
-      background-size: 300% 100%;
-      animation: gradientShift 6s infinite linear;
-    }
-    .ticker-header {
-      font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #64748b;
+      margin-top: 20px; background: var(--card-bg); border-radius: 24px; padding: 20px 22px; text-align: center;
+      border: 1.5px solid rgba(255, 255, 255, 0.98); display: flex; flex-direction: column; align-items: center; gap: 6px;
     }
     .ticker-days-value {
-      font-family: 'Montserrat', sans-serif;
-      font-size: clamp(2.4rem, 8vw, 3.3rem);
-      font-weight: 900;
-      line-height: 1;
-      margin: 4px 0 2px 0;
+      font-family: 'Montserrat', sans-serif; font-size: clamp(2.4rem, 8vw, 3.3rem); font-weight: 900;
       background: linear-gradient(135deg, #059669 0%, #0284c7 50%, #db2777 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .ticker-subtext { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
-    .ticker-since { font-size: 0.82rem; color: #64748b; font-weight: 500; }
-
-    /* Mülltermine Upload & Zoom */
     .muell-upload-box {
-      border: 2px dashed #94a3b8;
-      border-radius: 18px;
-      padding: 28px 20px;
-      text-align: center;
-      background: rgba(255, 255, 255, 0.65);
-      cursor: pointer;
-      display: block;
-      transition: all 0.2s;
-      margin-bottom: 16px;
-    }
-    .muell-upload-box:hover {
-      border-color: var(--blue-dark);
-      background: rgba(255, 255, 255, 0.9);
+      border: 2px dashed #94a3b8; border-radius: 18px; padding: 28px 20px; text-align: center;
+      background: rgba(255, 255, 255, 0.65); cursor: pointer; display: block; margin-bottom: 16px;
     }
     .muell-preview-container {
-      width: 100%;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1.5px solid #cbd5e1;
-      background: white;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 14px;
+      width: 100%; border-radius: 18px; border: 1.5px solid #cbd5e1; background: white; padding: 14px; display: flex; flex-direction: column; align-items: center;
     }
-    .muell-preview-img {
-      width: 100%;
-      max-height: 350px;
-      object-fit: contain;
-      border-radius: 10px;
-      cursor: zoom-in;
-      transition: transform 0.2s;
-    }
-    .muell-preview-img:hover { transform: scale(1.01); }
-
-    /* Zoom Modal */
+    .muell-preview-img { width: 100%; max-height: 350px; object-fit: contain; border-radius: 10px; cursor: zoom-in; }
     #muell-zoom-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 10020;
-      background: rgba(0, 0, 0, 0.95);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
+      display: none; position: fixed; inset: 0; z-index: 10020; background: rgba(0, 0, 0, 0.95);
+      align-items: center; justify-content: center; overflow: auto;
     }
     #muell-zoom-modal.active { display: flex; }
-    
-    .muell-zoom-wrapper {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: auto;
-      position: relative;
-    }
-    #muell-zoom-img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      transition: transform 0.1s ease-out;
-      transform-origin: center center;
-      cursor: grab;
-    }
-    #muell-zoom-img:active { cursor: grabbing; }
-
-    .muell-zoom-controls {
-      position: fixed;
-      bottom: 25px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 12px;
-      z-index: 10030;
-      background: rgba(15, 23, 42, 0.75);
-      padding: 8px 16px;
-      border-radius: 99px;
-      backdrop-filter: blur(10px);
-    }
-    .zoom-ctrl-btn {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .zoom-ctrl-btn:active { background: rgba(255, 255, 255, 0.4); }
-
-    .muell-zoom-close {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.25);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      font-size: 1.5rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10030;
-    }
-
-    /* Bok-Vollbild */
-    #bok-overlay {
-      display: none; position: fixed; inset: 0; z-index: 10005; background: black;
-      align-items: center; justify-content: center; overflow: hidden; cursor: pointer;
-    }
-    #bok-overlay.active { display: flex; }
-    #bok-image {
-      width: 100vw; height: 100vh; object-fit: cover; transform-origin: center center;
-      animation: bokZoomIn 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    @keyframes bokZoomIn {
-      0% { transform: scale(0.08); opacity: 0.2; border-radius: 50%; }
-      70% { opacity: 1; }
-      100% { transform: scale(1); opacity: 1; border-radius: 0; }
-    }
-
-    /* Listen & Formulare */
-    .section-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 22px;
-      padding: 20px 16px;
-      margin-bottom: 18px;
-      border: 1.5px solid rgba(255, 255, 255, 0.95);
-      box-shadow: 0 8px 26px rgba(15, 23, 42, 0.07);
-    }
-    .section-title {
-      font-size: 1.22rem; font-weight: 700; margin-bottom: 14px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-
-    .input-bar {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .input-bar input, .input-bar select {
-      flex: 1;
-      padding: 13px 14px;
-      border-radius: 12px;
-      border: 1.5px solid #cbd5e1;
-      font-size: 16px;
-      background: rgba(255, 255, 255, 0.98);
-      outline: none;
-      min-height: 48px;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
-      transition: border 0.2s, box-shadow 0.2s;
-    }
-    .input-bar input:focus, .input-bar select:focus { 
-      border-color: var(--blue-dark); 
-      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
-    }
-    .primary-btn {
-      background: linear-gradient(135deg, #22c55e 0%, #0ea5e9 100%);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      border-radius: 12px;
-      padding: 12px 18px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      min-height: 48px;
-      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
-      transition: opacity 0.2s, transform 0.1s;
-    }
-    .primary-btn:active { transform: scale(0.97); }
-
-    @media (max-width: 580px) {
-      .input-bar { flex-direction: column; }
-      .input-bar input, .input-bar select, .input-bar button { width: 100% !important; min-width: 0 !important; }
-    }
-
-    /* Listen-Elemente */
-    .list-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 13px 14px; background: rgba(255, 255, 255, 0.98);
-      border-radius: 14px; margin-bottom: 8px; border: 1px solid rgba(226, 232, 240, 0.9);
-      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04); cursor: pointer; user-select: none;
-      min-height: 48px; transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
-    }
-    .list-item:active { transform: scale(0.99); }
-    .item-text {
-      position: relative; font-size: 0.95rem; font-weight: 500; color: var(--text);
-      display: inline-block; word-break: break-word;
-    }
-    .item-text::after {
-      content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 2px;
-      background: #94a3b8; transform: scaleX(0); transform-origin: left; transition: transform 0.35s ease-out;
-    }
-    .list-item.striking .item-text::after { transform: scaleX(1); }
-    .list-item.striking { opacity: 0.6; }
-    .list-item.done { background: rgba(241, 245, 249, 0.85); opacity: 0.7; border-color: #e2e8f0; }
-    .list-item.done .item-text::after { transform: scaleX(1); }
-    
-    .action-group { display: flex; align-items: center; gap: 4px; }
-    .icon-action-btn {
-      background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: 8px;
-      border-radius: 10px; color: #94a3b8; min-width: 40px; min-height: 40px;
-      display: flex; align-items: center; justify-content: center; transition: color 0.2s, background-color 0.2s;
-    }
-    .icon-action-btn:hover { background-color: #f1f5f9; color: #1e293b; }
-    .icon-action-btn.del-btn:hover { color: #ef4444; }
-
-    /* ToDos */
-    .todo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 600px) { .todo-grid { grid-template-columns: 1fr; } }
-    .todo-card {
-      border-radius: 16px; padding: 13px; margin-bottom: 8px;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05); border: 1.5px solid; border-left-width: 6px;
-      cursor: pointer; min-height: 48px; transition: all 0.2s;
-    }
-    .todo-card:active { transform: scale(0.99); }
-    .todo-card.striking .item-text::after { transform: scaleX(1); }
-    .todo-card.striking { opacity: 0.6; }
-    .todo-card.done { background: rgba(241, 245, 249, 0.85) !important; opacity: 0.7; border-color: #cbd5e1 !important; }
-    .todo-card.done .item-text::after { transform: scaleX(1); }
-
-    .todo-vanessa { background: var(--vanessa-card); border-color: #86efac; border-left-color: var(--vanessa-border); }
-    .todo-fabian { background: var(--fabian-card); border-color: #7dd3fc; border-left-color: var(--fabian-border); }
-    .todo-both { background: var(--both-card); border-color: #a7f3d0; border-left-color: #06b6d4; }
-
-    /* Termine */
-    .termin-item {
-      border: 1px solid rgba(226, 232, 240, 0.95); border-left: 6px solid #a855f7 !important; background: rgba(255, 255, 255, 0.98);
-    }
-    .termin-geburtstag { border-left-color: #3b82f6 !important; background: rgba(240, 247, 255, 0.98) !important; border-color: #bfdbfe; }
-    .termin-date { border-left-color: #ef4444 !important; background: rgba(255, 241, 242, 0.98) !important; border-color: #fecdd3; }
-    .termin-event { border-left-color: #22c55e !important; background: rgba(240, 253, 244, 0.98) !important; border-color: #bbf7d0; }
-    .termin-arzt { border-left-color: #eab308 !important; background: rgba(254, 252, 232, 0.98) !important; border-color: #fef08a; }
-    .termin-sonstiges { border-left-color: #a855f7 !important; background: rgba(250, 245, 255, 0.98) !important; border-color: #e9d5ff; }
-
-    .cat-badge {
-      display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 3px 9px;
-      border-radius: 999px; margin-bottom: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .badge-geburtstag { background: #dbeafe; color: #1d4ed8; }
-    .badge-date { background: #ffe4e6; color: #b91c1c; }
-    .badge-event { background: #dcfce7; color: #15803d; }
-    .badge-arzt { background: #fef9c3; color: #854d0e; }
-    .badge-sonstiges { background: #f3e8ff; color: #7e22ce; }
-
-    /* Pony Button */
-    .pony-container { display: flex; justify-content: center; margin-top: 24px; padding-bottom: 12px; }
-    .pony-btn {
-      background: rgba(255, 255, 255, 0.94); border: 1.5px solid rgba(255, 255, 255, 0.98);
-      border-radius: 999px; padding: 10px 20px; cursor: pointer; display: inline-flex;
-      align-items: center; gap: 8px; font-size: 1.3rem; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
-      user-select: none; min-height: 48px; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .pony-btn:hover { transform: scale(1.08); background: white; box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12); }
-    .pony-btn:active { transform: scale(0.94); }
-    .pony-text { font-size: 0.95rem; font-weight: 700; color: #64748b; display: inline-block; }
-    .pony-text.animate { animation: ponyHop 0.28s ease-out; }
-    @keyframes ponyHop {
-      0% { transform: scale(0.75); opacity: 0.6; }
-      50% { transform: scale(1.25); color: #0284c7; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* Totenkopf Footer */
-    .skull-footer { display: flex; justify-content: center; align-items: center; padding: 18px 0 35px 0; width: 100%; }
-    .skull-btn {
-      background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.9);
-      border-radius: 50%; font-size: 1.15rem; opacity: 0.35; cursor: pointer; user-select: none;
-      transition: opacity 0.25s ease, transform 0.25s ease, background 0.25s;
-      padding: 10px; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .skull-btn:hover { opacity: 0.95; background: white; transform: scale(1.25) rotate(12deg); }
-    .skull-btn:active { transform: scale(0.9); }
-
-    /* Modals */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(10px);
-      z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px;
-    }
-    .modal-box {
-      background: white; border: 2px solid rgba(255, 255, 255, 0.95); border-radius: 26px;
-      padding: 24px 20px; max-width: 420px; width: 100%; max-height: 85vh; overflow-y: auto;
-      -webkit-overflow-scrolling: touch; box-shadow: 0 24px 50px rgba(0, 0, 0, 0.28); text-align: center;
-      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative;
-    }
-    @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-    .date-btn-container {
-      position: relative; min-height: 80px; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 16px;
-    }
-    #btn-no {
-      position: relative; transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-      background: #f1f5f9; color: #64748b; border: 1.5px solid #cbd5e1; padding: 12px 22px;
-      border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; user-select: none; touch-action: none; min-height: 48px;
-    }
-
-    /* Chillgriff Overlay */
-    #chillgriff-overlay {
-      display: none; position: fixed; inset: 0; pointer-events: none; z-index: 9998;
-      align-items: center; justify-content: center;
-      background: radial-gradient(circle, rgba(240, 253, 250, 0.65) 0%, rgba(15, 23, 42, 0.55) 100%);
-      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 16px;
-    }
-    #chillgriff-overlay.active { display: flex; animation: chillgriffPopIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-    .chillgriff-huge-text {
-      font-family: 'Montserrat', sans-serif; font-size: clamp(1.8rem, 8.2vw, 5.5rem); font-weight: 900;
-      text-transform: uppercase; letter-spacing: clamp(1px, 0.8vw, 6px); text-align: center; line-height: 1.1;
-      max-width: 96vw; white-space: nowrap; padding: 6px 12px;
-      background: linear-gradient(135deg, #10b981, #06b6d4, #3b82f6, #8b5cf6, #ec4899);
-      background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 10px 25px rgba(6, 182, 212, 0.6)) drop-shadow(0 0 35px rgba(16, 185, 129, 0.7));
-      animation: chillgriffPulsate 1.1s infinite alternate ease-in-out, chillgriffGradient 4s ease infinite; user-select: none;
-    }
-    @keyframes chillgriffPopIn { 0% { transform: scale(0.2) rotate(-15deg); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-    @keyframes chillgriffPulsate { 0% { transform: scale(0.95) rotate(-2deg); } 100% { transform: scale(1.05) rotate(2deg); } }
-    @keyframes chillgriffGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-    .flying-capy {
-      position: fixed; pointer-events: none; z-index: 9999; border-radius: 50%; object-fit: cover;
-      border: 3.5px solid white; box-shadow: 0 12px 35px rgba(0,0,0,0.3);
-      animation: flyAcross 5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-    }
-    @keyframes flyAcross {
-      0% { transform: translate(var(--startX), var(--startY)) rotate(0deg) scale(0.4); opacity: 0; }
-      12% { opacity: 1; } 88% { opacity: 1; }
-      100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)) scale(1.25); opacity: 0; }
-    }
-
-    /* Partymodus */
-    #party-stage { display: none; position: fixed; inset: 0; pointer-events: none; z-index: 9997; overflow: hidden; }
-    .party-glow-overlay {
-      position: absolute; inset: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(254, 205, 211, 0.4), rgba(186, 230, 253, 0.4), rgba(220, 252, 231, 0.4));
-      animation: smoothColorGlow 6s ease-in-out infinite alternate; mix-blend-mode: multiply; opacity: 0.8;
-    }
-    @keyframes smoothColorGlow { 0% { filter: hue-rotate(0deg); opacity: 0.6; } 50% { filter: hue-rotate(90deg); opacity: 0.85; } 100% { filter: hue-rotate(180deg); opacity: 0.6; } }
-
-    .party-banner-container {
-      position: absolute; top: 18%; left: 50%; transform: translateX(-50%);
-      display: flex; flex-direction: column; align-items: center; gap: 10px; width: 90%; max-width: 620px;
-      animation: gentleBannerSway 2.5s infinite alternate ease-in-out;
-    }
-    @keyframes gentleBannerSway { 0% { transform: translateX(-50%) rotate(-2deg) scale(0.98); } 100% { transform: translateX(-50%) rotate(2deg) scale(1.03); } }
-
-    .party-banner-main {
-      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%); color: white;
-      padding: 16px 28px; border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 24px;
-      font-family: 'Montserrat', sans-serif; font-size: clamp(1.25rem, 4.5vw, 2.1rem); font-weight: 900;
-      text-align: center; box-shadow: 0 12px 35px rgba(236, 72, 153, 0.4); text-transform: uppercase; letter-spacing: 1px;
-    }
-    .party-banner-sub {
-      background: white; color: #0f172a; padding: 8px 20px; border-radius: 999px;
-      font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-    }
-    body.party-celebration .dash-card, body.party-celebration .section-card { animation: cardGroove 1.6s infinite alternate ease-in-out; }
-    @keyframes cardGroove { 0% { transform: translateY(0px) rotate(-0.5deg); } 100% { transform: translateY(-6px) rotate(0.5deg); } }
-
-    .party-particle {
-      position: fixed; top: -10vh; pointer-events: none; z-index: 10000;
-      font-size: clamp(2rem, 5vw, 3.8rem); will-change: transform, opacity;
-      animation: particleFloatDown 4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-    }
-    @keyframes particleFloatDown {
-      0% { transform: translate(var(--startX), 0) scale(0.6) rotate(0deg); opacity: 0; }
-      15% { opacity: 1; } 85% { opacity: 1; }
-      100% { transform: translate(var(--endX), 115vh) scale(1.1) rotate(var(--rot)); opacity: 0; }
-    }
-
-    /* Toast Benachrichtigung */
-    .toast-notification {
-      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-      background: rgba(255, 255, 255, 0.98); border: 2px solid #22c55e; color: #0f172a;
-      padding: 12px 22px; border-radius: 999px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
-      font-weight: 700; font-size: 0.95rem; z-index: 10010;
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s;
-      opacity: 0; pointer-events: none; display: flex; align-items: center; gap: 8px; white-space: nowrap;
-    }
+    #muell-zoom-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .muell-zoom-close { position: fixed; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.25); color: white; border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 1.5rem; cursor: pointer; z-index: 10030; }
+    .section-card { background: var(--card-bg); border-radius: 22px; padding: 20px 16px; margin-bottom: 18px; border: 1.5px solid rgba(255, 255, 255, 0.95); }
+    .section-title { font-size: 1.22rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+    .input-bar { display: flex; gap: 8px; margin-bottom: 14px; }
+    .input-bar input, .input-bar select { flex: 1; padding: 13px 14px; border-radius: 12px; border: 1.5px solid #cbd5e1; font-size: 16px; background: white; min-height: 48px; }
+    .primary-btn { background: linear-gradient(135deg, #22c55e 0%, #0ea5e9 100%); color: white; border-radius: 12px; padding: 12px 18px; font-weight: 600; cursor: pointer; min-height: 48px; }
+    .list-item { display: flex; align-items: center; justify-content: space-between; padding: 13px 14px; background: white; border-radius: 14px; margin-bottom: 8px; border: 1px solid rgba(226, 232, 240, 0.9); }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(10px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .modal-box { background: white; border-radius: 26px; padding: 24px 20px; max-width: 420px; width: 100%; text-align: center; position: relative; }
+    .toast-notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: white; border: 2px solid #22c55e; padding: 12px 22px; border-radius: 999px; z-index: 10010; transition: transform 0.4s; opacity: 0; pointer-events: none; font-weight: 700; }
     .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   </style>
 </head>
 <body>
 
-  <!-- Foto-Hintergrund & Overlay -->
   <div id="bg-photo"></div>
   <div id="bg-overlay"></div>
 
-  <!-- Vollbild-Zoom Modal für Mülltermine -->
-  <div id="muell-zoom-modal">
+  <!-- Zoom Modal -->
+  <div id="muell-zoom-modal" onclick="closeMuellZoom()">
     <button class="muell-zoom-close" onclick="closeMuellZoom()">✕</button>
-    <div class="muell-zoom-wrapper" id="zoom-wrapper">
-      <img id="muell-zoom-img" src="" alt="Vergrößerter Kalender">
-    </div>
-    <div class="muell-zoom-controls">
-      <button class="zoom-ctrl-btn" onclick="zoomInImg()">+</button>
-      <button class="zoom-ctrl-btn" onclick="zoomOutImg()">-</button>
-      <button class="zoom-ctrl-btn" onclick="resetZoomImg()" style="font-size: 0.9rem;">1:1</button>
-    </div>
+    <img id="muell-zoom-img" src="" alt="Vergrößert">
   </div>
 
-  <!-- Toast Benachrichtigung -->
   <div id="toast-notification" class="toast-notification"></div>
 
-  <!-- Bok-Vollbild-Overlay -->
-  <div id="bok-overlay" onclick="closeBokOverlay()">
-    <img id="bok-image" src="" alt="Bok">
-  </div>
-
-  <!-- Chillgriff Secret Overlay -->
-  <div id="chillgriff-overlay">
-    <div class="chillgriff-huge-text">CHILLGRIFF!</div>
-  </div>
-
-  <!-- Party-Bühne -->
-  <div id="party-stage">
-    <div class="party-glow-overlay"></div>
-    <div class="party-banner-container">
-      <div class="party-banner-main">🔥 DATE ANGENOMMEN! PARTY! 🔥</div>
-      <div class="party-banner-sub">30 SEKUNDEN LIEBE & FEIERN! 🍾🎉🥂💖</div>
-    </div>
-  </div>
-
-  <div class="bg-blob blob-1"></div>
-  <div class="bg-blob blob-2"></div>
-
   <div id="app-container">
-    <!-- Header mit Avatar (image1.png) -->
     <header>
-      <button class="capy-btn" id="capy-trigger" title="Doppelklick für Chillgriff!">
-        <img src="image1.png" alt="Avatar" class="fabian-header-avatar" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><text y=\'.9em\' font-size=\'90\'>🦫</text></svg>'">
+      <button class="capy-btn" id="capy-trigger">
+        <img src="image1.png" alt="Avatar" class="fabian-header-avatar">
       </button>
       <div class="header-controls">
-        <button class="icon-btn" id="btn-toggle-play" title="Musik Pausieren / Abspielen">⏸️</button>
-        <button class="icon-btn" id="btn-next-song" title="Nächstes Lied">⏭️</button>
+        <button class="icon-btn" id="btn-toggle-play">⏸️</button>
+        <button class="icon-btn" id="btn-next-song">⏭️</button>
         <button class="icon-btn" id="btn-switch-user">👤 <span id="current-user-name">...</span></button>
       </div>
     </header>
 
-    <!-- Navigation -->
     <nav>
       <button class="nav-tab active" data-tab="home" onclick="showTab('home')">🏠 Startseite</button>
       <button class="nav-tab" data-tab="einkauf" onclick="showTab('einkauf')">🛒 Einkaufsliste</button>
@@ -819,339 +157,132 @@
       <button class="nav-tab" id="tab-date-btn" data-tab="date" style="display:none;" onclick="showTab('date')">❤️ Date</button>
     </nav>
 
-    <!-- Content -->
     <main>
-      <!-- TAB 1: STARTSEITE -->
+      <!-- STARTSEITE -->
       <div id="tab-home" class="tab-content active">
-        <h1 class="brand-title" id="main-brand-title">Vanessa & Fabian 🤍</h1>
+        <h1 class="brand-title">Vanessa & Fabian 🤍</h1>
         <p class="greeting-sub" id="user-greeting">Schön, dass du da bist! ✨</p>
-
         <div class="dashboard-grid">
-          <div class="dash-card" onclick="showTab('einkauf')">
-            <div class="icon">🛒</div>
-            <h3>Einkaufsliste</h3>
-            <p id="dash-einkauf-count">0 offene Einträge</p>
-          </div>
-          <div class="dash-card" onclick="showTab('todos')">
-            <div class="icon">📋</div>
-            <h3>Aufgaben</h3>
-            <p id="dash-todos-count">0 Aufgaben warten</p>
-          </div>
-          <div class="dash-card" onclick="showTab('termine')">
-            <div class="icon">📅</div>
-            <h3>Termine</h3>
-            <p id="dash-termine-count">0 anstehende Dates</p>
-          </div>
-          <div class="dash-card" onclick="showTab('muell')">
-            <div class="icon">🗑️</div>
-            <h3>Mülltermine</h3>
-            <p>Kalender ansehen</p>
-          </div>
+          <div class="dash-card" onclick="showTab('einkauf')"><div class="icon">🛒</div><h3>Einkauf</h3><p id="dash-einkauf-count">0 offene</p></div>
+          <div class="dash-card" onclick="showTab('todos')"><div class="icon">📋</div><h3>Aufgaben</h3><p id="dash-todos-count">0 warten</p></div>
+          <div class="dash-card" onclick="showTab('termine')"><div class="icon">📅</div><h3>Termine</h3><p id="dash-termine-count">0 Dates</p></div>
+          <div class="dash-card" onclick="showTab('muell')"><div class="icon">🗑️</div><h3>Müll</h3><p>Ansehen</p></div>
         </div>
-
-        <!-- Button: Bok benötigt -->
-        <div class="bok-container">
-          <button class="bok-btn" onclick="triggerBok()">
-            <span>Bok benötigt</span> 🥺🤍
-          </button>
-        </div>
-
-        <!-- Süßer Beziehungsticker -->
+        <div class="bok-container"><button class="bok-btn" onclick="triggerBok()"><span>Bok benötigt</span> 🥺🤍</button></div>
         <div class="ticker-card">
           <div class="ticker-header">🤍 Zusammen seit 🤍</div>
           <div class="ticker-days-value" id="love-ticker-days">0</div>
-          <div class="ticker-subtext">Tagen voller Liebe & Glück ✨</div>
-          <div class="ticker-since">seit dem 25. September 2025</div>
+          <div class="ticker-subtext">Tagen voller Liebe ✨</div>
+          <div class="ticker-since">seit 25. September 2025</div>
         </div>
       </div>
 
-      <!-- TAB 2: EINKAUFSLISTE -->
+      <!-- EINKAUFSLISTE -->
       <div id="tab-einkauf" class="tab-content">
         <div class="section-card">
           <div class="section-title">Einkaufsliste 🛒</div>
-          <form class="input-bar" onsubmit="addEinkauf(event)">
-            <input type="text" id="einkauf-input" placeholder="Was brauchen wir? (z. B. Hafermilch)" required>
-            <button type="submit" class="primary-btn">Hinzufügen</button>
-          </form>
+          <form class="input-bar" onsubmit="addEinkauf(event)"><input type="text" id="einkauf-input" placeholder="Was brauchen wir?" required><button type="submit" class="primary-btn">Hinzufügen</button></form>
           <div id="einkauf-list"></div>
         </div>
-
-        <div class="section-card">
-          <div class="section-title" style="font-size: 1rem; color: var(--text-muted);">Erledigt ✔️</div>
-          <div id="einkauf-done-list"></div>
-        </div>
-
-        <!-- Easter Egg: Pony-Zähler -->
-        <div class="pony-container">
-          <button type="button" class="pony-btn" onclick="triggerPony()" title="Ein Pony!">
-            <span>🐴</span>
-            <span id="pony-display" class="pony-text">Pony 0</span>
-          </button>
-        </div>
+        <div class="section-card"><div class="section-title" style="font-size: 1rem; color: var(--text-muted);">Erledigt ✔️</div><div id="einkauf-done-list"></div></div>
       </div>
 
-      <!-- TAB 3: TODOS -->
+      <!-- TODOS -->
       <div id="tab-todos" class="tab-content">
         <div class="section-card">
           <div class="section-title">Neue Aufgabe 📋</div>
-          <form class="input-bar" onsubmit="addTodo(event)">
-            <input type="text" id="todo-input" placeholder="Aufgabe eingeben..." required>
-            <select id="todo-assignee" style="max-width: 140px;">
-              <option value="both">Beide 🤍</option>
-              <option value="vanessa">Vanessa 🌸</option>
-              <option value="fabian">Fabian 💙</option>
-            </select>
-            <button type="submit" class="primary-btn">Speichern</button>
-          </form>
+          <form class="input-bar" onsubmit="addTodo(event)"><input type="text" id="todo-input" placeholder="Aufgabe..." required><select id="todo-assignee" style="max-width: 140px;"><option value="both">Beide 🤍</option><option value="vanessa">Vanessa 🌸</option><option value="fabian">Fabian 💙</option></select><button type="submit" class="primary-btn">Speichern</button></form>
         </div>
-
         <div class="todo-grid">
-          <div class="section-card">
-            <div class="section-title" style="color: #166534;">Vanessa 🌸</div>
-            <div id="todos-vanessa"></div>
-          </div>
-          <div class="section-card">
-            <div class="section-title" style="color: #0369a1;">Fabian 💙</div>
-            <div id="todos-fabian"></div>
-          </div>
-        </div>
-        <div class="section-card" style="margin-top: 14px;">
-          <div class="section-title" style="color: #4f46e5;">Gemeinsam 🤝</div>
-          <div id="todos-both"></div>
+          <div class="section-card"><div class="section-title" style="color: #166534;">Vanessa 🌸</div><div id="todos-vanessa"></div></div>
+          <div class="section-card"><div class="section-title" style="color: #0369a1;">Fabian 💙</div><div id="todos-fabian"></div></div>
         </div>
       </div>
 
-      <!-- TAB 4: TERMINE -->
+      <!-- TERMINE -->
       <div id="tab-termine" class="tab-content">
         <div class="section-card">
           <div class="section-title">Neuer Termin 📅</div>
-          <form class="input-bar" onsubmit="addTermin(event)">
-            <div style="display: flex; gap: 8px; width: 100%;">
-              <input type="date" id="termin-date" required style="flex: 1;">
-              <input type="time" id="termin-time" required style="width: 110px;">
-            </div>
-            <select id="termin-category">
-              <option value="geburtstag">Geburtstag 🎂 (Blau)</option>
-              <option value="date">Date ❤️ (Rot)</option>
-              <option value="event">Veranstaltung 🎟️ (Grün)</option>
-              <option value="arzt">Arzt / Pflichttermin 🩺 (Gelb)</option>
-              <option value="sonstiges" selected>Sonstiges 📌 (Lila)</option>
-            </select>
-            <input type="text" id="termin-title" placeholder="Was steht an?" required>
-            <button type="submit" class="primary-btn">Eintragen</button>
-          </form>
+          <form class="input-bar" onsubmit="addTermin(event)"><input type="date" id="termin-date" required><input type="time" id="termin-time" required><select id="termin-category"><option value="geburtstag">Geburtstag</option><option value="date">Date</option><option value="event">Event</option><option value="arzt">Arzt</option><option value="sonstiges" selected>Sonstiges</option></select><input type="text" id="termin-title" placeholder="Beschreibung" required><button type="submit" class="primary-btn">Eintragen</button></form>
           <div id="termine-list"></div>
         </div>
       </div>
 
-      <!-- TAB 5: MÜLLTERMINE -->
+      <!-- MÜLLTERMINE -->
       <div id="tab-muell" class="tab-content">
         <div class="section-card">
           <div class="section-title">Mülltermine 🗑️</div>
-          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 14px;">
-            Lade hier den aktuellen Müllkalender (Bild oder PDF) hoch:
-          </p>
-          
           <label class="muell-upload-box" for="muell-file-input">
-            <div style="font-size: 2rem; margin-bottom: 6px;">📄📸</div>
-            <div style="font-weight: 600; color: var(--text);">Datei auswählen / hochladen</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">(Bild oder PDF)</div>
+            <div>📄📸 <b>Datei hochladen</b> (Bild/PDF)</div>
             <input type="file" id="muell-file-input" accept="image/*,application/pdf" style="display: none;" onchange="handleMuellUpload(event)">
           </label>
-
           <div id="muell-display-area" style="display: none;">
             <div class="muell-preview-container">
-              <img id="muell-img-preview" class="muell-preview-img" style="display: none;" alt="Müllkalender Vorschau" onclick="openMuellZoom()" title="Zum Vergrößern antippen">
-              <iframe id="muell-pdf-preview" style="width: 100%; height: 500px; border: none; display: none; border-radius: 8px;"></iframe>
-              
-              <!-- Bearbeitbarer Titel unter dem Bild -->
-              <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px; width: 100%;">
-                <span id="muell-file-title" style="font-weight: 700; font-size: 1rem; color: var(--blue-dark);">Müllkalender bis Januar</span>
-                <button type="button" class="icon-action-btn" onclick="enableMuellTitleEdit()" title="Titel bearbeiten">✏️</button>
-              </div>
-
-              <!-- Editierfeld (Standardmäßig versteckt) -->
-              <div id="muell-title-edit-box" style="display: none; margin-top: 8px; width: 100%;">
-                <div class="input-bar" style="margin-bottom: 0;">
-                  <input type="text" id="muell-title-input" placeholder="Z.B. Müllkalender bis Januar...">
-                  <button type="button" class="primary-btn" onclick="saveMuellTitle()">OK</button>
-                </div>
-              </div>
-
-              <button type="button" class="icon-btn" style="margin-top: 14px; background: #fee2e2; color: #991b1b; border-color: #fecaca;" onclick="clearMuellFile()">🗑️ Kalender löschen</button>
+              <img id="muell-img-preview" class="muell-preview-img" style="display: none;" onclick="openMuellZoom()" alt="Müll">
+              <div style="font-weight: 700; margin-top: 10px; color: var(--blue-dark);" id="muell-file-title">Müllkalender</div>
+              <button type="button" class="icon-btn" style="margin-top: 10px; background: #fee2e2; color: #991b1b;" onclick="clearMuellFile()">🗑️ Löschen</button>
             </div>
           </div>
-          <div id="muell-empty-notice" style="text-align: center; font-size: 0.9rem; color: var(--text-muted); padding: 10px;">
-            Noch kein Müllkalender hinterlegt.
-          </div>
+          <div id="muell-empty-notice" style="text-align: center; color: var(--text-muted); padding: 10px;">Noch kein Kalender hinterlegt.</div>
         </div>
       </div>
 
-      <!-- TAB 6: GALERIE & DIASHOW -->
+      <!-- GALERIE & DIASHOW -->
       <div id="tab-galerie" class="tab-content">
         <div class="section-card" style="text-align: center;">
           <div class="section-title">Unsere Momente 🤍</div>
-          
-          <!-- Diashow Vorschau (mit object-fit: contain, damit man das ganze Bild sieht) -->
-          <div style="width: 100%; height: 280px; border-radius: 16px; overflow: hidden; background: #0f172a; position: relative; margin-bottom: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center;">
-            <img id="slideshow-img" style="max-width: 100%; max-height: 100%; object-fit: contain; transition: opacity 1s ease-in-out; opacity: 0;" alt="Diashow">
-            <div style="position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,0.6); color: white; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem;">Zufällige Diashow ✨</div>
+          <div style="width: 100%; height: 260px; border-radius: 16px; overflow: hidden; background: #0f172a; position: relative; margin-bottom: 18px; display: flex; align-items: center; justify-content: center;">
+            <img id="slideshow-img" style="max-width: 100%; max-height: 100%; object-fit: contain; transition: opacity 1s; opacity: 0;" alt="Diashow">
           </div>
-
-          <!-- Multi-Upload Formular -->
           <label class="muell-upload-box" for="gallery-file-input">
-            <div style="font-size: 2rem; margin-bottom: 6px;">📸✨</div>
-            <div style="font-weight: 600; color: var(--text);">Mehrere Bilder auswählen</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">(Werden in Google Drive gespeichert)</div>
+            <div>📸✨ <b>Bilder für Diashow hochladen</b> (Mehrfachauswahl möglich)</div>
             <input type="file" id="gallery-file-input" accept="image/*" multiple style="display: none;" onchange="handleGalleryUpload(event)">
           </label>
-          <div id="upload-status" style="font-size: 0.85rem; color: var(--blue-dark); font-weight: 600; margin-top: 8px;"></div>
+          <div id="upload-status" style="font-size: 0.85rem; color: var(--blue-dark); font-weight: 600;"></div>
         </div>
       </div>
 
-      <!-- TAB 7: DATE (FABIAN) -->
+      <!-- DATE -->
       <div id="tab-date" class="tab-content">
         <div class="section-card">
           <div class="section-title">Geheime Date-Einladung ❤️</div>
-          <form onsubmit="sendDateInvite(event)">
-            <div class="input-bar" style="margin-bottom: 10px;">
-              <div style="display: flex; gap: 8px; width: 100%;">
-                <input type="date" id="date-invite-date" required style="flex: 1;">
-                <input type="time" id="date-invite-time" required style="width: 110px;">
-              </div>
-            </div>
-            <div class="input-bar">
-              <input type="text" id="date-invite-text" placeholder="Notiz für Vanessa..." required>
-              <button type="submit" class="primary-btn">Abschicken 💌</button>
-            </div>
-          </form>
-          <div id="date-status-box" style="margin-top: 15px; font-size: 0.95rem; color: var(--text-muted);"></div>
-
-          <!-- Test Button -->
-          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed #cbd5e1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <span style="font-size: 0.85rem; color: var(--text-muted);">Vorschau testen:</span>
-            <button type="button" class="icon-btn" onclick="startGentlePartyMode()">🎉 Partymodus jetzt testen (30s)</button>
-          </div>
+          <form onsubmit="sendDateInvite(event)"><input type="date" id="date-invite-date" required><input type="time" id="date-invite-time" required><input type="text" id="date-invite-text" placeholder="Notiz..." required><button type="submit" class="primary-btn">Abschicken</button></form>
+          <div id="date-status-box" style="margin-top: 15px;"></div>
         </div>
       </div>
     </main>
-
-    <!-- Ganz unten: Geheim-Totenkopf für cursed.jpg -->
-    <div class="skull-footer">
-      <button type="button" class="skull-btn" onclick="triggerCursedMode()" title="💀">💀</button>
-    </div>
   </div>
 
-  <!-- MODAL: LOGIN -->
+  <!-- MODALS & OVERLAYS -->
   <div class="modal-overlay" id="login-modal" style="display: none;">
     <div class="modal-box">
-      <h2 style="font-family:'Dancing Script', cursive; font-size: 2.2rem; margin-bottom: 8px;">Willkommen 🤍</h2>
-      <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 16px;">Wann sind wir zusammengekommen?</p>
-      <input type="text" id="login-date" placeholder="TT.MM.JJJJ" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; text-align: center; font-size: 16px; margin-bottom: 12px; min-height: 48px;">
-      <p id="login-error" style="color: #ef4444; font-size: 0.85rem; display: none; margin-bottom: 10px;">Identität fragwürdig 🤨</p>
-      <button class="primary-btn" style="width: 100%;" onclick="checkAuth()">Prüfen ✨</button>
+      <h2>Willkommen 🤍</h2>
+      <p style="margin-bottom: 12px; color: var(--text-muted);">Wann sind wir zusammengekommen?</p>
+      <input type="text" id="login-date" placeholder="TT.MM.JJJJ" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ccc; text-align: center; margin-bottom: 10px;">
+      <button class="primary-btn" style="width: 100%;" onclick="checkAuth()">Prüfen</button>
     </div>
   </div>
 
-  <!-- MODAL: PROFILWAHL -->
   <div class="modal-overlay" id="profile-modal" style="display: none;">
     <div class="modal-box">
-      <h2 style="font-size: 1.3rem; margin-bottom: 16px;">Wer bist du gerade?</h2>
-      <div style="display: flex; gap: 12px; flex-direction: column;">
-        <button class="primary-btn" style="width: 100%; background: #22c55e;" onclick="selectUser('vanessa')">Ich bin Vanessa 🌸</button>
-        <button class="primary-btn" style="width: 100%; background: #0284c7;" onclick="selectUser('fabian')">Ich bin Fabian 💙</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: TERMIN BEARBEITEN -->
-  <div class="modal-overlay" id="edit-termin-modal" style="display: none;">
-    <div class="modal-box">
-      <h3 style="font-size: 1.3rem; margin-bottom: 16px; font-weight: 700;">Termin bearbeiten ✏️</h3>
-      <form onsubmit="saveEditedTermin(event)">
-        <input type="hidden" id="edit-termin-index">
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-          <input type="date" id="edit-termin-date" required style="flex: 1; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 16px; min-height: 44px;">
-          <input type="time" id="edit-termin-time" required style="width: 110px; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 16px; min-height: 44px;">
-        </div>
-        <div style="margin-bottom: 12px;">
-          <select id="edit-termin-category" style="width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 16px; min-height: 44px;">
-            <option value="geburtstag">Geburtstag 🎂 (Blau)</option>
-            <option value="date">Date ❤️ (Rot)</option>
-            <option value="event">Veranstaltung 🎟️ (Grün)</option>
-            <option value="arzt">Arzt / Pflichttermin 🩺 (Gelb)</option>
-            <option value="sonstiges">Sonstiges 📌 (Lila)</option>
-          </select>
-        </div>
-        <div style="margin-bottom: 20px;">
-          <input type="text" id="edit-termin-title" placeholder="Beschreibung..." required style="width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 16px; min-height: 44px;">
-        </div>
-        <div style="display: flex; gap: 10px;">
-          <button type="button" class="icon-btn" style="flex: 1; justify-content: center; padding: 12px;" onclick="closeEditTerminModal()">Abbrechen</button>
-          <button type="submit" class="primary-btn" style="flex: 1; padding: 12px;">Speichern</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: DATE POPUP FÜR VANESSA -->
-  <div class="modal-overlay" id="date-popup-modal" style="display: none;">
-    <div class="modal-box">
-      <h2 style="font-family:'Dancing Script', cursive; font-size: 2.2rem; color: #e11d48; margin-bottom: 8px;">Date-Einladung! 💌</h2>
-      <p id="date-popup-msg" style="font-size: 1.05rem; margin-bottom: 16px; white-space: pre-line;"></p>
-      <div class="date-btn-container">
-        <button class="primary-btn" style="background: #e11d48; padding: 12px 24px; position: relative; z-index: 2;" onclick="acceptDate()">Ja, von Herzen gerne! ❤️</button>
-        <button id="btn-no" onmouseover="dodgeNoButton(event)" onmouseenter="dodgeNoButton(event)" ontouchstart="dodgeNoButton(event)" onclick="dodgeNoButton(event)">Nein</button>
+      <h2>Wer bist du?</h2>
+      <div style="display: flex; gap: 10px; margin-top: 15px; flex-direction: column;">
+        <button class="primary-btn" style="background: #22c55e;" onclick="selectUser('vanessa')">Vanessa 🌸</button>
+        <button class="primary-btn" style="background: #0284c7;" onclick="selectUser('fabian')">Fabian 💙</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ==========================================
-    // KONFIGURATION & AUDIO
-    // ==========================================
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO5or9QVWSOyfIBpzq0G2Q4LmzR-ECKQLF3DihegW6u6jR_dNhDDQOI6Leu9L1h2CX/exec";
-
-    const playlist = ['song1.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3'];
-    let currentSongIndex = 0;
-    const bgAudio = new Audio();
-    const dateAudio = new Audio('date-song.mp3');
-    const secretAudio = new Audio('geheimmodus.mp3');
-    const customBokAudio = new Audio('bok.mp3');
-    let isAudioUnlocked = false;
-
-    let partyTimeout = null;
-    let partyParticleInterval = null;
-    let secretTimeout = null;
-    let secretInterval = null;
-    let bokTimeout = null;
-    let cursedTimeout = null;
-
-    let isFirstFetch = true;
-    let lastKnownInviteStatus = null;
-
-    let appData = {
-      einkauf: [],
-      todos: [],
-      termine: [],
-      dateEinladung: null,
-      ponyCounter: 0,
-      muellTitle: "Müllkalender bis Januar",
-      muellFile: null,
-      galleryImages: []
-    };
-
+    const bgAudio = new Audio('song1.mp3');
+    let appData = { einkauf: [], todos: [], termine: [], dateEinladung: null, ponyCounter: 0, muellFile: null, galleryImages: [] };
     let currentUser = localStorage.getItem('planer_user') || null;
 
-    // ==========================================
-    // INITIALISIERUNG
-    // ==========================================
     document.addEventListener('DOMContentLoaded', () => {
       loadLocalData();
       checkLoginStatus();
-      setupAudio();
       renderAll();
-      updateLoveTicker();
       setupSwipeGestures();
       setTimeout(startSlideshow, 800);
       if (GOOGLE_SCRIPT_URL) {
@@ -1160,77 +291,12 @@
       }
     });
 
-    function setupAudio() {
-      bgAudio.src = playlist[currentSongIndex];
-      bgAudio.addEventListener('ended', nextSong);
-
-      const unlock = () => {
-        if (!isAudioUnlocked) {
-          isAudioUnlocked = true;
-          bgAudio.play().then(() => updatePlayIcon(true)).catch(() => {});
-        }
-        window.removeEventListener('click', unlock);
-        window.removeEventListener('touchstart', unlock);
-      };
-      window.addEventListener('click', unlock);
-      window.addEventListener('touchstart', unlock);
-
-      document.getElementById('btn-toggle-play').onclick = togglePlay;
-      document.getElementById('btn-next-song').onclick = nextSong;
-    }
-
-    function togglePlay() {
-      if (bgAudio.paused) {
-        bgAudio.play();
-        updatePlayIcon(true);
-      } else {
-        bgAudio.pause();
-        updatePlayIcon(false);
-      }
-    }
-
-    function nextSong() {
-      currentSongIndex = (currentSongIndex + 1) % playlist.length;
-      bgAudio.src = playlist[currentSongIndex];
-      bgAudio.play();
-      updatePlayIcon(true);
-    }
-
-    function updatePlayIcon(isPlaying) {
-      document.getElementById('btn-toggle-play').textContent = isPlaying ? '⏸️' : '▶️';
-    }
-
-    // ==========================================
-    // MÜLLTERMINE: TITEL, UPLOAD & ZOOM (CLOUD GESYNCT)
-    // ==========================================
-    function enableMuellTitleEdit() {
-      document.getElementById('muell-title-edit-box').style.display = 'block';
-      document.getElementById('muell-title-input').value = appData.muellTitle || "Müllkalender bis Januar";
-      document.getElementById('muell-title-input').focus();
-    }
-
-    function saveMuellTitle() {
-      const val = document.getElementById('muell-title-input').value.trim();
-      if (val) {
-        appData.muellTitle = val;
-      } else {
-        appData.muellTitle = "Müllkalender bis Januar";
-      }
-      document.getElementById('muell-title-edit-box').style.display = 'none';
-      renderMuellView();
-      syncData();
-    }
-
     function handleMuellUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       const reader = new FileReader();
       reader.onload = function(e) {
-        appData.muellFile = {
-          data: e.target.result,
-          name: file.name
-        };
+        appData.muellFile = { data: e.target.result, name: file.name };
         renderMuellView();
         syncData();
       };
@@ -1246,47 +312,26 @@
     function renderMuellView() {
       const displayArea = document.getElementById('muell-display-area');
       const emptyNotice = document.getElementById('muell-empty-notice');
-      const titleEl = document.getElementById('muell-file-title');
       const imgPreview = document.getElementById('muell-img-preview');
-      const pdfPreview = document.getElementById('muell-pdf-preview');
-
-      titleEl.textContent = appData.muellTitle || "Müllkalender bis Januar";
-
+      
       if (!appData.muellFile) {
         displayArea.style.display = 'none';
         emptyNotice.style.display = 'block';
         return;
       }
-
-      try {
-        emptyNotice.style.display = 'none';
-        displayArea.style.display = 'block';
-
-        if (appData.muellFile.data.startsWith('data:image/') || appData.muellFile.data.match(/\.(jpeg|jpg|png|webp)$/i)) {
-          imgPreview.src = appData.muellFile.data;
-          imgPreview.style.display = 'block';
-          pdfPreview.style.display = 'none';
-        } else {
-          pdfPreview.src = appData.muellFile.data;
-          pdfPreview.style.display = 'block';
-          imgPreview.style.display = 'none';
-        }
-      } catch(e) {
-        displayArea.style.display = 'none';
-        emptyNotice.style.display = 'block';
-      }
+      emptyNotice.style.display = 'none';
+      displayArea.style.display = 'block';
+      imgPreview.src = appData.muellFile.data;
+      imgPreview.style.display = 'block';
     }
 
-    let currentZoomScale = 1;
     function openMuellZoom() {
-      const imgPreview = document.getElementById('muell-img-preview');
-      const zoomModal = document.getElementById('muell-zoom-modal');
+      const img = document.getElementById('muell-img-preview');
+      const modal = document.getElementById('muell-zoom-modal');
       const zoomImg = document.getElementById('muell-zoom-img');
-      if (imgPreview && imgPreview.src) {
-        zoomImg.src = imgPreview.src;
-        currentZoomScale = 1;
-        zoomImg.style.transform = `scale(${currentZoomScale})`;
-        zoomModal.classList.add('active');
+      if (img && img.src) {
+        zoomImg.src = img.src;
+        modal.classList.add('active');
       }
     }
 
@@ -1294,238 +339,84 @@
       document.getElementById('muell-zoom-modal').classList.remove('active');
     }
 
-    function zoomInImg() {
-      currentZoomScale = Math.min(currentZoomScale + 0.5, 4);
-      document.getElementById('muell-zoom-img').style.transform = `scale(${currentZoomScale})`;
-    }
-
-    function zoomOutImg() {
-      currentZoomScale = Math.max(currentZoomScale - 0.5, 1);
-      document.getElementById('muell-zoom-img').style.transform = `scale(${currentZoomScale})`;
-    }
-
-    function resetZoomImg() {
-      currentZoomScale = 1;
-      document.getElementById('muell-zoom-img').style.transform = `scale(${currentZoomScale})`;
-    }
-
-    // ==========================================
-    // GALERIE & DIASHOW LOGIK
-    // ==========================================
     function handleGalleryUpload(event) {
       const files = event.target.files;
       if (!files || files.length === 0) return;
-
       const statusEl = document.getElementById('upload-status');
       statusEl.textContent = `${files.length} Bild(er) werden hochgeladen... ⏳`;
 
-      let processedCount = 0;
-      const base64Images = [];
-
+      let processed = 0;
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const reader = new FileReader();
-        
         reader.onload = function(e) {
-          base64Images.push({
-            base64: e.target.result,
-            type: file.type,
-            name: file.name
-          });
-          
-          processedCount++;
-          if (processedCount === files.length) {
-            sendImagesToCloud(base64Images, statusEl);
+          if (!appData.galleryImages) appData.galleryImages = [];
+          appData.galleryImages.push(e.target.result);
+          processed++;
+          if (processed === files.length) {
+            syncData();
+            startSlideshow();
+            statusEl.textContent = "Erfolgreich hinzugefügt! 🎉";
+            setTimeout(() => { statusEl.textContent = ""; }, 3000);
           }
         };
         reader.readAsDataURL(file);
       }
     }
 
-    function sendImagesToCloud(imagesArray, statusEl) {
-      if (!GOOGLE_SCRIPT_URL) {
-        statusEl.textContent = "Fehler: Keine Cloud-URL!";
-        return;
-      }
-
-      imagesArray.forEach(img => {
-        if (!appData.galleryImages) appData.galleryImages = [];
-        appData.galleryImages.push(img.base64);
-      });
-      syncData();
-      startSlideshow();
-
-      fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: "uploadImages", images: imagesArray })
-      }).then(() => {
-        statusEl.textContent = "Erfolgreich in Google Drive & App gespeichert! 🎉";
-        setTimeout(() => { statusEl.textContent = ""; }, 4000);
-      }).catch(() => {
-        statusEl.textContent = "In App gespeichert (Drive-Sync Hinweis).";
-      });
-    }
-
     let slideshowInterval = null;
     function startSlideshow() {
       const imgEl = document.getElementById('slideshow-img');
       if (!imgEl) return;
+      const images = (appData.galleryImages && appData.galleryImages.length > 0) ? appData.galleryImages : ['image1.png', 'hintergrund.jpeg'];
 
-      const images = (appData.galleryImages && appData.galleryImages.length > 0) 
-        ? appData.galleryImages 
-        : ['image1.png', 'hintergrund.jpeg'];
-
-      function showRandomImage() {
+      function showNext() {
         imgEl.style.opacity = 0;
         setTimeout(() => {
-          const randomIndex = Math.floor(Math.random() * images.length);
-          imgEl.src = images[randomIndex];
+          const rand = Math.floor(Math.random() * images.length);
+          imgEl.src = images[rand];
           imgEl.style.opacity = 1;
         }, 500);
       }
-
-      showRandomImage();
+      showNext();
       if (slideshowInterval) clearInterval(slideshowInterval);
-      slideshowInterval = setInterval(showRandomImage, 4500);
+      slideshowInterval = setInterval(showNext, 4500);
     }
 
-    // ==========================================
-    // TOUCH WISCHGESTEN (GLOBAL AUF GANZEN BILDSCHIRM)
-    // ==========================================
     function setupSwipeGestures() {
-      let touchStartX = 0;
-      let touchStartY = 0;
-
-      window.addEventListener('touchstart', e => {
-        if (document.querySelector('.modal-overlay[style*="display: flex"]') || 
-            document.getElementById('bok-overlay').classList.contains('active') ||
-            document.getElementById('chillgriff-overlay').classList.contains('active') ||
-            document.getElementById('muell-zoom-modal').classList.contains('active')) {
-          return;
-        }
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-      }, { passive: true });
-
+      let startX = 0;
+      window.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; }, {passive: true});
       window.addEventListener('touchend', e => {
-        const touchEndX = e.changedTouches[0].screenX;
-        const touchEndY = e.changedTouches[0].screenY;
-        
-        const diffX = touchEndX - touchStartX;
-        const diffY = touchEndY - touchStartY;
-
-        if (Math.abs(diffX) > 65 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
-          const tabs = ['home', 'einkauf', 'todos', 'termine', 'muell', 'galerie'];
-          if (currentUser === 'fabian') {
-            tabs.push('date');
-          }
-
-          const currentActiveEl = document.querySelector('.tab-content.active');
-          if (!currentActiveEl) return;
-          const currentTabId = currentActiveEl.id.replace('tab-', '');
-          const currentIndex = tabs.indexOf(currentTabId);
-
-          if (currentIndex !== -1) {
-            if (diffX < 0 && currentIndex < tabs.length - 1) {
-              showTab(tabs[currentIndex + 1]);
-            } else if (diffX > 0 && currentIndex > 0) {
-              showTab(tabs[currentIndex - 1]);
-            }
-          }
+        let diff = e.changedTouches[0].screenX - startX;
+        if (Math.abs(diff) > 70) {
+          const tabs = ['home', 'einkauf', 'todos', 'termine', 'muell', 'galerie', 'date'];
+          let active = document.querySelector('.tab-content.active').id.replace('tab-', '');
+          let idx = tabs.indexOf(active);
+          if (diff < 0 && idx < tabs.length - 1) showTab(tabs[idx+1]);
+          if (diff > 0 && idx > 0) showTab(tabs[idx-1]);
         }
-      }, { passive: true });
+      }, {passive: true});
     }
 
-    // ==========================================
-    // TOAST BENACHRICHTIGUNG
-    // ==========================================
-    function showToast(message, duration = 4500) {
-      const toast = document.getElementById('toast-notification');
-      if (!toast) return;
-      toast.textContent = message;
-      toast.classList.add('show');
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, duration);
+    function showTab(name) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      document.querySelectorAll('.nav-tab').forEach(el => {
+        el.classList.toggle('active', el.getAttribute('data-tab') === name);
+      });
     }
 
-    // ==========================================
-    // BEZIEHUNGSTICKER (Seit 25.09.2025)
-    // ==========================================
-    function updateLoveTicker() {
-      const startDate = new Date(2025, 8, 25);
-      const today = new Date();
-      
-      const diffTime = today - startDate;
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      
-      const daysEl = document.getElementById('love-ticker-days');
-      if (daysEl) {
-        daysEl.textContent = diffDays >= 0 ? diffDays : 0;
-      }
-    }
-
-    // ==========================================
-    // EASTER EGG: PONY ZÄHLER
-    // ==========================================
-    function triggerPony() {
-      appData.ponyCounter = (parseInt(appData.ponyCounter, 10) || 0) + 1;
-      updatePonyUI(true);
-      syncData();
-    }
-
-    function updatePonyUI(animate = false) {
-      const display = document.getElementById('pony-display');
-      if (!display) return;
-      display.textContent = `Pony ${appData.ponyCounter || 0}`;
-      if (animate) {
-        display.classList.remove('animate');
-        void display.offsetWidth;
-        display.classList.add('animate');
-      }
-    }
-
-    // ==========================================
-    // EASTER EGG: CURSED HINTERGRUND (10 SEKUNDEN)
-    // ==========================================
-    function triggerCursedMode() {
-      clearTimeout(cursedTimeout);
-      const bg = document.getElementById('bg-photo');
-      if (!bg) return;
-
-      bg.style.backgroundImage = "url('cursed.jpg')";
-      bg.classList.add('cursed-active');
-
-      cursedTimeout = setTimeout(() => {
-        bg.style.backgroundImage = "url('hintergrund.jpeg')";
-        bg.classList.remove('cursed-active');
-      }, 10000);
-    }
-
-    // ==========================================
-    // AUTH & PROFIL
-    // ==========================================
     function checkLoginStatus() {
-      const isAuthed = localStorage.getItem('planer_authed');
-      if (!isAuthed) {
-        document.getElementById('login-modal').style.display = 'flex';
-      } else if (!currentUser) {
-        document.getElementById('profile-modal').style.display = 'flex';
-      } else {
-        updateUserUI();
-      }
+      if (!localStorage.getItem('planer_authed')) document.getElementById('login-modal').style.display = 'flex';
+      else if (!currentUser) document.getElementById('profile-modal').style.display = 'flex';
+      else updateUserUI();
     }
 
     function checkAuth() {
-      const val = document.getElementById('login-date').value.trim();
-      if (val === '25.09.2025') {
+      if (document.getElementById('login-date').value.trim() === '25.09.2025') {
         localStorage.setItem('planer_authed', 'true');
         document.getElementById('login-modal').style.display = 'none';
         document.getElementById('profile-modal').style.display = 'flex';
-      } else {
-        document.getElementById('login-error').style.display = 'block';
       }
     }
 
@@ -1536,534 +427,40 @@
       updateUserUI();
     }
 
-    document.getElementById('btn-switch-user').onclick = () => {
-      document.getElementById('profile-modal').style.display = 'flex';
-    };
-
     function updateUserUI() {
       document.getElementById('current-user-name').textContent = currentUser === 'vanessa' ? 'Vanessa 🌸' : 'Fabian 💙';
-      document.getElementById('user-greeting').textContent = currentUser === 'vanessa' ? 'Schön, dass du da bist, Vanessa 🌸' : 'Hey Fabian, packen wir es an! 💙';
+      document.getElementById('user-greeting').textContent = currentUser === 'vanessa' ? 'Schön, dass du da bist, Vanessa 🌸' : 'Hey Fabian! 💙';
       document.getElementById('tab-date-btn').style.display = (currentUser === 'fabian') ? 'inline-block' : 'none';
-      checkPendingDateForVanessa();
     }
 
-    // ==========================================
-    // BOK BENÖTIGT
-    // ==========================================
-    function triggerBok() {
-      clearTimeout(bokTimeout);
-      playBokSound();
+    function triggerBok() { alert("Bok!"); }
+    function triggerCursedMode() {}
+    function renderEinkauf() {}
+    function renderTodos() {}
+    function renderTermine() {}
+    function renderDateStatus() {}
 
-      const overlay = document.getElementById('bok-overlay');
-      const img = document.getElementById('bok-image');
-
-      const targetImage = (currentUser === 'fabian') ? 'vanessa.png' : 'fabian.png';
-
-      img.onerror = function() {
-        if (this.src.endsWith('vanessa.png')) {
-          this.src = 'Vanessa.png';
-        } else if (this.src.endsWith('Vanessa.png')) {
-          this.src = 'vanessa.jpg';
-        } else if (this.src.endsWith('fabian.png')) {
-          this.src = 'fabian.jpg';
-        }
-      };
-
-      img.style.animation = 'none';
-      img.offsetHeight;
-      img.style.animation = null;
-
-      img.src = targetImage;
-      overlay.classList.add('active');
-
-      bokTimeout = setTimeout(() => {
-        closeBokOverlay();
-      }, 3000);
-    }
-
-    function playBokSound() {
-      customBokAudio.currentTime = 0;
-      customBokAudio.play().catch(() => {
-        try {
-          const ctx = new (window.AudioContext || window.webkitAudioContext)();
-          const frequencies = [523.25, 659.25, 783.99, 1046.50, 1318.51];
-          frequencies.forEach((freq, idx) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.07);
-            gain.gain.setValueAtTime(0.01, ctx.currentTime + idx * 0.07);
-            gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + idx * 0.07 + 0.03);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.7);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(ctx.currentTime + idx * 0.07);
-            osc.stop(ctx.currentTime + idx * 0.07 + 0.75);
-          });
-        } catch(e) {}
-      });
-    }
-
-    function closeBokOverlay() {
-      clearTimeout(bokTimeout);
-      document.getElementById('bok-overlay').classList.remove('active');
-    }
-
-    // ==========================================
-    // EASTER EGG: CHILLGRIFF
-    // ==========================================
-    let lastTap = 0;
-    document.getElementById('capy-trigger').addEventListener('click', () => {
-      const now = Date.now();
-      if (now - lastTap < 400) {
-        triggerChillgriff();
-      }
-      lastTap = now;
-    });
-
-    function triggerChillgriff() {
-      clearTimeout(secretTimeout);
-      clearInterval(secretInterval);
-
-      const overlay = document.getElementById('chillgriff-overlay');
-      overlay.classList.add('active');
-
-      bgAudio.pause();
-      secretAudio.currentTime = 0;
-      secretAudio.play().catch(e => console.log('Secret Audio Blocked:', e));
-
-      function spawnHead() {
-        const img = document.createElement('img');
-        img.className = 'flying-capy';
-        img.src = 'image1.png';
-        img.onerror = function() {
-          this.onerror = null;
-          this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🦫</text></svg>';
-        };
-        const size = Math.floor(Math.random() * 55) + 65;
-        img.style.width = size + 'px';
-        img.style.height = size + 'px';
-        img.style.setProperty('--startX', (Math.random() * 100) + 'vw');
-        img.style.setProperty('--startY', (Math.random() * 100) + 'vh');
-        img.style.setProperty('--endX', ((Math.random() - 0.5) * 180) + 'vw');
-        img.style.setProperty('--endY', ((Math.random() - 0.5) * 180) + 'vh');
-        img.style.setProperty('--rot', (Math.random() * 1440 - 720) + 'deg');
-        img.style.animationDuration = (Math.random() * 2 + 3.8) + 's';
-        document.body.appendChild(img);
-
-        setTimeout(() => img.remove(), 5500);
-      }
-
-      for (let i = 0; i < 25; i++) {
-        spawnHead();
-      }
-
-      secretInterval = setInterval(() => {
-        for (let i = 0; i < 3; i++) {
-          spawnHead();
-        }
-      }, 280);
-
-      secretTimeout = setTimeout(() => {
-        clearInterval(secretInterval);
-        overlay.classList.remove('active');
-        document.querySelectorAll('.flying-capy').forEach(f => f.remove());
-
-        secretAudio.pause();
-        secretAudio.currentTime = 0;
-
-        bgAudio.play().catch(() => {});
-        updatePlayIcon(true);
-      }, 15000);
-    }
-
-    // ==========================================
-    // TABS
-    // ==========================================
-    function showTab(name) {
-      const currentActive = document.querySelector('.tab-content.active');
-      const targetTab = document.getElementById('tab-' + name);
-      if (!targetTab || currentActive === targetTab) return;
-
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      targetTab.classList.add('active');
-
-      document.querySelectorAll('.nav-tab').forEach(el => {
-        if (el.getAttribute('data-tab') === name) {
-          el.classList.add('active');
-        } else {
-          el.classList.remove('active');
-        }
-      });
-    }
-
-    // ==========================================
-    // EINKAUFSLISTE
-    // ==========================================
-    function renderEinkauf() {
-      const openCont = document.getElementById('einkauf-list');
-      const doneCont = document.getElementById('einkauf-done-list');
-      openCont.innerHTML = '';
-      doneCont.innerHTML = '';
-
-      let openCount = 0;
-      appData.einkauf.forEach((item, idx) => {
-        const el = document.createElement('div');
-        el.className = 'list-item' + (item.done ? ' done' : '');
-        el.innerHTML = `
-          <span class="item-text">${item.text}</span>
-          <button class="icon-action-btn del-btn" onclick="deleteEinkauf(event, ${idx})">✕</button>
-        `;
-        el.onclick = (e) => {
-          if (e.target.closest('.icon-action-btn')) return;
-          toggleEinkauf(el, idx);
-        };
-
-        if (item.done) doneCont.appendChild(el);
-        else { openCont.appendChild(el); openCount++; }
-      });
-      document.getElementById('dash-einkauf-count').textContent = `${openCount} offene Einträge`;
-    }
-
-    function addEinkauf(e) {
-      e.preventDefault();
-      const input = document.getElementById('einkauf-input');
-      const val = input.value.trim();
-      if (!val) return;
-      appData.einkauf.unshift({ text: val, done: false });
-      input.value = '';
-      renderEinkauf();
-      syncData();
-    }
-
-    function toggleEinkauf(el, idx) {
-      el.classList.add('striking');
-      setTimeout(() => {
-        appData.einkauf[idx].done = !appData.einkauf[idx].done;
-        renderEinkauf();
-        syncData();
-      }, 350);
-    }
-
-    function deleteEinkauf(e, idx) {
-      e.stopPropagation();
-      appData.einkauf.splice(idx, 1);
-      renderEinkauf();
-      syncData();
-    }
-
-    // ==========================================
-    // TODOS
-    // ==========================================
-    function renderTodos() {
-      const vCont = document.getElementById('todos-vanessa');
-      const fCont = document.getElementById('todos-fabian');
-      const bCont = document.getElementById('todos-both');
-      vCont.innerHTML = ''; fCont.innerHTML = ''; bCont.innerHTML = '';
-
-      let openCount = 0;
-      const indexedTodos = appData.todos.map((t, index) => ({ ...t, originalIndex: index }));
-      
-      indexedTodos.sort((a, b) => {
-        if (a.done === b.done) return 0;
-        return a.done ? 1 : -1;
-      });
-
-      indexedTodos.forEach((t) => {
-        if (!t.done) openCount++;
-        const el = document.createElement('div');
-        el.className = `todo-card todo-${t.assignee}` + (t.done ? ' done' : '');
-        el.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="item-text">${t.text}</span>
-            <button class="icon-action-btn del-btn" onclick="deleteTodo(event, ${t.originalIndex})">✕</button>
-          </div>
-        `;
-        el.onclick = (e) => {
-          if (e.target.closest('.icon-action-btn')) return;
-          toggleTodo(el, t.originalIndex);
-        };
-
-        if (t.assignee === 'vanessa') vCont.appendChild(el);
-        else if (t.assignee === 'fabian') fCont.appendChild(el);
-        else bCont.appendChild(el);
-      });
-      document.getElementById('dash-todos-count').textContent = `${openCount} Aufgaben warten`;
-    }
-
-    function addTodo(e) {
-      e.preventDefault();
-      const input = document.getElementById('todo-input');
-      const assignee = document.getElementById('todo-assignee').value;
-      const val = input.value.trim();
-      if (!val) return;
-      appData.todos.unshift({ text: val, assignee: assignee, done: false });
-      input.value = '';
-      renderTodos();
-      syncData();
-    }
-
-    function toggleTodo(el, idx) {
-      el.classList.add('striking');
-      setTimeout(() => {
-        appData.todos[idx].done = !appData.todos[idx].done;
-        renderTodos();
-        syncData();
-      }, 350);
-    }
-
-    function deleteTodo(e, idx) {
-      e.stopPropagation();
-      appData.todos.splice(idx, 1);
-      renderTodos();
-      syncData();
-    }
-
-    // ==========================================
-    // TERMINE: KATEGORIEN & BEARBEITEN
-    // ==========================================
-    const categoryConfig = {
-      geburtstag: { name: 'Geburtstag 🎂', class: 'termin-geburtstag', badgeClass: 'badge-geburtstag' },
-      date: { name: 'Date ❤️', class: 'termin-date', badgeClass: 'badge-date' },
-      event: { name: 'Veranstaltung 🎟️', class: 'termin-event', badgeClass: 'badge-event' },
-      arzt: { name: 'Arzt / Termin 🩺', class: 'termin-arzt', badgeClass: 'badge-arzt' },
-      sonstiges: { name: 'Sonstiges 📌', class: 'termin-sonstiges', badgeClass: 'badge-sonstiges' }
-    };
-
-    function renderTermine() {
-      const cont = document.getElementById('termine-list');
-      cont.innerHTML = '';
-
-      appData.termine.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
-
-      appData.termine.forEach((t, idx) => {
-        const catKey = t.category || 'sonstiges';
-        const catInfo = categoryConfig[catKey] || categoryConfig.sonstiges;
-
-        const el = document.createElement('div');
-        el.className = `list-item termin-item ${catInfo.class}`;
-        el.innerHTML = `
-          <div style="display: flex; flex-direction: column; gap: 2px;">
-            <span class="cat-badge ${catInfo.badgeClass}">${catInfo.name}</span>
-            <div>
-              <strong>${t.date.split('-').reverse().join('.')} um ${t.time} Uhr</strong>: ${t.title}
-            </div>
-          </div>
-          <div class="action-group">
-            <button class="icon-action-btn" title="Termin bearbeiten" onclick="openEditTerminModal(event, ${idx})">✏️</button>
-            <button class="icon-action-btn del-btn" title="Löschen" onclick="deleteTermin(event, ${idx})">✕</button>
-          </div>
-        `;
-        cont.appendChild(el);
-      });
-      document.getElementById('dash-termine-count').textContent = `${appData.termine.length} anstehende Dates`;
-    }
-
-    function addTermin(e) {
-      e.preventDefault();
-      const date = document.getElementById('termin-date').value;
-      const time = document.getElementById('termin-time').value;
-      const category = document.getElementById('termin-category').value;
-      const title = document.getElementById('termin-title').value.trim();
-      if (!title) return;
-
-      appData.termine.push({ date, time, category, title });
-      document.getElementById('termin-title').value = '';
-      renderTermine();
-      syncData();
-    }
-
-    function deleteTermin(e, idx) {
-      e.stopPropagation();
-      appData.termine.splice(idx, 1);
-      renderTermine();
-      syncData();
-    }
-
-    function openEditTerminModal(e, idx) {
-      e.stopPropagation();
-      const t = appData.termine[idx];
-      if (!t) return;
-
-      document.getElementById('edit-termin-index').value = idx;
-      document.getElementById('edit-termin-date').value = t.date;
-      document.getElementById('edit-termin-time').value = t.time;
-      document.getElementById('edit-termin-category').value = t.category || 'sonstiges';
-      document.getElementById('edit-termin-title').value = t.title;
-
-      document.getElementById('edit-termin-modal').style.display = 'flex';
-    }
-
-    function closeEditTerminModal() {
-      document.getElementById('edit-termin-modal').style.display = 'none';
-    }
-
-    function saveEditedTermin(e) {
-      e.preventDefault();
-      const idx = parseInt(document.getElementById('edit-termin-index').value, 10);
-      if (isNaN(idx) || !appData.termine[idx]) return;
-
-      appData.termine[idx].date = document.getElementById('edit-termin-date').value;
-      appData.termine[idx].time = document.getElementById('edit-termin-time').value;
-      appData.termine[idx].category = document.getElementById('edit-termin-category').value;
-      appData.termine[idx].title = document.getElementById('edit-termin-title').value.trim();
-
-      closeEditTerminModal();
-      renderTermine();
-      syncData();
-    }
-
-    // ==========================================
-    // DATE EINLADUNG & FLIEHENDER BUTTON
-    // ==========================================
-    function sendDateInvite(e) {
-      e.preventDefault();
-      const date = document.getElementById('date-invite-date').value;
-      const time = document.getElementById('date-invite-time').value;
-      const text = document.getElementById('date-invite-text').value.trim();
-      appData.dateEinladung = { date, time, text, status: 'open' };
-      lastKnownInviteStatus = 'open';
-      renderDateStatus();
-      syncData();
-      alert('Date-Einladung wurde losgeschickt! ❤️');
-    }
-
-    function renderDateStatus() {
-      const box = document.getElementById('date-status-box');
-      if (!appData.dateEinladung) {
-        box.textContent = 'Noch keine Einladung verschickt.';
-      } else if (appData.dateEinladung.status === 'open') {
-        box.textContent = `Offene Einladung für den ${appData.dateEinladung.date} um ${appData.dateEinladung.time} Uhr verschickt... Warte auf Vanessa! ⏳`;
-      } else {
-        box.textContent = `Vanessa hat die Einladung für den ${appData.dateEinladung.date} angenommen! 🎉❤️`;
-      }
-    }
-
-    function checkPendingDateForVanessa() {
-      if (currentUser === 'vanessa' && appData.dateEinladung && appData.dateEinladung.status === 'open') {
-        const inv = appData.dateEinladung;
-        document.getElementById('date-popup-msg').textContent = 
-          `Fabian lädt dich ein zum Date am ${inv.date.split('-').reverse().join('.')} um ${inv.time} Uhr!\n"${inv.text}"`;
-        const btnNo = document.getElementById('btn-no');
-        if (btnNo) btnNo.style.transform = 'translate(0, 0)';
-        document.getElementById('date-popup-modal').style.display = 'flex';
-      }
-    }
-
-    function dodgeNoButton(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      const btn = document.getElementById('btn-no');
-      const randX = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 80) + 70);
-      const randY = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 60) + 40);
-      btn.style.transform = `translate(${randX}px, ${randY}px)`;
-    }
-
-    function acceptDate() {
-      document.getElementById('date-popup-modal').style.display = 'none';
-      if (!appData.dateEinladung) return;
-      const inv = appData.dateEinladung;
-      inv.status = 'accepted';
-      lastKnownInviteStatus = 'accepted';
-      appData.termine.push({ date: inv.date, time: inv.time, title: `Date: ${inv.text} ❤️`, category: 'date' });
-
-      syncData();
-      renderAll();
-
-      if (currentUser === 'vanessa') {
-        startGentlePartyMode();
-      }
-    }
-
-    // ==========================================
-    // 30-SEKUNDEN PARTYMODUS
-    // ==========================================
-    function startGentlePartyMode() {
-      clearTimeout(partyTimeout);
-      clearInterval(partyParticleInterval);
-
-      bgAudio.pause();
-      dateAudio.currentTime = 0;
-      dateAudio.play().catch(err => console.log('Date Audio Playblock:', err));
-
-      document.getElementById('party-stage').style.display = 'block';
-      document.body.classList.add('party-celebration');
-
-      const partyEmojis = ['🍾', '🥂', '🎉', '💖', '✨', '💃', '🕺', '🍰', '🌸', '🎈', '💍', '🍕'];
-
-      partyParticleInterval = setInterval(() => {
-        for (let i = 0; i < 2; i++) {
-          const p = document.createElement('div');
-          p.className = 'party-particle';
-          p.textContent = partyEmojis[Math.floor(Math.random() * partyEmojis.length)];
-          p.style.setProperty('--startX', (Math.random() * 95) + 'vw');
-          p.style.setProperty('--endX', ((Math.random() - 0.5) * 40) + 'vw');
-          p.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg');
-          document.body.appendChild(p);
-
-          setTimeout(() => p.remove(), 4000);
-        }
-      }, 280);
-
-      partyTimeout = setTimeout(() => {
-        stopGentlePartyMode();
-      }, 30000);
-    }
-
-    function stopGentlePartyMode() {
-      clearTimeout(partyTimeout);
-      clearInterval(partyParticleInterval);
-
-      document.getElementById('party-stage').style.display = 'none';
-      document.body.classList.remove('party-celebration');
-      document.querySelectorAll('.party-particle').forEach(p => p.remove());
-
-      dateAudio.pause();
-      dateAudio.currentTime = 0;
-
-      bgAudio.play().catch(() => {});
-      updatePlayIcon(true);
-    }
-
-    // ==========================================
-    // SYNC & STORAGE
-    // ==========================================
     function renderAll() {
       renderEinkauf();
       renderTodos();
       renderTermine();
       renderDateStatus();
       renderMuellView();
-      updatePonyUI(false);
     }
 
     function loadLocalData() {
       const saved = localStorage.getItem('planer_data');
-      if (saved) {
-        try { 
-          appData = JSON.parse(saved); 
-          if (appData.ponyCounter === undefined) {
-            appData.ponyCounter = parseInt(localStorage.getItem('planer_pony_counter'), 10) || 0;
-          }
-          if (appData.muellTitle === undefined) {
-            appData.muellTitle = "Müllkalender bis Januar";
-          }
-          lastKnownInviteStatus = appData.dateEinladung ? appData.dateEinladung.status : null;
-        } catch(e){}
-      }
+      if (saved) { try { appData = JSON.parse(saved); } catch(e){} }
     }
 
     function syncData() {
       localStorage.setItem('planer_data', JSON.stringify(appData));
       if (GOOGLE_SCRIPT_URL) {
         fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
+          method: 'POST', mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(appData)
-        }).catch(err => console.log('Sync error:', err));
+        }).catch(() => {});
       }
     }
 
@@ -2073,33 +470,9 @@
         .then(res => res.json())
         .then(data => {
           if (data && data.einkauf) {
-            const incomingInvite = data.dateEinladung;
-            const incomingStatus = incomingInvite ? incomingInvite.status : null;
-
-            if (!isFirstFetch && lastKnownInviteStatus === 'open' && incomingStatus === 'accepted') {
-              if (currentUser === 'fabian') {
-                showToast('💌 Vanessa hat die Date-Einladung angenommen! ❤️');
-              }
-            }
-
-            lastKnownInviteStatus = incomingStatus;
-            isFirstFetch = false;
-
-            const localPony = appData.ponyCounter;
             appData = data;
-            if (appData.ponyCounter === undefined) appData.ponyCounter = localPony;
-            if (appData.muellTitle === undefined) appData.muellTitle = "Müllkalender bis Januar";
-
             renderAll();
-            checkPendingDateForVanessa();
             startSlideshow();
-
-            if (appData.dateEinladung && appData.dateEinladung.status === 'accepted') {
-              const partyKey = appData.dateEinladung.date + '_' + appData.dateEinladung.time;
-              if (localStorage.getItem('party_celebrated_key') !== partyKey) {
-                localStorage.setItem('party_celebrated_key', partyKey);
-              }
-            }
           }
         }).catch(() => {});
     }
