@@ -69,11 +69,11 @@
       100% { transform: translate(40px, 50px) scale(1.1); }
     }
 
-    /* Header */
+    /* Header & Avatar */
     header {
       width: 100%;
       max-width: 720px;
-      padding: 16px 20px;
+      padding: 14px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -89,12 +89,24 @@
     .capy-btn {
       background: none;
       border: none;
-      font-size: 1.8rem;
+      padding: 0;
       cursor: pointer;
       user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: transform 0.2s;
     }
-    .capy-btn:active { transform: scale(1.2) rotate(-10deg); }
+    .capy-btn:active { transform: scale(1.15) rotate(-8deg); }
+    
+    .fabian-header-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2.5px solid var(--blue-border);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+    }
 
     .header-controls {
       display: flex;
@@ -334,11 +346,9 @@
     .todo-fabian { background: var(--fabian-card); border-color: var(--fabian-border); }
     .todo-both { background: var(--both-card); border-color: var(--both-border); }
 
-    /* =========================================================
-       TERMINE: FARBCODIERUNG NACH KATEGORIEN
-       ========================================================= */
+    /* Termine: Kategorien */
     .termin-item {
-      border-left: 5px solid #a855f7; /* Standard Lila */
+      border-left: 5px solid #a855f7;
       background: white;
     }
     .termin-geburtstag { border-left-color: #3b82f6 !important; background: #f0f7ff !important; }
@@ -410,23 +420,25 @@
       touch-action: none;
     }
 
-    /* Fliegende Capybaras */
+    /* Fliegende Fabian-Bilder (Chillgriff-Modus) */
     .flying-capy {
       position: fixed;
       pointer-events: none;
       z-index: 999;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid white;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
       animation: flyAcross 8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
     }
     @keyframes flyAcross {
-      0% { transform: translate(var(--startX), var(--startY)) rotate(0deg) scale(0.7); opacity: 0; }
+      0% { transform: translate(var(--startX), var(--startY)) rotate(0deg) scale(0.6); opacity: 0; }
       10% { opacity: 1; }
       90% { opacity: 1; }
-      100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)) scale(1.1); opacity: 0; }
+      100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)) scale(1.15); opacity: 0; }
     }
 
-    /* =========================================================
-       PARTYMODUS (30 SEKUNDEN - SANFT)
-       ========================================================= */
+    /* Partymodus (30 Sekunden - Sanft) */
     #party-stage {
       display: none;
       position: fixed;
@@ -547,9 +559,11 @@
   <div class="bg-blob blob-2"></div>
 
   <div id="app-container">
-    <!-- Header -->
+    <!-- Header mit Fabian-Avatar (image1.png) -->
     <header>
-      <button class="capy-btn" id="capy-trigger" title="Chillgriff!">🦫</button>
+      <button class="capy-btn" id="capy-trigger" title="Doppelklick für Chillgriff!">
+        <img src="image1.png" alt="Fabian" class="fabian-header-avatar" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><text y=\'.9em\' font-size=\'90\'>🦫</text></svg>'">
+      </button>
       <div class="header-controls">
         <button class="icon-btn" id="btn-toggle-play" title="Musik Pausieren / Abspielen">⏸️</button>
         <button class="icon-btn" id="btn-next-song" title="Nächstes Lied">⏭️</button>
@@ -640,7 +654,7 @@
         </div>
       </div>
 
-      <!-- TAB 4: TERMINE (Mit Kategorien & Bearbeiten) -->
+      <!-- TAB 4: TERMINE -->
       <div id="tab-termine" class="tab-content">
         <div class="section-card">
           <div class="section-title">Neuer Termin 📅</div>
@@ -873,7 +887,7 @@
     }
 
     // ==========================================
-    // EASTER EGG: CHILLGRIFF!
+    // EASTER EGG: CHILLGRIFF (image1.png)
     // ==========================================
     let lastTap = 0;
     document.getElementById('capy-trigger').addEventListener('click', () => {
@@ -889,25 +903,30 @@
       const oldTitle = title.textContent;
       title.textContent = 'Chillgriff!';
 
-      const capys = [];
+      const fabians = [];
       for (let i = 0; i < 28; i++) {
-        const capy = document.createElement('div');
-        capy.className = 'flying-capy';
-        capy.textContent = '🦫';
-        const size = Math.floor(Math.random() * 100) + 80;
-        capy.style.fontSize = size + 'px';
-        capy.style.setProperty('--startX', (Math.random() * 100) + 'vw');
-        capy.style.setProperty('--startY', (Math.random() * 100) + 'vh');
-        capy.style.setProperty('--endX', ((Math.random() - 0.5) * 150) + 'vw');
-        capy.style.setProperty('--endY', ((Math.random() - 0.5) * 150) + 'vh');
-        capy.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
-        document.body.appendChild(capy);
-        capys.push(capy);
+        const img = document.createElement('img');
+        img.className = 'flying-capy';
+        img.src = 'image1.png';
+        img.onerror = function() {
+          this.onerror = null;
+          this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🦫</text></svg>';
+        };
+        const size = Math.floor(Math.random() * 65) + 75;
+        img.style.width = size + 'px';
+        img.style.height = size + 'px';
+        img.style.setProperty('--startX', (Math.random() * 100) + 'vw');
+        img.style.setProperty('--startY', (Math.random() * 100) + 'vh');
+        img.style.setProperty('--endX', ((Math.random() - 0.5) * 150) + 'vw');
+        img.style.setProperty('--endY', ((Math.random() - 0.5) * 150) + 'vh');
+        img.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+        document.body.appendChild(img);
+        fabians.push(img);
       }
 
       setTimeout(() => {
         title.textContent = oldTitle;
-        capys.forEach(c => c.remove());
+        fabians.forEach(f => f.remove());
       }, 8000);
     }
 
@@ -1046,7 +1065,7 @@
     }
 
     // ==========================================
-    // TERMINE: FARBEN, SORTIERUNG & EDITIEREN
+    // TERMINE: KATEGORIEN & BEARBEITEN
     // ==========================================
     const categoryConfig = {
       geburtstag: { name: 'Geburtstag 🎂', class: 'termin-geburtstag', badgeClass: 'badge-geburtstag' },
@@ -1060,7 +1079,6 @@
       const cont = document.getElementById('termine-list');
       cont.innerHTML = '';
 
-      // Chronologische Sortierung nach Datum & Zeit
       appData.termine.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
 
       appData.termine.forEach((t, idx) => {
@@ -1204,7 +1222,7 @@
     }
 
     // ==========================================
-    // 30-SEKUNDEN PARTYMODUS (Sanft)
+    // 30-SEKUNDEN PARTYMODUS
     // ==========================================
     function startGentlePartyMode() {
       clearTimeout(partyTimeout);
@@ -1217,7 +1235,7 @@
       document.getElementById('party-stage').style.display = 'block';
       document.body.classList.add('party-celebration');
 
-      const partyEmojis = ['🍾', '🥂', '🎉', '💖', '✨', '💃', '🕺', '🍰', '🌸', '🎈', '💍', '🍕', '🦫'];
+      const partyEmojis = ['🍾', '🥂', '🎉', '💖', '✨', '💃', '🕺', '🍰', '🌸', '🎈', '💍', '🍕'];
 
       partyParticleInterval = setInterval(() => {
         for (let i = 0; i < 2; i++) {
