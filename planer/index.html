@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Vanessa & Fabian 🤍</title>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --mint: #bbf7d0;
@@ -221,14 +221,14 @@
     .bok-container {
       display: flex;
       justify-content: center;
-      margin-top: 26px;
+      margin-top: 24px;
     }
     .bok-btn {
       background: linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #8b5cf6 100%);
       color: white;
       border: none;
       border-radius: 999px;
-      padding: 14px 32px;
+      padding: 14px 34px;
       font-size: 1.15rem;
       font-weight: 700;
       letter-spacing: 0.5px;
@@ -244,6 +244,67 @@
       box-shadow: 0 12px 30px rgba(244, 63, 94, 0.45);
     }
     .bok-btn:active { transform: scale(0.97); }
+
+    /* =========================================================
+       BEZIEHUNGSTICKER (Unten auf Startseite)
+       ========================================================= */
+    .ticker-card {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 22px;
+      padding: 20px 24px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ticker-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #bbf7d0, #bae6fd, #fbcfe8, #bbf7d0);
+      background-size: 300% 100%;
+      animation: gradientShift 6s infinite linear;
+    }
+    .ticker-header {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ticker-days-value {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(2.4rem, 8vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1;
+      margin: 4px 0 2px 0;
+      background: linear-gradient(135deg, #059669 0%, #0284c7 50%, #db2777 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .ticker-subtext {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #475569;
+    }
+    .ticker-since {
+      font-size: 0.82rem;
+      color: #94a3b8;
+    }
 
     /* =========================================================
        BOK BENÖTIGT: 2-SEKUNDEN ZOOM + AUTOMATISCHES SCHLIESSEN
@@ -739,6 +800,14 @@
             <span>Bok benötigt</span> 🥺🤍
           </button>
         </div>
+
+        <!-- Süßer Beziehungsticker -->
+        <div class="ticker-card">
+          <div class="ticker-header">🤍 Zusammen seit 🤍</div>
+          <div class="ticker-days-value" id="love-ticker-days">0</div>
+          <div class="ticker-subtext">Tagen voller Liebe & Glück ✨</div>
+          <div class="ticker-since">seit dem 25. September 2025</div>
+        </div>
       </div>
 
       <!-- TAB 2: EINKAUFSLISTE -->
@@ -911,6 +980,7 @@
     const bgAudio = new Audio();
     const dateAudio = new Audio('date-song.mp3');
     const secretAudio = new Audio('geheimmodus.mp3');
+    const customBokAudio = new Audio('bok.mp3');
     let isAudioUnlocked = false;
 
     let partyTimeout = null;
@@ -936,6 +1006,7 @@
       checkLoginStatus();
       setupAudio();
       renderAll();
+      updateLoveTicker();
       if (GOOGLE_SCRIPT_URL) {
         fetchRemoteData();
         setInterval(fetchRemoteData, 10000);
@@ -983,6 +1054,23 @@
     }
 
     // ==========================================
+    // BEZIEHUNGSTICKER (Seit 25.09.2025)
+    // ==========================================
+    function updateLoveTicker() {
+      // 25. September 2025 (Monat 8, da 0-indiziert)
+      const startDate = new Date(2025, 8, 25);
+      const today = new Date();
+      
+      const diffTime = today - startDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      const daysEl = document.getElementById('love-ticker-days');
+      if (daysEl) {
+        daysEl.textContent = diffDays >= 0 ? diffDays : 0;
+      }
+    }
+
+    // ==========================================
     // AUTH & PROFIL
     // ==========================================
     function checkLoginStatus() {
@@ -1026,17 +1114,17 @@
     }
 
     // ==========================================
-    // BOK BENÖTIGT (2s Zoom + Auto-Close nach 3s)
+    // BOK BENÖTIGT (Sound + 2s Zoom + Auto-Close nach 3s)
     // ==========================================
     function triggerBok() {
       clearTimeout(bokTimeout);
+      playBokSound();
+
       const overlay = document.getElementById('bok-overlay');
       const img = document.getElementById('bok-image');
 
-      // Standardmäßig kleingeschrieben anfordern
       const targetImage = (currentUser === 'fabian') ? 'vanessa.png' : 'fabian.png';
 
-      // Robuster Fallback gegen Case-Sensitivity (Vanessa vs vanessa) und Formatunterschiede
       img.onerror = function() {
         if (this.src.endsWith('vanessa.png')) {
           this.src = 'Vanessa.png';
@@ -1047,18 +1135,42 @@
         }
       };
 
-      // Animation neu starten
       img.style.animation = 'none';
-      img.offsetHeight; // Reflow
+      img.offsetHeight; // Reflow erzwingen
       img.style.animation = null;
 
       img.src = targetImage;
       overlay.classList.add('active');
 
-      // Nach exakt 3 Sekunden automatisch wieder ausblenden
+      // Nach exakt 3 Sekunden (2s Zoom + 1s Vollbild) automatisch schließen
       bokTimeout = setTimeout(() => {
         closeBokOverlay();
       }, 3000);
+    }
+
+    function playBokSound() {
+      // Wenn eine bok.mp3 im Ordner existiert, spiele diese ab
+      customBokAudio.currentTime = 0;
+      customBokAudio.play().catch(() => {
+        // Fallback: Magischer Glitzer-Akkord direkt per Web Audio synthetisieren
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const frequencies = [523.25, 659.25, 783.99, 1046.50, 1318.51]; // C5, E5, G5, C6, E6
+          frequencies.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.07);
+            gain.gain.setValueAtTime(0.01, ctx.currentTime + idx * 0.07);
+            gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + idx * 0.07 + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.7);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + idx * 0.07);
+            osc.stop(ctx.currentTime + idx * 0.07 + 0.75);
+          });
+        } catch(e) {}
+      });
     }
 
     function closeBokOverlay() {
