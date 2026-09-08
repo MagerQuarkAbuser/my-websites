@@ -246,7 +246,7 @@
     .bok-btn:active { transform: scale(0.97); }
 
     /* =========================================================
-       BOK BENÖTIGT: 2-SEKUNDEN VOLLBILD OVERLAY
+       BOK BENÖTIGT: 2-SEKUNDEN ZOOM + AUTOMATISCHES SCHLIESSEN
        ========================================================= */
     #bok-overlay {
       display: none;
@@ -917,6 +917,7 @@
     let partyParticleInterval = null;
     let secretTimeout = null;
     let secretInterval = null;
+    let bokTimeout = null;
 
     let appData = {
       einkauf: [],
@@ -1025,25 +1026,43 @@
     }
 
     // ==========================================
-    // BOK BENÖTIGT (2-SEKUNDEN VOLLBILD)
+    // BOK BENÖTIGT (2s Zoom + Auto-Close nach 3s)
     // ==========================================
     function triggerBok() {
+      clearTimeout(bokTimeout);
       const overlay = document.getElementById('bok-overlay');
       const img = document.getElementById('bok-image');
 
-      // Fabian sieht Vanessa.png, Vanessa sieht fabian.png
-      const targetImage = (currentUser === 'fabian') ? 'Vanessa.png' : 'fabian.png';
+      // Standardmäßig kleingeschrieben anfordern
+      const targetImage = (currentUser === 'fabian') ? 'vanessa.png' : 'fabian.png';
 
-      // Animation durch kurzes Zurücksetzen neu triggern
+      // Robuster Fallback gegen Case-Sensitivity (Vanessa vs vanessa) und Formatunterschiede
+      img.onerror = function() {
+        if (this.src.endsWith('vanessa.png')) {
+          this.src = 'Vanessa.png';
+        } else if (this.src.endsWith('Vanessa.png')) {
+          this.src = 'vanessa.jpg';
+        } else if (this.src.endsWith('fabian.png')) {
+          this.src = 'fabian.jpg';
+        }
+      };
+
+      // Animation neu starten
       img.style.animation = 'none';
-      img.offsetHeight; // Reflow erzwingen
+      img.offsetHeight; // Reflow
       img.style.animation = null;
 
       img.src = targetImage;
       overlay.classList.add('active');
+
+      // Nach exakt 3 Sekunden automatisch wieder ausblenden
+      bokTimeout = setTimeout(() => {
+        closeBokOverlay();
+      }, 3000);
     }
 
     function closeBokOverlay() {
+      clearTimeout(bokTimeout);
       document.getElementById('bok-overlay').classList.remove('active');
     }
 
