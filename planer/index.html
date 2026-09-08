@@ -420,22 +420,75 @@
       touch-action: none;
     }
 
-    /* Fliegende Fabian-Bilder (Chillgriff-Modus) */
+    /* =========================================================
+       RIESIGER CHILLGRIFF-GEHEIMMODUS
+       ========================================================= */
+    #chillgriff-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(240, 253, 250, 0.45) 0%, rgba(15, 23, 42, 0.35) 100%);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+    #chillgriff-overlay.active {
+      display: flex;
+      animation: chillgriffPopIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
+    .chillgriff-huge-text {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(3.8rem, 16vw, 9.5rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: clamp(4px, 1.5vw, 12px);
+      text-align: center;
+      line-height: 1;
+      padding: 10px;
+      background: linear-gradient(135deg, #10b981, #06b6d4, #3b82f6, #8b5cf6, #ec4899);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 15px 35px rgba(6, 182, 212, 0.6)) drop-shadow(0 0 45px rgba(16, 185, 129, 0.7));
+      animation: chillgriffPulsate 1.1s infinite alternate ease-in-out, chillgriffGradient 4s ease infinite;
+      user-select: none;
+    }
+
+    @keyframes chillgriffPopIn {
+      0% { transform: scale(0.2) rotate(-15deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    @keyframes chillgriffPulsate {
+      0% { transform: scale(0.93) rotate(-3deg); }
+      100% { transform: scale(1.07) rotate(3deg); }
+    }
+
+    @keyframes chillgriffGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Fliegende Fabian-Bilder (image1.png) */
     .flying-capy {
       position: fixed;
       pointer-events: none;
-      z-index: 999;
+      z-index: 9999;
       border-radius: 50%;
       object-fit: cover;
-      border: 3px solid white;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      border: 3.5px solid white;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.3);
       animation: flyAcross 8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
     }
     @keyframes flyAcross {
       0% { transform: translate(var(--startX), var(--startY)) rotate(0deg) scale(0.6); opacity: 0; }
       10% { opacity: 1; }
       90% { opacity: 1; }
-      100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)) scale(1.15); opacity: 0; }
+      100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)) scale(1.2); opacity: 0; }
     }
 
     /* Partymodus (30 Sekunden - Sanft) */
@@ -444,7 +497,7 @@
       position: fixed;
       inset: 0;
       pointer-events: none;
-      z-index: 9999;
+      z-index: 9997;
       overflow: hidden;
     }
 
@@ -546,6 +599,11 @@
 </head>
 <body>
 
+  <!-- Riesiger Chillgriff Secret Overlay -->
+  <div id="chillgriff-overlay">
+    <div class="chillgriff-huge-text">CHILLGRIFF!</div>
+  </div>
+
   <!-- Party-Bühne -->
   <div id="party-stage">
     <div class="party-glow-overlay"></div>
@@ -559,10 +617,10 @@
   <div class="bg-blob blob-2"></div>
 
   <div id="app-container">
-    <!-- Header mit Fabian-Avatar (image1.png) -->
+    <!-- Header mit Avatar (image1.png) -->
     <header>
       <button class="capy-btn" id="capy-trigger" title="Doppelklick für Chillgriff!">
-        <img src="image1.png" alt="Fabian" class="fabian-header-avatar" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><text y=\'.9em\' font-size=\'90\'>🦫</text></svg>'">
+        <img src="image1.png" alt="Avatar" class="fabian-header-avatar" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><text y=\'.9em\' font-size=\'90\'>🦫</text></svg>'">
       </button>
       <div class="header-controls">
         <button class="icon-btn" id="btn-toggle-play" title="Musik Pausieren / Abspielen">⏸️</button>
@@ -887,7 +945,7 @@
     }
 
     // ==========================================
-    // EASTER EGG: CHILLGRIFF (image1.png)
+    // EASTER EGG: RIESIGER CHILLGRIFF
     // ==========================================
     let lastTap = 0;
     document.getElementById('capy-trigger').addEventListener('click', () => {
@@ -899,9 +957,8 @@
     });
 
     function triggerChillgriff() {
-      const title = document.getElementById('main-brand-title');
-      const oldTitle = title.textContent;
-      title.textContent = 'Chillgriff!';
+      const overlay = document.getElementById('chillgriff-overlay');
+      overlay.classList.add('active');
 
       const fabians = [];
       for (let i = 0; i < 28; i++) {
@@ -925,7 +982,7 @@
       }
 
       setTimeout(() => {
-        title.textContent = oldTitle;
+        overlay.classList.remove('active');
         fabians.forEach(f => f.remove());
       }, 8000);
     }
@@ -998,7 +1055,7 @@
     }
 
     // ==========================================
-    // TODOS (Erledigte immer ganz unten)
+    // TODOS
     // ==========================================
     function renderTodos() {
       const vCont = document.getElementById('todos-vanessa');
