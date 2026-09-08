@@ -421,7 +421,7 @@
     }
 
     /* =========================================================
-       RIESIGER CHILLGRIFF-GEHEIMMODUS
+       CHILLGRIFF GEHEIMMODUS OVERLAY & FLIEGENDE KÖPFE
        ========================================================= */
     #chillgriff-overlay {
       display: none;
@@ -431,9 +431,9 @@
       z-index: 9998;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle, rgba(240, 253, 250, 0.45) 0%, rgba(15, 23, 42, 0.35) 100%);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
+      background: radial-gradient(circle, rgba(240, 253, 250, 0.5) 0%, rgba(15, 23, 42, 0.4) 100%);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
     #chillgriff-overlay.active {
       display: flex;
@@ -473,7 +473,6 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Fliegende Fabian-Bilder (image1.png) */
     .flying-capy {
       position: fixed;
       pointer-events: none;
@@ -482,13 +481,13 @@
       object-fit: cover;
       border: 3.5px solid white;
       box-shadow: 0 12px 35px rgba(0,0,0,0.3);
-      animation: flyAcross 8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      animation: flyAcross 5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
     }
     @keyframes flyAcross {
-      0% { transform: translate(var(--startX), var(--startY)) rotate(0deg) scale(0.6); opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)) scale(1.2); opacity: 0; }
+      0% { transform: translate(var(--startX), var(--startY)) rotate(0deg) scale(0.4); opacity: 0; }
+      12% { opacity: 1; }
+      88% { opacity: 1; }
+      100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)) scale(1.25); opacity: 0; }
     }
 
     /* Partymodus (30 Sekunden - Sanft) */
@@ -833,10 +832,13 @@
     let currentSongIndex = 0;
     const bgAudio = new Audio();
     const dateAudio = new Audio('date-song.mp3');
+    const secretAudio = new Audio('geheimmodus.mp3');
     let isAudioUnlocked = false;
 
     let partyTimeout = null;
     let partyParticleInterval = null;
+    let secretTimeout = null;
+    let secretInterval = null;
 
     let appData = {
       einkauf: [],
@@ -945,7 +947,7 @@
     }
 
     // ==========================================
-    // EASTER EGG: RIESIGER CHILLGRIFF
+    // EASTER EGG: CHILLGRIFF (15s & geheimmodus.mp3)
     // ==========================================
     let lastTap = 0;
     document.getElementById('capy-trigger').addEventListener('click', () => {
@@ -957,11 +959,18 @@
     });
 
     function triggerChillgriff() {
+      clearTimeout(secretTimeout);
+      clearInterval(secretInterval);
+
       const overlay = document.getElementById('chillgriff-overlay');
       overlay.classList.add('active');
 
-      const fabians = [];
-      for (let i = 0; i < 28; i++) {
+      // Hintergrundmusik stoppen & Geheimmodus-Song für 15 Sekunden starten
+      bgAudio.pause();
+      secretAudio.currentTime = 0;
+      secretAudio.play().catch(e => console.log('Secret Audio Blocked:', e));
+
+      function spawnHead() {
         const img = document.createElement('img');
         img.className = 'flying-capy';
         img.src = 'image1.png';
@@ -969,22 +978,44 @@
           this.onerror = null;
           this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🦫</text></svg>';
         };
-        const size = Math.floor(Math.random() * 65) + 75;
+        const size = Math.floor(Math.random() * 65) + 70; // 70px bis 135px
         img.style.width = size + 'px';
         img.style.height = size + 'px';
         img.style.setProperty('--startX', (Math.random() * 100) + 'vw');
         img.style.setProperty('--startY', (Math.random() * 100) + 'vh');
-        img.style.setProperty('--endX', ((Math.random() - 0.5) * 150) + 'vw');
-        img.style.setProperty('--endY', ((Math.random() - 0.5) * 150) + 'vh');
-        img.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+        img.style.setProperty('--endX', ((Math.random() - 0.5) * 180) + 'vw');
+        img.style.setProperty('--endY', ((Math.random() - 0.5) * 180) + 'vh');
+        img.style.setProperty('--rot', (Math.random() * 1440 - 720) + 'deg');
+        img.style.animationDuration = (Math.random() * 2 + 3.8) + 's';
         document.body.appendChild(img);
-        fabians.push(img);
+
+        setTimeout(() => img.remove(), 5500);
       }
 
-      setTimeout(() => {
+      // Initialer Schwarm aus 25 Köpfen
+      for (let i = 0; i < 25; i++) {
+        spawnHead();
+      }
+
+      // Kontinuierlich 3 Köpfe alle 280ms nachwerfen
+      secretInterval = setInterval(() => {
+        for (let i = 0; i < 3; i++) {
+          spawnHead();
+        }
+      }, 280);
+
+      // Nach exakt 15 Sekunden wieder alles normalisieren
+      secretTimeout = setTimeout(() => {
+        clearInterval(secretInterval);
         overlay.classList.remove('active');
-        fabians.forEach(f => f.remove());
-      }, 8000);
+        document.querySelectorAll('.flying-capy').forEach(f => f.remove());
+
+        secretAudio.pause();
+        secretAudio.currentTime = 0;
+
+        bgAudio.play().catch(() => {});
+        updatePlayIcon(true);
+      }, 15000);
     }
 
     // ==========================================
