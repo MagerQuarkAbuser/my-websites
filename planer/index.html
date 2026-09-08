@@ -351,7 +351,7 @@
     .ticker-subtext { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
     .ticker-since { font-size: 0.82rem; color: #64748b; font-weight: 500; }
 
-    /* Mülltermine Upload & Vorschau */
+    /* Mülltermine Upload & Zoom */
     .muell-upload-box {
       border: 2px dashed #94a3b8;
       border-radius: 18px;
@@ -390,7 +390,7 @@
     }
     .muell-preview-img:hover { transform: scale(1.01); }
 
-    /* Vollbild Zoom Modal mit echtem Zoom & Pan */
+    /* Zoom Modal mit echtem Pinch-to-Zoom Support */
     #muell-zoom-modal {
       display: none;
       position: fixed;
@@ -401,7 +401,9 @@
       -webkit-backdrop-filter: blur(8px);
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      padding: 0;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
     }
     #muell-zoom-modal.active { display: flex; }
     
@@ -412,7 +414,6 @@
       align-items: center;
       justify-content: center;
       overflow: auto;
-      -webkit-overflow-scrolling: touch;
       position: relative;
     }
     #muell-zoom-img {
@@ -756,7 +757,7 @@
   <div id="bg-photo"></div>
   <div id="bg-overlay"></div>
 
-  <!-- Vollbild-Zoom Modal mit Zoom-Buttons & Pinch Support -->
+  <!-- Vollbild-Zoom Modal für Mülltermine (mit Zoom-Buttons & echtem Zoomen) -->
   <div id="muell-zoom-modal">
     <button class="muell-zoom-close" onclick="closeMuellZoom()">✕</button>
     <div class="muell-zoom-wrapper" id="zoom-wrapper">
@@ -813,7 +814,7 @@
       <button class="nav-tab" data-tab="einkauf" onclick="showTab('einkauf')">🛒 Einkaufsliste</button>
       <button class="nav-tab" data-tab="todos" onclick="showTab('todos')">📋 ToDos</button>
       <button class="nav-tab" data-tab="termine" onclick="showTab('termine')">📅 Termine</button>
-      <button class="nav-tab" data-tab="muell" onclick="showTab('muell')">🗑️ Mülltermine</button>
+      <button class="nav-tab" data-tab="muell" onclick="showTab('muell')">🗑️ Müll</button>
       <button class="nav-tab" id="tab-date-btn" data-tab="date" style="display:none;" onclick="showTab('date')">❤️ Date</button>
     </nav>
 
@@ -959,24 +960,24 @@
 
           <div id="muell-display-area" style="display: none;">
             <div class="muell-preview-container">
+              <img id="muell-img-preview" class="muell-preview-img" style="display: none;" alt="Müllkalender Vorschau" onclick="openMuellZoom()" title="Zum Vergrößern antippen">
+              <iframe id="muell-pdf-preview" style="width: 100%; height: 500px; border: none; display: none; border-radius: 8px;"></iframe>
               
-              <!-- Bearbeitbarer Titel statt Dateiname -->
-              <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 8px; width: 100%;">
-                <span id="muell-file-title" style="font-weight: 700; font-size: 1rem; color: var(--blue-dark);">Müllkalender</span>
+              <!-- Bearbeitbarer Titel unter dem Bild -->
+              <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px; width: 100%;">
+                <span id="muell-file-title" style="font-weight: 700; font-size: 1rem; color: var(--blue-dark);">Müllkalender bis Januar</span>
                 <button type="button" class="icon-action-btn" onclick="enableMuellTitleEdit()" title="Titel bearbeiten">✏️</button>
               </div>
 
               <!-- Editierfeld (Standardmäßig versteckt) -->
-              <div id="muell-title-edit-box" style="display: none; margin-bottom: 10px; width: 100%;">
+              <div id="muell-title-edit-box" style="display: none; margin-top: 8px; width: 100%;">
                 <div class="input-bar" style="margin-bottom: 0;">
                   <input type="text" id="muell-title-input" placeholder="Z.B. Müllkalender bis Januar...">
                   <button type="button" class="primary-btn" onclick="saveMuellTitle()">OK</button>
                 </div>
               </div>
 
-              <img id="muell-img-preview" class="muell-preview-img" style="display: none;" alt="Müllkalender Vorschau" onclick="openMuellZoom()" title="Zum Vergrößern antippen">
-              <iframe id="muell-pdf-preview" style="width: 100%; height: 500px; border: none; display: none; border-radius: 8px;"></iframe>
-              <button type="button" class="icon-btn" style="margin-top: 12px; background: #fee2e2; color: #991b1b; border-color: #fecaca;" onclick="clearMuellFile()">🗑️ Kalender löschen</button>
+              <button type="button" class="icon-btn" style="margin-top: 14px; background: #fee2e2; color: #991b1b; border-color: #fecaca;" onclick="clearMuellFile()">🗑️ Kalender löschen</button>
             </div>
           </div>
           <div id="muell-empty-notice" style="text-align: center; font-size: 0.9rem; color: var(--text-muted); padding: 10px;">
@@ -1178,7 +1179,7 @@
     // ==========================================
     function enableMuellTitleEdit() {
       document.getElementById('muell-title-edit-box').style.display = 'block';
-      document.getElementById('muell-title-input').value = appData.muellTitle || "Müllkalender";
+      document.getElementById('muell-title-input').value = appData.muellTitle || "Müllkalender bis Januar";
       document.getElementById('muell-title-input').focus();
     }
 
@@ -1187,7 +1188,7 @@
       if (val) {
         appData.muellTitle = val;
       } else {
-        appData.muellTitle = "Müllkalender";
+        appData.muellTitle = "Müllkalender bis Januar";
       }
       document.getElementById('muell-title-edit-box').style.display = 'none';
       renderMuellView();
@@ -1202,7 +1203,7 @@
       reader.onload = function(e) {
         const fileData = {
           data: e.target.result,
-          title: appData.muellTitle || "Müllkalender"
+          title: appData.muellTitle || "Müllkalender bis Januar"
         };
         localStorage.setItem('planer_muell_file', JSON.stringify(fileData));
         renderMuellView();
@@ -1222,7 +1223,7 @@
       const imgPreview = document.getElementById('muell-img-preview');
       const pdfPreview = document.getElementById('muell-pdf-preview');
 
-      titleEl.textContent = appData.muellTitle || "Müllkalender";
+      titleEl.textContent = appData.muellTitle || "Müllkalender bis Januar";
 
       const savedFile = localStorage.getItem('planer_muell_file');
       if (!savedFile) {
