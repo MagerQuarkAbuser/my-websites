@@ -50,7 +50,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: transform 0.1s;
+      transition: transform 0.3s ease;
     }
 
     /* Schwebende Hintergrund-Blobs */
@@ -389,7 +389,7 @@
     }
 
     /* =========================================================
-       PARTYMODUS ESKALATION (15 SEKUNDEN)
+       PARTYMODUS (30 SEKUNDEN - EPILEPSIE-FREUNDLICH & SANFT)
        ========================================================= */
     #party-stage {
       display: none;
@@ -400,53 +400,52 @@
       overflow: hidden;
     }
 
-    .disco-overlay {
+    /* Sanfter, fließender Farbglow statt Stroboskop */
+    .party-glow-overlay {
       position: absolute;
       inset: 0;
-      animation: discoStrobe 0.18s infinite alternate;
-      mix-blend-mode: color-burn;
-      opacity: 0.45;
+      background: radial-gradient(circle at 50% 50%, rgba(254, 205, 211, 0.35), rgba(186, 230, 253, 0.35), rgba(220, 252, 231, 0.35));
+      animation: smoothColorGlow 6s ease-in-out infinite alternate;
+      mix-blend-mode: multiply;
+      opacity: 0.8;
     }
 
-    @keyframes discoStrobe {
-      0% { background-color: #ff0055; }
-      25% { background-color: #00e5ff; }
-      50% { background-color: #ffe600; }
-      75% { background-color: #bd00ff; }
-      100% { background-color: #00ff66; }
+    @keyframes smoothColorGlow {
+      0% { filter: hue-rotate(0deg); opacity: 0.6; }
+      50% { filter: hue-rotate(90deg); opacity: 0.85; }
+      100% { filter: hue-rotate(180deg); opacity: 0.6; }
     }
 
+    /* Bouncendes Party-Banner */
     .party-banner-container {
       position: absolute;
       top: 18%;
       left: 50%;
-      transform: translateX(-50%) rotate(-3deg);
+      transform: translateX(-50%);
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
       width: 90%;
-      max-width: 600px;
-      animation: bannerBounce 0.3s infinite alternate ease-in-out;
+      max-width: 620px;
+      animation: gentleBannerSway 2.5s infinite alternate ease-in-out;
     }
 
-    @keyframes bannerBounce {
-      0% { transform: translateX(-50%) rotate(-4deg) scale(0.95); }
-      100% { transform: translateX(-50%) rotate(4deg) scale(1.08); }
+    @keyframes gentleBannerSway {
+      0% { transform: translateX(-50%) rotate(-2deg) scale(0.98); }
+      100% { transform: translateX(-50%) rotate(2deg) scale(1.03); }
     }
 
     .party-banner-main {
-      background: linear-gradient(90deg, #ff007f, #7928ca, #0070f3, #00dfd8);
-      background-size: 200% 200%;
-      animation: gradientShift 1s infinite alternate;
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
       color: white;
-      padding: 16px 24px;
-      border-radius: 20px;
+      padding: 16px 28px;
+      border-radius: 24px;
       font-family: 'Montserrat', sans-serif;
-      font-size: clamp(1.3rem, 5vw, 2.2rem);
+      font-size: clamp(1.25rem, 4.5vw, 2.1rem);
       font-weight: 900;
       text-align: center;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 30px #ff007f;
+      box-shadow: 0 12px 35px rgba(236, 72, 153, 0.35);
       text-transform: uppercase;
       letter-spacing: 1px;
     }
@@ -454,55 +453,50 @@
     .party-banner-sub {
       background: white;
       color: #0f172a;
-      padding: 8px 18px;
+      padding: 8px 20px;
       border-radius: 999px;
       font-weight: 800;
-      font-size: 1rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      font-size: 0.95rem;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
     }
 
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 100% 50%; }
+    /* Sanft tanzende UI-Karten */
+    body.party-celebration .dash-card,
+    body.party-celebration .section-card {
+      animation: cardGroove 1.6s infinite alternate ease-in-out;
     }
 
-    /* Partikel / Konfetti */
+    @keyframes cardGroove {
+      0% { transform: translateY(0px) rotate(-0.5deg); }
+      100% { transform: translateY(-6px) rotate(0.5deg); }
+    }
+
+    /* Konfetti & Party-Partikel (sanfter Flug) */
     .party-particle {
       position: fixed;
-      top: 0;
-      left: 0;
+      top: -10vh;
       pointer-events: none;
       z-index: 10000;
-      font-size: clamp(2.2rem, 6vw, 4.2rem);
+      font-size: clamp(2rem, 5vw, 3.8rem);
       will-change: transform, opacity;
-      animation: particleFly 2.2s cubic-bezier(0.12, 0.8, 0.32, 1) forwards;
+      animation: particleFloatDown 4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
     }
 
-    @keyframes particleFly {
+    @keyframes particleFloatDown {
       0% {
-        transform: translate(var(--startX), var(--startY)) scale(0.3) rotate(0deg);
+        transform: translate(var(--startX), 0) scale(0.6) rotate(0deg);
+        opacity: 0;
+      }
+      15% {
         opacity: 1;
       }
-      80% {
+      85% {
         opacity: 1;
       }
       100% {
-        transform: translate(var(--endX), var(--endY)) scale(1.5) rotate(var(--rot));
+        transform: translate(var(--endX), 115vh) scale(1.1) rotate(var(--rot));
         opacity: 0;
       }
-    }
-
-    /* Screen-Shake für Hauptcontainer */
-    .insane-shake {
-      animation: earthquake 0.1s infinite !important;
-    }
-
-    @keyframes earthquake {
-      0% { transform: translate(3px, 2px) rotate(0.4deg); }
-      25% { transform: translate(-4px, -3px) rotate(-0.5deg); }
-      50% { transform: translate(4px, -2px) rotate(0.5deg); }
-      75% { transform: translate(-3px, 3px) rotate(-0.4deg); }
-      100% { transform: translate(2px, -3px) rotate(0.3deg); }
     }
   </style>
 </head>
@@ -510,10 +504,10 @@
 
   <!-- Party-Bühne -->
   <div id="party-stage">
-    <div class="disco-overlay"></div>
+    <div class="party-glow-overlay"></div>
     <div class="party-banner-container">
       <div class="party-banner-main">🔥 DATE ANGENOMMEN! PARTY! 🔥</div>
-      <div class="party-banner-sub">15 SEKUNDEN VOLLGAS! 🍾🎉💃🕺</div>
+      <div class="party-banner-sub">30 SEKUNDEN LIEBE & FEIERN! 🍾🎉🥂💖</div>
     </div>
   </div>
 
@@ -647,7 +641,7 @@
           <!-- Test Button -->
           <div style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.85rem; color: var(--text-muted);">Vorschau testen:</span>
-            <button type="button" class="icon-btn" onclick="startInsanePartyMode()">🎉 Partymodus jetzt testen (15s)</button>
+            <button type="button" class="icon-btn" onclick="startGentlePartyMode()">🎉 Partymodus jetzt testen (30s)</button>
           </div>
         </div>
       </div>
@@ -1082,14 +1076,14 @@
       syncData();
       renderAll();
 
-      // Startet die 15-sekündige Eskalation
-      startInsanePartyMode();
+      // Startet die 30-sekündige Feier
+      startGentlePartyMode();
     }
 
     // ==========================================
-    // 15-SEKUNDEN PARTYMODUS
+    // 30-SEKUNDEN PARTYMODUS (Epilepsie-sicher)
     // ==========================================
-    function startInsanePartyMode() {
+    function startGentlePartyMode() {
       clearTimeout(partyTimeout);
       clearInterval(partyParticleInterval);
 
@@ -1098,41 +1092,39 @@
       dateAudio.currentTime = 0;
       dateAudio.play().catch(err => console.log('Date Audio Playblock:', err));
 
-      // Visuelle Effekte aktivieren
+      // Visuelle Effekte aktivieren (ohne Flackern)
       document.getElementById('party-stage').style.display = 'block';
-      document.getElementById('app-container').classList.add('insane-shake');
+      document.body.classList.add('party-celebration');
 
-      const partyEmojis = ['🍾', '🥂', '🎉', '💃', '🕺', '💖', '🎆', '💥', '🍕', '✨', '💍', '🚀', '❤️', '🦫', '🔥'];
+      const partyEmojis = ['🍾', '🥂', '🎉', '💖', '✨', '💃', '🕺', '🍰', '🌸', '🎈', '💍', '🍕', '🦫'];
 
-      // Partikel-Kanone
+      // Sanfte Konfetti-Regendusche
       partyParticleInterval = setInterval(() => {
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 2; i++) {
           const p = document.createElement('div');
           p.className = 'party-particle';
           p.textContent = partyEmojis[Math.floor(Math.random() * partyEmojis.length)];
-          p.style.setProperty('--startX', (Math.random() * 100) + 'vw');
-          p.style.setProperty('--startY', (Math.random() * 100) + 'vh');
-          p.style.setProperty('--endX', ((Math.random() - 0.5) * 160) + 'vw');
-          p.style.setProperty('--endY', ((Math.random() - 0.5) * 160) + 'vh');
-          p.style.setProperty('--rot', (Math.random() * 1080 - 540) + 'deg');
+          p.style.setProperty('--startX', (Math.random() * 95) + 'vw');
+          p.style.setProperty('--endX', ((Math.random() * 30) - 15) + 'vw');
+          p.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg');
           document.body.appendChild(p);
 
-          setTimeout(() => p.remove(), 2200);
+          setTimeout(() => p.remove(), 4000);
         }
-      }, 120);
+      }, 280);
 
-      // Exakt nach 15 Sekunden alles normalisieren
+      // Nach exakt 30 Sekunden alles beenden und normale Musik starten
       partyTimeout = setTimeout(() => {
-        stopInsanePartyMode();
-      }, 15000);
+        stopGentlePartyMode();
+      }, 30000);
     }
 
-    function stopInsanePartyMode() {
+    function stopGentlePartyMode() {
       clearTimeout(partyTimeout);
       clearInterval(partyParticleInterval);
 
       document.getElementById('party-stage').style.display = 'none';
-      document.getElementById('app-container').classList.remove('insane-shake');
+      document.body.classList.remove('party-celebration');
       document.querySelectorAll('.party-particle').forEach(p => p.remove());
 
       dateAudio.pause();
@@ -1182,12 +1174,12 @@
             renderAll();
             checkPendingDateForVanessa();
 
-            // Wenn Vanessa auf ihrem Handy angenommen hat, feiert Fabians Handy mit!
+            // Wenn Vanessa auf ihrem Gerät annimmt, feiert Fabians Gerät automatisch 30s mit
             if (appData.dateEinladung && appData.dateEinladung.status === 'accepted') {
               const partyKey = appData.dateEinladung.date + '_' + appData.dateEinladung.time;
               if (localStorage.getItem('party_celebrated_key') !== partyKey) {
                 localStorage.setItem('party_celebrated_key', partyKey);
-                startInsanePartyMode();
+                startGentlePartyMode();
               }
             }
           }
