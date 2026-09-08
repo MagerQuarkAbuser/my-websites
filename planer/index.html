@@ -321,15 +321,18 @@
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO5or9QVWSOyfIBpzq0G2Q4LmzR-ECKQLF3DihegW6u6jR_dNhDDQOI6Leu9L1h2CX/exec";
         let state = { user: null, shopping: [], todos: [], calendar: [], dateInvite: { active: false, date: '', time: '', note: '', status: 'open' } };
         
-        const playlist = [
-            'https://cdn.pixabay.com/audio/2022/05/27/audio_1808f3030c.mp3',
-            'https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3',
-            'https://cdn.pixabay.com/audio/2021/11/23/audio_0c9929973f.mp3',
-            'https://cdn.pixabay.com/audio/2023/10/24/audio_3473180299.mp3'
-        ];
+        const playlist = ['song1.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3'];
         let currentSongIndex = 0;
         const audio = new Audio(playlist[0]);
         audio.onended = () => nextSong();
+
+        function startMusic() {
+            audio.play().catch(() => {});
+            document.removeEventListener('click', startMusic);
+            document.removeEventListener('touchstart', startMusic);
+        }
+        document.addEventListener('click', startMusic);
+        document.addEventListener('touchstart', startMusic);
 
         async function syncData(push = false) {
             if (push) {
@@ -373,12 +376,6 @@
             saveAndSync();
         }
 
-        function startMusic() {
-            audio.play().catch(() => {
-                console.log("Warte auf Interaktion für Audio...");
-            });
-        }
-
         function nextSong() {
             currentSongIndex = (currentSongIndex + 1) % playlist.length;
             audio.src = playlist[currentSongIndex];
@@ -399,8 +396,8 @@
                 const newItem = { id: Date.now(), text: val, done: false };
                 state.shopping.push(newItem);
                 input.value = '';
-                renderAll(); // Sofortiges lokales Rendering
-                saveAndSync(); // Hintergrund-Sync
+                renderAll();
+                saveAndSync();
             } else if (type === 'todo') {
                 const val = document.getElementById('todo-input').value;
                 const owner = document.getElementById('todo-owner').value;
@@ -481,6 +478,8 @@
             state.dateInvite.status = 'accepted';
             state.calendar.push({ id: Date.now(), date: state.dateInvite.date, time: state.dateInvite.time, title: "❤️ DATE: " + state.dateInvite.note });
             document.getElementById('date-popup').style.display = 'none';
+            audio.src = 'date-song.mp3';
+            audio.play();
             saveAndSync();
         }
 
