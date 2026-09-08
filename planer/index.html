@@ -210,9 +210,7 @@
       justify-content: center;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .nav-tab:active {
-      transform: scale(0.95);
-    }
+    .nav-tab:active { transform: scale(0.95); }
     .nav-tab.active {
       background: white;
       color: var(--text);
@@ -225,10 +223,11 @@
       width: 100%;
       max-width: 720px;
       padding: 10px 14px 20px 14px;
+      touch-action: pan-y;
     }
 
     /* =========================================================
-       MODERNE SEITENÜBERGÄNGE (SUBTIL & CLEAN)
+       MODERNE SEITENÜBERGÄNGE
        ========================================================= */
     .tab-content {
       display: none;
@@ -239,17 +238,10 @@
     }
 
     @keyframes tabEnter {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Gestaffeltes sanftes Einblenden der Inhaltsblöcke */
     .tab-content.active .section-card,
     .tab-content.active .dashboard-grid,
     .tab-content.active .bok-container,
@@ -265,14 +257,8 @@
     .tab-content.active .ticker-card { animation-delay: 0.11s; }
 
     @keyframes cardSubtleFade {
-      from {
-        opacity: 0;
-        transform: translateY(6px) scale(0.99);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+      from { opacity: 0; transform: translateY(6px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     /* Startseite */
@@ -300,7 +286,7 @@
 
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 12px;
       margin-top: 8px;
     }
@@ -309,21 +295,18 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-radius: 20px;
-      padding: 18px 14px;
+      padding: 16px 10px;
       border: 2px solid rgba(255, 255, 255, 0.95);
       box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
       cursor: pointer;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       text-align: center;
     }
-    .dash-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
-    }
+    .dash-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1); }
     .dash-card:active { transform: scale(0.97); }
-    .dash-card .icon { font-size: 2.2rem; margin-bottom: 6px; }
-    .dash-card h3 { font-size: 1.05rem; margin-bottom: 3px; font-weight: 700; }
-    .dash-card p { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; }
+    .dash-card .icon { font-size: 2rem; margin-bottom: 6px; }
+    .dash-card h3 { font-size: 1rem; margin-bottom: 3px; font-weight: 700; }
+    .dash-card p { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; }
 
     /* Bok-Button */
     .bok-container {
@@ -348,10 +331,7 @@
       gap: 8px;
       min-height: 52px;
     }
-    .bok-btn:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 14px 32px rgba(244, 63, 94, 0.48);
-    }
+    .bok-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 14px 32px rgba(244, 63, 94, 0.48); }
     .bok-btn:active { transform: scale(0.95); }
 
     /* Beziehungsticker */
@@ -412,6 +392,41 @@
       font-size: 0.82rem;
       color: #64748b;
       font-weight: 500;
+    }
+
+    /* Mülltermine Upload & Ansicht */
+    .muell-upload-box {
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 16px;
+    }
+    .muell-upload-box:hover {
+      border-color: var(--blue-dark);
+      background: rgba(255, 255, 255, 0.8);
+    }
+    .muell-preview-container {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1.5px solid #cbd5e1;
+      background: white;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+    }
+    .muell-preview-img {
+      width: 100%;
+      max-height: 600px;
+      object-fit: contain;
+      border-radius: 10px;
     }
 
     /* Bok-Vollbild */
@@ -497,13 +512,8 @@
     .primary-btn:active { transform: scale(0.97); }
 
     @media (max-width: 580px) {
-      .input-bar {
-        flex-direction: column;
-      }
-      .input-bar input, .input-bar select, .input-bar button {
-        width: 100% !important;
-        min-width: 0 !important;
-      }
+      .input-bar { flex-direction: column; }
+      .input-bar input, .input-bar select, .input-bar button { width: 100% !important; min-width: 0 !important; }
     }
 
     /* Listen-Elemente */
@@ -682,9 +692,7 @@
       color: #64748b;
       display: inline-block;
     }
-    .pony-text.animate {
-      animation: ponyHop 0.28s ease-out;
-    }
+    .pony-text.animate { animation: ponyHop 0.28s ease-out; }
     @keyframes ponyHop {
       0% { transform: scale(0.75); opacity: 0.6; }
       50% { transform: scale(1.25); color: #0284c7; }
@@ -1024,11 +1032,12 @@
       <button class="nav-tab" data-tab="einkauf" onclick="showTab('einkauf')">🛒 Einkaufsliste</button>
       <button class="nav-tab" data-tab="todos" onclick="showTab('todos')">📋 ToDos</button>
       <button class="nav-tab" data-tab="termine" onclick="showTab('termine')">📅 Termine</button>
+      <button class="nav-tab" data-tab="muell" onclick="showTab('muell')">🗑️ Müll</button>
       <button class="nav-tab" id="tab-date-btn" data-tab="date" style="display:none;" onclick="showTab('date')">❤️ Date</button>
     </nav>
 
     <!-- Content -->
-    <main>
+    <main id="main-swipe-area">
       <!-- TAB 1: STARTSEITE -->
       <div id="tab-home" class="tab-content active">
         <h1 class="brand-title" id="main-brand-title">Vanessa & Fabian 🤍</h1>
@@ -1049,6 +1058,11 @@
             <div class="icon">📅</div>
             <h3>Termine</h3>
             <p id="dash-termine-count">0 anstehende Dates</p>
+          </div>
+          <div class="dash-card" onclick="showTab('muell')">
+            <div class="icon">🗑️</div>
+            <h3>Mülltermine</h3>
+            <p>Kalender ansehen</p>
           </div>
         </div>
 
@@ -1147,7 +1161,36 @@
         </div>
       </div>
 
-      <!-- TAB 5: DATE (FABIAN) -->
+      <!-- TAB 5: MÜLLTERMINE -->
+      <div id="tab-muell" class="tab-content">
+        <div class="section-card">
+          <div class="section-title">Mülltermine 🗑️</div>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 14px;">
+            Lade hier den aktuellen Müllkalender (Bild oder PDF) hoch:
+          </p>
+          
+          <label class="muell-upload-box" for="muell-file-input">
+            <div style="font-size: 2rem; margin-bottom: 6px;">📄📸</div>
+            <div style="font-weight: 600; color: var(--text);">Datei auswählen / hochladen</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">(Bild oder PDF)</div>
+            <input type="file" id="muell-file-input" accept="image/*,application/pdf" style="display: none;" onchange="handleMuellUpload(event)">
+          </label>
+
+          <div id="muell-display-area" style="display: none;">
+            <div class="muell-preview-container">
+              <div id="muell-file-name" style="font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; color: var(--blue-dark);"></div>
+              <img id="muell-img-preview" class="muell-preview-img" style="display: none;" alt="Müllkalender Vorschau">
+              <iframe id="muell-pdf-preview" style="width: 100%; height: 500px; border: none; display: none; border-radius: 8px;"></iframe>
+              <button type="button" class="icon-btn" style="margin-top: 12px; background: #fee2e2; color: #991b1b; border-color: #fecaca;" onclick="clearMuellFile()">🗑️ Kalender löschen</button>
+            </div>
+          </div>
+          <div id="muell-empty-notice" style="text-align: center; font-size: 0.9rem; color: var(--text-muted); padding: 10px;">
+            Noch kein Müllkalender hinterlegt.
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 6: DATE (FABIAN) -->
       <div id="tab-date" class="tab-content">
         <div class="section-card">
           <div class="section-title">Geheime Date-Einladung ❤️</div>
@@ -1273,7 +1316,9 @@
       todos: [],
       termine: [],
       dateEinladung: null,
-      ponyCounter: 0
+      ponyCounter: 0,
+      muellFile: null,      // Base64 oder URL der Müll-Datei
+      muellFileName: ""
     };
 
     let currentUser = localStorage.getItem('planer_user') || null;
@@ -1287,6 +1332,7 @@
       setupAudio();
       renderAll();
       updateLoveTicker();
+      setupSwipeGestures();
       if (GOOGLE_SCRIPT_URL) {
         fetchRemoteData();
         setInterval(fetchRemoteData, 10000);
@@ -1331,6 +1377,102 @@
 
     function updatePlayIcon(isPlaying) {
       document.getElementById('btn-toggle-play').textContent = isPlaying ? '⏸️' : '▶️';
+    }
+
+    // ==========================================
+    // MÜLLTERMINE UPLOAD & ANZEIGE
+    // ==========================================
+    function handleMuellUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        appData.muellFile = e.target.result;
+        appData.muellFileName = file.name;
+        renderMuellView();
+        syncData();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearMuellFile() {
+      appData.muellFile = null;
+      appData.muellFileName = "";
+      renderMuellView();
+      syncData();
+    }
+
+    function renderMuellView() {
+      const displayArea = document.getElementById('muell-display-area');
+      const emptyNotice = document.getElementById('muell-empty-notice');
+      const nameEl = document.getElementById('muell-file-name');
+      const imgPreview = document.getElementById('muell-img-preview');
+      const pdfPreview = document.getElementById('muell-pdf-preview');
+
+      if (!appData.muellFile) {
+        displayArea.style.display = 'none';
+        emptyNotice.style.display = 'block';
+        return;
+      }
+
+      emptyNotice.style.display = 'none';
+      displayArea.style.display = 'block';
+      nameEl.textContent = appData.muellFileName || "Müllkalender";
+
+      if (appData.muellFile.startsWith('data:image/') || appData.muellFile.match(/\.(jpeg|jpg|png|webp)$/i)) {
+        imgPreview.src = appData.muellFile;
+        imgPreview.style.display = 'block';
+        pdfPreview.style.display = 'none';
+      } else {
+        pdfPreview.src = appData.muellFile;
+        pdfPreview.style.display = 'block';
+        imgPreview.style.display = 'none';
+      }
+    }
+
+    // ==========================================
+    // TOUCH WISCHGESTEN (SWIPE NAVIGATION)
+    // ==========================================
+    function setupSwipeGestures() {
+      const swipeArea = document.getElementById('main-swipe-area');
+      if (!swipeArea) return;
+
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      swipeArea.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
+
+      swipeArea.addEventListener('touchend', e => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+        
+        const diffX = touchEndX - touchStartX;
+        const diffY = touchEndY - touchStartY;
+
+        if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+          const tabs = ['home', 'einkauf', 'todos', 'termine', 'muell'];
+          if (currentUser === 'fabian') {
+            tabs.push('date');
+          }
+
+          const currentActiveEl = document.querySelector('.tab-content.active');
+          if (!currentActiveEl) return;
+          const currentTabId = currentActiveEl.id.replace('tab-', '');
+          const currentIndex = tabs.indexOf(currentTabId);
+
+          if (currentIndex !== -1) {
+            if (diffX < 0 && currentIndex < tabs.length - 1) {
+              showTab(tabs[currentIndex + 1]);
+            } else if (diffX > 0 && currentIndex > 0) {
+              showTab(tabs[currentIndex - 1]);
+            }
+          }
+        }
+      }, { passive: true });
     }
 
     // ==========================================
@@ -1443,7 +1585,7 @@
     }
 
     // ==========================================
-    // BOK BENÖTIGT (Sound + 2s Zoom + Auto-Close nach 3s)
+    // BOK BENÖTIGT
     // ==========================================
     function triggerBok() {
       clearTimeout(bokTimeout);
@@ -1505,7 +1647,7 @@
     }
 
     // ==========================================
-    // EASTER EGG: CHILLGRIFF (15s & geheimmodus.mp3)
+    // EASTER EGG: CHILLGRIFF
     // ==========================================
     let lastTap = 0;
     document.getElementById('capy-trigger').addEventListener('click', () => {
@@ -1573,20 +1715,16 @@
     }
 
     // ==========================================
-    // TABS MIT MODERNEN ANIMATIONEN
+    // TABS
     // ==========================================
     function showTab(name) {
       const currentActive = document.querySelector('.tab-content.active');
       const targetTab = document.getElementById('tab-' + name);
       if (!targetTab || currentActive === targetTab) return;
 
-      // Vorherigen Tab ausblenden
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-
-      // Neuen Tab mit Animation einblenden
       targetTab.classList.add('active');
 
-      // Aktiven Nav-Button optisch hervorheben
       document.querySelectorAll('.nav-tab').forEach(el => {
         if (el.getAttribute('data-tab') === name) {
           el.classList.add('active');
@@ -1934,6 +2072,7 @@
       renderTodos();
       renderTermine();
       renderDateStatus();
+      renderMuellView();
       updatePonyUI(false);
     }
 
@@ -1982,6 +2121,9 @@
 
             appData = data;
             if (appData.ponyCounter === undefined) appData.ponyCounter = 0;
+            if (appData.muellFile === undefined) appData.muellFile = null;
+            if (appData.muellFileName === undefined) appData.muellFileName = "";
+
             renderAll();
             checkPendingDateForVanessa();
 
