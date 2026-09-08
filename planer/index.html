@@ -16,6 +16,12 @@
             --text: #333;
             --shadow: 0 8px 32px rgba(0,0,0,0.1);
             --glass: rgba(255, 255, 255, 0.7);
+            
+            /* Neue ToDo Farben */
+            --vanessa-bg: #d1f2e8;
+            --vanessa-border: #48bb78;
+            --fabian-bg: #dbeafe;
+            --fabian-border: #4299e1;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -192,330 +198,29 @@
         .dash-tile:hover { transform: translateY(-5px); background: white; }
         .dash-tile i { font-size: 1.5rem; display: block; margin-bottom: 10px; }
 
-        .list-item { background: white; margin: 10px 0; padding: 16px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: 0.3s; }
-        .list-item:hover { transform: scale(1.01); }
-        .list-item.done { opacity: 0.6; text-decoration: line-through; background: #f9f9f9; }
-
-        .todo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        @media (max-width: 500px) { .todo-grid { grid-template-columns: 1fr; } }
-        .todo-col { border-radius: 20px; padding: 15px; }
-        .vanessa-bg { background: rgba(213, 237, 218, 0.5); }
-        .fabian-bg { background: rgba(227, 242, 253, 0.5); }
-        .both-bg { background: linear-gradient(135deg, rgba(213, 237, 218, 0.7), rgba(227, 242, 253, 0.7)); }
-
-        .flying-capy { position: fixed; z-index: 3000; pointer-events: none; animation: fly-enhanced linear forwards; display: flex; align-items: center; justify-content: center; }
-        @keyframes fly-enhanced { 0% { transform: translate(var(--startX), var(--startY)) rotate(0deg); } 100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)); } }
-        .confetti { position: fixed; width: 10px; height: 10px; z-index: 1500; pointer-events: none; animation: fall linear forwards; }
-        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
-        .audio-control { background: var(--emerald); color: white; padding: 15px; border-radius: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; margin-top: 20px; }
-    </style>
-</head>
-<body>
-
-    <div class="bg-blobs">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-    </div>
-
-    <div id="security-modal" class="overlay">
-        <div class="glass-card" style="max-width: 350px;">
-            <h3>Sicherheitsabfrage</h3>
-            <p>Wann sind wir zusammengekommen?</p>
-            <input type="text" id="security-input" placeholder="dd.mm.yyyy">
-            <button onclick="checkSecurity()" style="width:100%;">Prüfen</button>
-            <p id="security-error" style="color:red; display:none; margin-top:10px;">Identität fragwürdig!</p>
-        </div>
-    </div>
-
-    <div id="profile-modal" class="overlay" style="display:none;">
-        <div class="glass-card" style="max-width: 350px;">
-            <h3>Wer bist du?</h3>
-            <button onclick="setProfile('Vanessa')" style="background:var(--sage); margin-bottom:10px; width:100%;">Ich bin Vanessa 🌸</button>
-            <button onclick="setProfile('Fabian')" style="background:var(--accent-blue); width:100%;">Ich bin Fabian 💙</button>
-        </div>
-    </div>
-
-    <div class="header-tools">
-        <div id="capybara-corner" ondblclick="triggerChillgriff()">🦫</div>
-        <div class="profile-btn" onclick="showProfileSwitch()" id="profile-indicator">?</div>
-    </div>
-
-    <div class="container">
-        <div id="tab-home" class="tab-content active">
-            <h1 id="main-title" class="hero-title">Vanessa & Fabian 🤍</h1>
-            <div class="greeting" id="user-greeting">Schön, dass du da bist!</div>
-            <div class="dashboard-grid">
-                <div class="dash-tile" onclick="switchTab('shopping', document.getElementById('nav-shop-btn'))"><i>🛒</i><strong>Einkauf</strong></div>
-                <div class="dash-tile" onclick="switchTab('todos', document.getElementById('nav-todo-btn'))"><i>✅</i><strong>ToDos</strong></div>
-                <div class="dash-tile" onclick="switchTab('calendar', document.getElementById('nav-cal-btn'))"><i>📅</i><strong>Termine</strong></div>
-                <div class="dash-tile" onclick="nextSong()"><i>⏭️</i><strong>Nächstes Lied</strong></div>
-            </div>
-        </div>
-
-        <div id="tab-shopping" class="tab-content">
-            <h3>🛒 Einkaufsliste</h3>
-            <div class="glass-card" style="display:flex; gap:10px; padding: 15px;">
-                <input type="text" id="shop-input" placeholder="Was brauchen wir?" style="margin:0;" onkeypress="if(event.key === 'Enter') addItem('shopping')">
-                <button onclick="addItem('shopping')">+</button>
-            </div>
-            <div id="shopping-list-container"></div>
-            <div id="shopping-done-container"></div>
-        </div>
-
-        <div id="tab-todos" class="tab-content">
-            <h3>✅ Aufgaben</h3>
-            <div class="glass-card">
-                <input type="text" id="todo-input" placeholder="Neue Aufgabe...">
-                <select id="todo-owner"><option value="Vanessa">Für Vanessa</option><option value="Fabian">Für Fabian</option><option value="Beide">Für Beide</option></select>
-                <button onclick="addItem('todo')" style="width:100%;">Hinzufügen</button>
-            </div>
-            <div class="todo-grid">
-                <div class="todo-col vanessa-bg"><small>Vanessas Aufgaben</small><div id="todo-vanessa"></div></div>
-                <div id="todo-fabian-col" class="todo-col fabian-bg"><small>Fabians Aufgaben</small><div id="todo-fabian"></div></div>
-            </div>
-        </div>
-
-        <div id="tab-calendar" class="tab-content">
-            <h3>📅 Termine</h3>
-            <div class="glass-card">
-                <input type="date" id="cal-date"><input type="time" id="cal-time"><input type="text" id="cal-title" placeholder="Was steht an?">
-                <button onclick="addItem('calendar')" style="width:100%;">Termin speichern</button>
-            </div>
-            <div id="calendar-container"></div>
-        </div>
-
-        <div id="tab-date" class="tab-content">
-            <h3>❤️ Date Einladung</h3>
-            <div id="fabian-date-view" style="display:none;">
-                <div class="glass-card">
-                    <p>Lade Vanessa zu etwas Besonderem ein:</p>
-                    <input type="date" id="date-invite-date"><input type="time" id="date-invite-time"><textarea id="date-invite-note" placeholder="Kleine Notiz..."></textarea>
-                    <button onclick="sendDateInvite()" style="width:100%;">Einladung abschicken</button>
-                </div>
-                <div id="date-status-msg" style="margin-top:20px; text-align:center; font-style:italic;"></div>
-            </div>
-            <div id="vanessa-date-view" style="display:none;"><p>Aktuell keine neuen Einladungen.</p></div>
-        </div>
-    </div>
-
-    <div id="date-popup" class="overlay" style="display:none; background: rgba(255,255,255,0.95);">
-        <div class="glass-card" style="position:relative; max-width: 350px;">
-            <h2 style="font-family:'Dancing Script'">Eine Einladung! ❤️</h2>
-            <p id="date-popup-text"></p>
-            <div style="display:flex; justify-content: space-around; margin-top:20px; height: 50px;">
-                <button onclick="acceptDate()" style="background:var(--emerald);">JA!</button>
-                <button id="no-btn" onmouseover="flee(this)" ontouchstart="flee(this)" style="background:#888;">Nein</button>
-            </div>
-        </div>
-    </div>
-
-    <nav class="nav-bar">
-        <div class="nav-item active" onclick="switchTab('home', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
-        <div class="nav-item" id="nav-shop-btn" onclick="switchTab('shopping', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Einkauf</div>
-        <div class="nav-item" id="nav-todo-btn" onclick="switchTab('todos', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>ToDos</div>
-        <div class="nav-item" id="nav-cal-btn" onclick="switchTab('calendar', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Termine</div>
-        <div class="nav-item" id="nav-date" style="display:none;" onclick="switchTab('date', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Date</div>
-    </nav>
-
-    <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO5or9QVWSOyfIBpzq0G2Q4LmzR-ECKQLF3DihegW6u6jR_dNhDDQOI6Leu9L1h2CX/exec";
-        let state = { user: null, shopping: [], todos: [], calendar: [], dateInvite: { active: false, date: '', time: '', note: '', status: 'open' } };
+        .list-item { 
+            background: white; 
+            margin: 10px 0; 
+            padding: 16px; 
+            border-radius: 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideIn 0.4s ease-out;
+        }
         
-        const playlist = ['song1.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3'];
-        let currentSongIndex = 0;
-        const audio = new Audio(playlist[0]);
-        audio.onended = () => nextSong();
-
-        function startMusic() {
-            audio.play().catch(() => {});
-            document.removeEventListener('click', startMusic);
-            document.removeEventListener('touchstart', startMusic);
-        }
-        document.addEventListener('click', startMusic);
-        document.addEventListener('touchstart', startMusic);
-
-        async function syncData(push = false) {
-            if (push) {
-                fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(state) });
-            } else {
-                try {
-                    const res = await fetch(GOOGLE_SCRIPT_URL);
-                    const data = await res.json();
-                    if (data && JSON.stringify(data) !== JSON.stringify(state)) { 
-                        state = data; 
-                        renderAll(); 
-                    }
-                } catch(e) {}
-            }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        window.onload = () => {
-            const saved = localStorage.getItem('v_f_planner_data_v2');
-            if (saved) { state = JSON.parse(saved); if(state.user) setProfile(state.user); }
-            syncData();
-            setInterval(() => syncData(), 10000);
-        };
-
-        function checkSecurity() {
-            if (document.getElementById('security-input').value === "25.09.2025") {
-                document.getElementById('security-modal').style.display = 'none';
-                document.getElementById('profile-modal').style.display = 'flex';
-                startMusic();
-            } else document.getElementById('security-error').style.display = 'block';
+        .list-item span { position: relative; cursor: pointer; flex: 1; }
+        .list-item span::after {
+            content: ''; position: absolute; left: 0; top: 55%; width: 100%; height: 2px;
+            background: currentColor; transform: scaleX(0); transform-origin: left;
+            transition: transform 0.3s ease-in-out;
         }
-
-        function setProfile(name) {
-            state.user = name;
-            document.getElementById('profile-modal').style.display = 'none';
-            document.getElementById('profile-indicator').innerText = name[0];
-            document.getElementById('nav-date').style.display = (name === 'Fabian') ? 'flex' : 'none';
-            document.getElementById('user-greeting').innerText = name === 'Vanessa' ? "Schön, dass du da bist, Vanessa 🌸" : "Hey Fabian 💙";
-            document.getElementById('fabian-date-view').style.display = (name === 'Fabian') ? 'block' : 'none';
-            document.getElementById('vanessa-date-view').style.display = (name === 'Vanessa') ? 'block' : 'none';
-            startMusic();
-            saveAndSync();
-        }
-
-        function nextSong() {
-            currentSongIndex = (currentSongIndex + 1) % playlist.length;
-            audio.src = playlist[currentSongIndex];
-            audio.play();
-        }
-
-        function saveAndSync() {
-            localStorage.setItem('v_f_planner_data_v2', JSON.stringify(state));
-            syncData(true);
-            renderAll();
-        }
-
-        function addItem(type) {
-            if (type === 'shopping') {
-                const input = document.getElementById('shop-input');
-                const val = input.value.trim();
-                if (!val) return;
-                const newItem = { id: Date.now(), text: val, done: false };
-                state.shopping.push(newItem);
-                input.value = '';
-                renderAll();
-                saveAndSync();
-            } else if (type === 'todo') {
-                const val = document.getElementById('todo-input').value;
-                const owner = document.getElementById('todo-owner').value;
-                if (!val) return;
-                state.todos.push({ id: Date.now(), text: val, owner: owner, done: false });
-                document.getElementById('todo-input').value = '';
-                saveAndSync();
-            } else if (type === 'calendar') {
-                const d = document.getElementById('cal-date').value;
-                const t = document.getElementById('cal-time').value;
-                const title = document.getElementById('cal-title').value;
-                if (!d || !title) return;
-                state.calendar.push({ id: Date.now(), date: d, time: t, title: title });
-                saveAndSync();
-            }
-        }
-
-        function toggleItem(type, id) {
-            const item = state[type].find(i => i.id === id);
-            if(item) item.done = !item.done;
-            saveAndSync();
-        }
-
-        function deleteItem(type, id) {
-            state[type] = state[type].filter(i => i.id !== id);
-            saveAndSync();
-        }
-
-        function renderAll() {
-            const shopCont = document.getElementById('shopping-list-container');
-            const shopDoneCont = document.getElementById('shopping-done-container');
-            if (shopCont) {
-                shopCont.innerHTML = ''; shopDoneCont.innerHTML = '';
-                state.shopping.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = `list-item ${item.done ? 'done' : ''}`;
-                    div.innerHTML = `<span onclick="toggleItem('shopping', ${item.id})">${item.text}</span><button onclick="deleteItem('shopping', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
-                    if (item.done) shopDoneCont.appendChild(div); else shopCont.appendChild(div);
-                });
-            }
-
-            const vTodo = document.getElementById('todo-vanessa');
-            const fTodo = document.getElementById('todo-fabian');
-            if (vTodo && fTodo) {
-                vTodo.innerHTML = ''; fTodo.innerHTML = '';
-                state.todos.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = `list-item ${item.done ? 'done' : ''} ${item.owner === 'Beide' ? 'both-bg' : ''}`;
-                    div.innerHTML = `<span onclick="toggleItem('todos', ${item.id})">${item.text}</span><button onclick="deleteItem('todos', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
-                    if (item.owner === 'Vanessa' || item.owner === 'Beide') vTodo.appendChild(div.cloneNode(true));
-                    if (item.owner === 'Fabian' || item.owner === 'Beide') fTodo.appendChild(div);
-                });
-            }
-
-            const calCont = document.getElementById('calendar-container');
-            if (calCont) {
-                calCont.innerHTML = '';
-                state.calendar.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'list-item';
-                    div.innerHTML = `<div><strong>${new Date(item.date).toLocaleDateString('de-DE')} ${item.time}</strong><br>${item.title}</div><button onclick="deleteItem('calendar', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
-                    calCont.appendChild(div);
-                });
-            }
-
-            if (state.user === 'Vanessa' && state.dateInvite.active && state.dateInvite.status === 'open') {
-                document.getElementById('date-popup-text').innerText = `Am ${state.dateInvite.date} um ${state.dateInvite.time} Uhr.\n\n"${state.dateInvite.note}"`;
-                document.getElementById('date-popup').style.display = 'flex';
-            }
-        }
-
-        function sendDateInvite() {
-            state.dateInvite = { active: true, date: document.getElementById('date-invite-date').value, time: document.getElementById('date-invite-time').value, note: document.getElementById('date-invite-note').value, status: 'open' };
-            saveAndSync();
-        }
-
-        function acceptDate() {
-            state.dateInvite.status = 'accepted';
-            state.calendar.push({ id: Date.now(), date: state.dateInvite.date, time: state.dateInvite.time, title: "❤️ DATE: " + state.dateInvite.note });
-            document.getElementById('date-popup').style.display = 'none';
-            audio.src = 'date-song.mp3';
-            audio.play();
-            saveAndSync();
-        }
-
-        function switchTab(tabId, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            if(el) el.classList.add('active');
-        }
-
-        function flee(btn) {
-            btn.style.position = 'fixed';
-            btn.style.left = (Math.random() * 80) + 'vw';
-            btn.style.top = (Math.random() * 80) + 'vh';
-        }
-
-        function triggerChillgriff() {
-            for(let i=0; i<15; i++) {
-                const capy = document.createElement('div');
-                capy.className = 'flying-capy';
-                capy.innerHTML = '🦫';
-                capy.style.fontSize = (Math.random() * 2 + 1) + 'rem';
-                capy.style.setProperty('--startX', '-100px');
-                capy.style.setProperty('--startY', (Math.random() * 100) + 'vh');
-                capy.style.setProperty('--endX', '110vw');
-                capy.style.setProperty('--endY', (Math.random() * 100) + 'vh');
-                capy.style.setProperty('--rot', (Math.random() * 720) + 'deg');
-                capy.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                document.body.appendChild(capy);
-                setTimeout(() => capy.remove(), 4000);
-            }
-        }
-
-        function showProfileSwitch() {
-            document.getElementById('profile-modal').style.display = 'flex';
-        }
-    </script>
-</body>
-</html>
+        .list-item.done span::after { transform: scaleX(1); }
+        .list-item.done { opacity: 0.
