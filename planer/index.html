@@ -248,14 +248,14 @@
                 <div class="dash-tile" onclick="switchTab('shopping', document.getElementById('nav-shop-btn'))"><i>🛒</i><strong>Einkauf</strong></div>
                 <div class="dash-tile" onclick="switchTab('todos', document.getElementById('nav-todo-btn'))"><i>✅</i><strong>ToDos</strong></div>
                 <div class="dash-tile" onclick="switchTab('calendar', document.getElementById('nav-cal-btn'))"><i>📅</i><strong>Termine</strong></div>
-                <div class="dash-tile" onclick="toggleMusic()"><i id="dash-music-icon">🎵</i><strong id="dash-music-text">Musik: Play</strong></div>
+                <div class="dash-tile" onclick="nextSong()"><i>⏭️</i><strong>Nächstes Lied</strong></div>
             </div>
         </div>
 
         <div id="tab-shopping" class="tab-content">
             <h3>🛒 Einkaufsliste</h3>
             <div class="glass-card" style="display:flex; gap:10px; padding: 15px;">
-                <input type="text" id="shop-input" placeholder="Was brauchen wir?" style="margin:0;">
+                <input type="text" id="shop-input" placeholder="Was brauchen wir?" style="margin:0;" onkeypress="if(event.key === 'Enter') addItem('shopping')">
                 <button onclick="addItem('shopping')">+</button>
             </div>
             <div id="shopping-list-container"></div>
@@ -320,15 +320,28 @@
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO5or9QVWSOyfIBpzq0G2Q4LmzR-ECKQLF3DihegW6u6jR_dNhDDQOI6Leu9L1h2CX/exec";
         let state = { user: null, shopping: [], todos: [], calendar: [], dateInvite: { active: false, date: '', time: '', note: '', status: 'open' } };
+        
+        const playlist = [
+            'https://cdn.pixabay.com/audio/2022/05/27/audio_1808f3030c.mp3',
+            'https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3',
+            'https://cdn.pixabay.com/audio/2021/11/23/audio_0c9929973f.mp3',
+            'https://cdn.pixabay.com/audio/2023/10/24/audio_3473180299.mp3'
+        ];
+        let currentSongIndex = 0;
+        const audio = new Audio(playlist[0]);
+        audio.onended = () => nextSong();
 
         async function syncData(push = false) {
             if (push) {
-                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(state) });
+                fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(state) });
             } else {
                 try {
                     const res = await fetch(GOOGLE_SCRIPT_URL);
                     const data = await res.json();
-                    if (data) { state = data; renderAll(); }
+                    if (data && JSON.stringify(data) !== JSON.stringify(state)) { 
+                        state = data; 
+                        renderAll(); 
+                    }
                 } catch(e) {}
             }
         }
@@ -344,6 +357,7 @@
             if (document.getElementById('security-input').value === "25.09.2025") {
                 document.getElementById('security-modal').style.display = 'none';
                 document.getElementById('profile-modal').style.display = 'flex';
+                startMusic();
             } else document.getElementById('security-error').style.display = 'block';
         }
 
@@ -355,7 +369,20 @@
             document.getElementById('user-greeting').innerText = name === 'Vanessa' ? "Schön, dass du da bist, Vanessa 🌸" : "Hey Fabian 💙";
             document.getElementById('fabian-date-view').style.display = (name === 'Fabian') ? 'block' : 'none';
             document.getElementById('vanessa-date-view').style.display = (name === 'Vanessa') ? 'block' : 'none';
+            startMusic();
             saveAndSync();
+        }
+
+        function startMusic() {
+            audio.play().catch(() => {
+                console.log("Warte auf Interaktion für Audio...");
+            });
+        }
+
+        function nextSong() {
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            audio.src = playlist[currentSongIndex];
+            audio.play();
         }
 
         function saveAndSync() {
@@ -366,24 +393,29 @@
 
         function addItem(type) {
             if (type === 'shopping') {
-                const val = document.getElementById('shop-input').value;
+                const input = document.getElementById('shop-input');
+                const val = input.value.trim();
                 if (!val) return;
-                state.shopping.push({ id: Date.now(), text: val, done: false });
-                document.getElementById('shop-input').value = '';
+                const newItem = { id: Date.now(), text: val, done: false };
+                state.shopping.push(newItem);
+                input.value = '';
+                renderAll(); // Sofortiges lokales Rendering
+                saveAndSync(); // Hintergrund-Sync
             } else if (type === 'todo') {
                 const val = document.getElementById('todo-input').value;
                 const owner = document.getElementById('todo-owner').value;
                 if (!val) return;
                 state.todos.push({ id: Date.now(), text: val, owner: owner, done: false });
                 document.getElementById('todo-input').value = '';
+                saveAndSync();
             } else if (type === 'calendar') {
                 const d = document.getElementById('cal-date').value;
                 const t = document.getElementById('cal-time').value;
                 const title = document.getElementById('cal-title').value;
                 if (!d || !title) return;
                 state.calendar.push({ id: Date.now(), date: d, time: t, title: title });
+                saveAndSync();
             }
-            saveAndSync();
         }
 
         function toggleItem(type, id) {
@@ -400,33 +432,39 @@
         function renderAll() {
             const shopCont = document.getElementById('shopping-list-container');
             const shopDoneCont = document.getElementById('shopping-done-container');
-            shopCont.innerHTML = ''; shopDoneCont.innerHTML = '';
-            state.shopping.forEach(item => {
-                const div = document.createElement('div');
-                div.className = `list-item ${item.done ? 'done' : ''}`;
-                div.innerHTML = `<span onclick="toggleItem('shopping', ${item.id})">${item.text}</span><button onclick="deleteItem('shopping', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
-                if (item.done) shopDoneCont.appendChild(div); else shopCont.appendChild(div);
-            });
+            if (shopCont) {
+                shopCont.innerHTML = ''; shopDoneCont.innerHTML = '';
+                state.shopping.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = `list-item ${item.done ? 'done' : ''}`;
+                    div.innerHTML = `<span onclick="toggleItem('shopping', ${item.id})">${item.text}</span><button onclick="deleteItem('shopping', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
+                    if (item.done) shopDoneCont.appendChild(div); else shopCont.appendChild(div);
+                });
+            }
 
             const vTodo = document.getElementById('todo-vanessa');
             const fTodo = document.getElementById('todo-fabian');
-            vTodo.innerHTML = ''; fTodo.innerHTML = '';
-            state.todos.forEach(item => {
-                const div = document.createElement('div');
-                div.className = `list-item ${item.done ? 'done' : ''} ${item.owner === 'Beide' ? 'both-bg' : ''}`;
-                div.innerHTML = `<span onclick="toggleItem('todos', ${item.id})">${item.text}</span><button onclick="deleteItem('todos', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
-                if (item.owner === 'Vanessa' || item.owner === 'Beide') vTodo.appendChild(div.cloneNode(true));
-                if (item.owner === 'Fabian' || item.owner === 'Beide') fTodo.appendChild(div);
-            });
+            if (vTodo && fTodo) {
+                vTodo.innerHTML = ''; fTodo.innerHTML = '';
+                state.todos.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = `list-item ${item.done ? 'done' : ''} ${item.owner === 'Beide' ? 'both-bg' : ''}`;
+                    div.innerHTML = `<span onclick="toggleItem('todos', ${item.id})">${item.text}</span><button onclick="deleteItem('todos', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
+                    if (item.owner === 'Vanessa' || item.owner === 'Beide') vTodo.appendChild(div.cloneNode(true));
+                    if (item.owner === 'Fabian' || item.owner === 'Beide') fTodo.appendChild(div);
+                });
+            }
 
             const calCont = document.getElementById('calendar-container');
-            calCont.innerHTML = '';
-            state.calendar.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                div.innerHTML = `<div><strong>${new Date(item.date).toLocaleDateString('de-DE')} ${item.time}</strong><br>${item.title}</div><button onclick="deleteItem('calendar', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
-                calCont.appendChild(div);
-            });
+            if (calCont) {
+                calCont.innerHTML = '';
+                state.calendar.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.innerHTML = `<div><strong>${new Date(item.date).toLocaleDateString('de-DE')} ${item.time}</strong><br>${item.title}</div><button onclick="deleteItem('calendar', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
+                    calCont.appendChild(div);
+                });
+            }
 
             if (state.user === 'Vanessa' && state.dateInvite.active && state.dateInvite.status === 'open') {
                 document.getElementById('date-popup-text').innerText = `Am ${state.dateInvite.date} um ${state.dateInvite.time} Uhr.\n\n"${state.dateInvite.note}"`;
@@ -459,8 +497,26 @@
             btn.style.top = (Math.random() * 80) + 'vh';
         }
 
-        function triggerChillgriff() { /* ... */ }
-        function toggleMusic() { /* ... */ }
+        function triggerChillgriff() {
+            for(let i=0; i<15; i++) {
+                const capy = document.createElement('div');
+                capy.className = 'flying-capy';
+                capy.innerHTML = '🦫';
+                capy.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+                capy.style.setProperty('--startX', '-100px');
+                capy.style.setProperty('--startY', (Math.random() * 100) + 'vh');
+                capy.style.setProperty('--endX', '110vw');
+                capy.style.setProperty('--endY', (Math.random() * 100) + 'vh');
+                capy.style.setProperty('--rot', (Math.random() * 720) + 'deg');
+                capy.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(capy);
+                setTimeout(() => capy.remove(), 4000);
+            }
+        }
+
+        function showProfileSwitch() {
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
     </script>
 </body>
 </html>
