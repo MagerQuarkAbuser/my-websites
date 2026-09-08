@@ -992,10 +992,10 @@
         <div class="section-card" style="text-align: center;">
           <div class="section-title">Unsere Momente 🤍</div>
           
-          <!-- Diashow Vorschau -->
-          <div style="width: 100%; height: 240px; border-radius: 16px; overflow: hidden; background: #000; position: relative; margin-bottom: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
-            <img id="slideshow-img" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 1s ease-in-out; opacity: 0;" alt="Diashow">
-            <div style="position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,0.5); color: white; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem;">Zufällige Diashow ✨</div>
+          <!-- Diashow Vorschau (mit object-fit: contain, damit man das ganze Bild sieht) -->
+          <div style="width: 100%; height: 280px; border-radius: 16px; overflow: hidden; background: #0f172a; position: relative; margin-bottom: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center;">
+            <img id="slideshow-img" style="max-width: 100%; max-height: 100%; object-fit: contain; transition: opacity 1s ease-in-out; opacity: 0;" alt="Diashow">
+            <div style="position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,0.6); color: white; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem;">Zufällige Diashow ✨</div>
           </div>
 
           <!-- Multi-Upload Formular -->
@@ -1348,7 +1348,6 @@
         return;
       }
 
-      // 1. Lokal zur Diashow hinzufügen
       imagesArray.forEach(img => {
         if (!appData.galleryImages) appData.galleryImages = [];
         appData.galleryImages.push(img.base64);
@@ -1356,7 +1355,6 @@
       syncData();
       startSlideshow();
 
-      // 2. An Google Drive schicken
       fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -2088,15 +2086,9 @@
             isFirstFetch = false;
 
             const localPony = appData.ponyCounter;
-            const localMuellTitle = appData.muellTitle;
-            const localMuellFile = appData.muellFile;
-            const localGallery = appData.galleryImages;
-
             appData = data;
             if (appData.ponyCounter === undefined) appData.ponyCounter = localPony;
-            if (appData.muellTitle === undefined) appData.muellTitle = localMuellTitle || "Müllkalender bis Januar";
-            if (appData.muellFile === undefined) appData.muellFile = localMuellFile || null;
-            if (appData.galleryImages === undefined) appData.galleryImages = localGallery || [];
+            if (appData.muellTitle === undefined) appData.muellTitle = "Müllkalender bis Januar";
 
             renderAll();
             checkPendingDateForVanessa();
