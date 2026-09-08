@@ -14,15 +14,15 @@
       --blue-dark: #0284c7;
       --blue-border: #7dd3fc;
       --bg: #f8fafc;
-      --card-bg: rgba(255, 255, 255, 0.88);
+      --card-bg: rgba(255, 255, 255, 0.93);
       --text: #0f172a;
-      --text-muted: #64748b;
-      --vanessa-card: rgba(240, 253, 244, 0.92);
-      --vanessa-border: #4ade80;
-      --fabian-card: rgba(240, 249, 255, 0.92);
-      --fabian-border: #38bdf8;
-      --both-card: linear-gradient(135deg, rgba(240, 253, 244, 0.95) 0%, rgba(240, 249, 255, 0.95) 100%);
-      --both-border: #a7f3d0;
+      --text-muted: #475569;
+      --vanessa-card: rgba(240, 253, 244, 0.96);
+      --vanessa-border: #22c55e;
+      --fabian-card: rgba(240, 249, 255, 0.96);
+      --fabian-border: #0284c7;
+      --both-card: linear-gradient(135deg, rgba(240, 253, 244, 0.96) 0%, rgba(240, 249, 255, 0.96) 100%);
+      --both-border: #38bdf8;
     }
 
     * {
@@ -34,7 +34,7 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f1f5f9;
+      background-color: #e2e8f0;
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -44,22 +44,27 @@
       position: relative;
     }
 
-    /* Foto-Hintergrund (hintergrund.jpeg) */
+    /* Foto-Hintergrund (hintergrund.jpeg) - erhöhte Deckkraft */
     #bg-photo {
       position: fixed;
       inset: 0;
       background: url('hintergrund.jpeg') center center / cover no-repeat;
-      opacity: 0.22;
-      filter: saturate(1.05);
+      opacity: 0.42;
+      filter: saturate(1.1) contrast(1.02);
       z-index: -2;
       pointer-events: none;
+      transition: opacity 0.4s ease, filter 0.4s ease;
+    }
+    #bg-photo.cursed-active {
+      opacity: 0.65;
+      filter: saturate(1.2) contrast(1.15);
     }
 
-    /* Weicher Farbverlauf über dem Foto */
+    /* Ausgleichender Verlauf für optimale Lesbarkeit */
     #bg-overlay {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at 10% 20%, rgba(224, 242, 254, 0.45) 0%, rgba(220, 252, 231, 0.45) 45%, rgba(248, 250, 252, 0.65) 85%);
+      background: radial-gradient(circle at 10% 20%, rgba(224, 242, 254, 0.35) 0%, rgba(220, 252, 231, 0.35) 45%, rgba(248, 250, 252, 0.5) 85%);
       z-index: -1;
       pointer-events: none;
     }
@@ -72,13 +77,13 @@
       transition: transform 0.3s ease;
     }
 
-    /* Schwebende Hintergrund-Blobs */
+    /* Hintergrund-Blobs */
     .bg-blob {
       position: fixed;
       border-radius: 50%;
       filter: blur(90px);
       z-index: -1;
-      opacity: 0.35;
+      opacity: 0.3;
       animation: floatSlow 18s ease-in-out infinite alternate;
     }
     .blob-1 { width: 320px; height: 320px; background: #bae6fd; top: -50px; left: -50px; }
@@ -99,11 +104,11 @@
       position: sticky;
       top: 0;
       z-index: 40;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      background: rgba(255, 255, 255, 0.85);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: rgba(255, 255, 255, 0.9);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 6px 25px rgba(15, 23, 42, 0.08);
     }
 
     .capy-btn {
@@ -136,17 +141,17 @@
 
     .icon-btn {
       background: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.25);
       border-radius: 999px;
       padding: 6px 12px;
       font-size: 0.9rem;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text);
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 5px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
       transition: all 0.2s;
     }
     .icon-btn:hover { background: white; transform: translateY(-1px); }
@@ -156,7 +161,7 @@
     nav {
       width: 100%;
       max-width: 720px;
-      padding: 10px 16px;
+      padding: 12px 16px 8px 16px;
       display: flex;
       justify-content: center;
       gap: 8px;
@@ -166,31 +171,32 @@
     nav::-webkit-scrollbar { display: none; }
 
     .nav-tab {
-      padding: 8px 16px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.6);
+      padding: 9px 18px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
       font-size: 0.9rem;
       font-weight: 600;
       color: var(--text-muted);
       cursor: pointer;
       white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
       transition: all 0.25s;
     }
     .nav-tab.active {
       background: white;
       color: var(--text);
-      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-      border-color: var(--mint-border);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.1);
+      border-color: var(--blue-dark);
       transform: translateY(-1px);
     }
 
     main {
       width: 100%;
       max-width: 720px;
-      padding: 12px 16px 80px 16px;
+      padding: 12px 16px 20px 16px;
     }
 
     .tab-content { display: none; }
@@ -200,21 +206,23 @@
     /* Startseite */
     .brand-title {
       font-family: 'Dancing Script', cursive;
-      font-size: clamp(2.8rem, 8vw, 4.4rem);
+      font-size: clamp(3rem, 8.5vw, 4.6rem);
       font-weight: 700;
       text-align: center;
       margin: 15px 0 6px 0;
-      background: linear-gradient(135deg, #166534 0%, #0369a1 100%);
+      background: linear-gradient(135deg, #14532d 0%, #0369a1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.8));
+      filter: drop-shadow(0 2px 10px rgba(255, 255, 255, 0.95)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
       line-height: 1.1;
       transition: all 0.3s;
     }
     .greeting-sub {
       text-align: center;
       font-size: 1.1rem;
-      color: var(--text-muted);
+      font-weight: 500;
+      color: var(--text);
+      text-shadow: 0 1px 4px rgba(255, 255, 255, 0.9);
       margin-bottom: 20px;
     }
 
@@ -226,20 +234,24 @@
     }
     .dash-card {
       background: var(--card-bg);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-radius: 18px;
-      padding: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 20px;
+      padding: 22px;
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
       cursor: pointer;
       transition: all 0.25s;
       text-align: center;
     }
-    .dash-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.08); }
-    .dash-card .icon { font-size: 2.2rem; margin-bottom: 8px; }
-    .dash-card h3 { font-size: 1.1rem; margin-bottom: 4px; }
-    .dash-card p { font-size: 0.85rem; color: var(--text-muted); }
+    .dash-card:hover { 
+      transform: translateY(-3px); 
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
+      border-color: #bae6fd;
+    }
+    .dash-card .icon { font-size: 2.3rem; margin-bottom: 8px; }
+    .dash-card h3 { font-size: 1.15rem; margin-bottom: 4px; font-weight: 700; }
+    .dash-card p { font-size: 0.88rem; color: var(--text-muted); font-weight: 500; }
 
     /* Bok-Button */
     .bok-container {
@@ -250,14 +262,14 @@
     .bok-btn {
       background: linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #8b5cf6 100%);
       color: white;
-      border: none;
+      border: 2px solid rgba(255, 255, 255, 0.8);
       border-radius: 999px;
-      padding: 14px 34px;
+      padding: 14px 36px;
       font-size: 1.15rem;
       font-weight: 700;
       letter-spacing: 0.5px;
       cursor: pointer;
-      box-shadow: 0 8px 25px rgba(244, 63, 94, 0.35);
+      box-shadow: 0 10px 28px rgba(244, 63, 94, 0.4);
       transition: all 0.25s;
       display: inline-flex;
       align-items: center;
@@ -265,21 +277,21 @@
     }
     .bok-btn:hover {
       transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 12px 30px rgba(244, 63, 94, 0.45);
+      box-shadow: 0 14px 35px rgba(244, 63, 94, 0.5);
     }
     .bok-btn:active { transform: scale(0.97); }
 
     /* Beziehungsticker */
     .ticker-card {
-      margin-top: 20px;
+      margin-top: 22px;
       background: var(--card-bg);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-radius: 22px;
-      padding: 20px 24px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 22px 26px;
       text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.95);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.98);
+      box-shadow: 0 12px 34px rgba(15, 23, 42, 0.09);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -294,12 +306,12 @@
       left: 0;
       right: 0;
       height: 4px;
-      background: linear-gradient(90deg, #bbf7d0, #bae6fd, #fbcfe8, #bbf7d0);
+      background: linear-gradient(90deg, #22c55e, #0284c7, #ec4899, #22c55e);
       background-size: 300% 100%;
       animation: gradientShift 6s infinite linear;
     }
     .ticker-header {
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1.2px;
@@ -310,7 +322,7 @@
     }
     .ticker-days-value {
       font-family: 'Montserrat', sans-serif;
-      font-size: clamp(2.4rem, 8vw, 3.2rem);
+      font-size: clamp(2.6rem, 8vw, 3.4rem);
       font-weight: 900;
       line-height: 1;
       margin: 4px 0 2px 0;
@@ -319,13 +331,14 @@
       -webkit-text-fill-color: transparent;
     }
     .ticker-subtext {
-      font-size: 0.95rem;
+      font-size: 0.98rem;
       font-weight: 600;
-      color: #334155;
+      color: #1e293b;
     }
     .ticker-since {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: #64748b;
+      font-weight: 500;
     }
 
     /* Bok-Vollbild */
@@ -369,16 +382,16 @@
     /* Listen & Formulare */
     .section-card {
       background: var(--card-bg);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 22px;
+      padding: 22px;
+      margin-bottom: 22px;
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
     }
     .section-title {
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: 700;
       margin-bottom: 16px;
       display: flex;
@@ -395,21 +408,26 @@
       flex: 1;
       padding: 12px 14px;
       border-radius: 12px;
-      border: 1px solid #cbd5e1;
+      border: 1.5px solid #cbd5e1;
       font-size: 0.95rem;
       background: rgba(255, 255, 255, 0.95);
       outline: none;
-      transition: border 0.2s;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: border 0.2s, box-shadow 0.2s;
     }
-    .input-bar input:focus, .input-bar select:focus { border-color: var(--blue-dark); }
+    .input-bar input:focus, .input-bar select:focus { 
+      border-color: var(--blue-dark); 
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
     .primary-btn {
       background: linear-gradient(135deg, #22c55e 0%, #0ea5e9 100%);
       color: white;
-      border: none;
+      border: 1px solid rgba(255, 255, 255, 0.6);
       border-radius: 12px;
-      padding: 12px 18px;
+      padding: 12px 20px;
       font-weight: 600;
       cursor: pointer;
+      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
       transition: opacity 0.2s, transform 0.1s;
     }
     .primary-btn:active { transform: scale(0.97); }
@@ -419,18 +437,24 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 14px;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 12px;
-      margin-bottom: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      padding: 13px 16px;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 14px;
+      margin-bottom: 9px;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
       cursor: pointer;
       user-select: none;
-      transition: transform 0.2s, opacity 0.2s;
+      transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
+    }
+    .list-item:hover {
+      box-shadow: 0 5px 14px rgba(15, 23, 42, 0.08);
+      border-color: #cbd5e1;
     }
     .item-text {
       position: relative;
-      font-size: 0.95rem;
+      font-size: 0.96rem;
+      font-weight: 500;
       color: var(--text);
       display: inline-block;
     }
@@ -448,7 +472,11 @@
     }
     .list-item.striking .item-text::after { transform: scaleX(1); }
     .list-item.striking { opacity: 0.6; }
-    .list-item.done { background: #f1f5f9; opacity: 0.65; }
+    .list-item.done { 
+      background: rgba(241, 245, 249, 0.85); 
+      opacity: 0.7;
+      border-color: #e2e8f0;
+    }
     .list-item.done .item-text::after { transform: scaleX(1); }
     
     .action-group {
@@ -469,7 +497,7 @@
     .icon-action-btn:hover { background-color: #f1f5f9; color: #1e293b; }
     .icon-action-btn.del-btn:hover { color: #ef4444; }
 
-    /* ToDos */
+    /* ToDos: Klare Umrandungen */
     .todo-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -479,41 +507,63 @@
       .todo-grid { grid-template-columns: 1fr; }
     }
     .todo-card {
-      border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-      border-left: 5px solid;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 9px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      border: 1.5px solid;
+      border-left-width: 6px;
       cursor: pointer;
       transition: all 0.2s;
     }
+    .todo-card:hover {
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.09);
+    }
     .todo-card.striking .item-text::after { transform: scaleX(1); }
     .todo-card.striking { opacity: 0.6; }
-    .todo-card.done { background: #f1f5f9; opacity: 0.65; }
+    .todo-card.done { 
+      background: rgba(241, 245, 249, 0.85) !important; 
+      opacity: 0.7; 
+      border-color: #cbd5e1 !important;
+    }
     .todo-card.done .item-text::after { transform: scaleX(1); }
 
-    .todo-vanessa { background: var(--vanessa-card); border-color: var(--vanessa-border); }
-    .todo-fabian { background: var(--fabian-card); border-color: var(--fabian-border); }
-    .todo-both { background: var(--both-card); border-color: var(--both-border); }
-
-    /* Termine: Kategorien */
-    .termin-item {
-      border-left: 5px solid #a855f7;
-      background: rgba(255, 255, 255, 0.95);
+    .todo-vanessa { 
+      background: var(--vanessa-card); 
+      border-color: #86efac;
+      border-left-color: var(--vanessa-border);
     }
-    .termin-geburtstag { border-left-color: #3b82f6 !important; background: #f0f7ff !important; }
-    .termin-date { border-left-color: #ef4444 !important; background: #fff1f2 !important; }
-    .termin-event { border-left-color: #22c55e !important; background: #f0fdf4 !important; }
-    .termin-arzt { border-left-color: #eab308 !important; background: #fefce8 !important; }
-    .termin-sonstiges { border-left-color: #a855f7 !important; background: #faf5ff !important; }
+    .todo-fabian { 
+      background: var(--fabian-card); 
+      border-color: #7dd3fc;
+      border-left-color: var(--fabian-border);
+    }
+    .todo-both { 
+      background: var(--both-card); 
+      border-color: #a7f3d0;
+      border-left-color: #06b6d4;
+    }
+
+    /* Termine: Kategorien mit klarer Umrandung */
+    .termin-item {
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      border-left: 6px solid #a855f7 !important;
+      background: rgba(255, 255, 255, 0.98);
+    }
+    .termin-geburtstag { border-left-color: #3b82f6 !important; background: rgba(240, 247, 255, 0.98) !important; border-color: #bfdbfe; }
+    .termin-date { border-left-color: #ef4444 !important; background: rgba(255, 241, 242, 0.98) !important; border-color: #fecdd3; }
+    .termin-event { border-left-color: #22c55e !important; background: rgba(240, 253, 244, 0.98) !important; border-color: #bbf7d0; }
+    .termin-arzt { border-left-color: #eab308 !important; background: rgba(254, 252, 232, 0.98) !important; border-color: #fef08a; }
+    .termin-sonstiges { border-left-color: #a855f7 !important; background: rgba(250, 245, 255, 0.98) !important; border-color: #e9d5ff; }
 
     .cat-badge {
       display: inline-block;
       font-size: 0.72rem;
       font-weight: 700;
-      padding: 2px 8px;
+      padding: 3px 9px;
       border-radius: 999px;
       margin-bottom: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .badge-geburtstag { background: #dbeafe; color: #1d4ed8; }
     .badge-date { background: #ffe4e6; color: #b91c1c; }
@@ -529,23 +579,23 @@
       padding-bottom: 12px;
     }
     .pony-btn {
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1.5px solid rgba(255, 255, 255, 0.98);
       border-radius: 999px;
-      padding: 8px 16px;
+      padding: 8px 18px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 8px;
       font-size: 1.25rem;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 3px 12px rgba(15, 23, 42, 0.06);
       user-select: none;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .pony-btn:hover {
       transform: scale(1.08);
       background: white;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+      box-shadow: 0 5px 16px rgba(15, 23, 42, 0.1);
     }
     .pony-btn:active { transform: scale(0.94); }
     .pony-text {
@@ -564,12 +614,41 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
+    /* Totenkopf Easter Egg */
+    .skull-footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 18px 0 35px 0;
+      width: 100%;
+    }
+    .skull-btn {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      font-size: 1.15rem;
+      opacity: 0.35;
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.25s ease, transform 0.25s ease, background 0.25s;
+      padding: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .skull-btn:hover {
+      opacity: 0.95;
+      background: white;
+      transform: scale(1.25) rotate(12deg);
+    }
+    .skull-btn:active {
+      transform: scale(0.9);
+    }
+
     /* Modals */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(8px);
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(10px);
       z-index: 100;
       display: flex;
       align-items: center;
@@ -578,11 +657,12 @@
     }
     .modal-box {
       background: white;
-      border-radius: 24px;
-      padding: 28px;
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      border-radius: 26px;
+      padding: 30px;
       max-width: 420px;
       width: 100%;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.25);
       text-align: center;
       animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
@@ -604,7 +684,7 @@
       transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
       background: #f1f5f9;
       color: #64748b;
-      border: 1px solid #cbd5e1;
+      border: 1.5px solid #cbd5e1;
       padding: 10px 20px;
       border-radius: 12px;
       font-weight: 600;
@@ -613,7 +693,7 @@
       touch-action: none;
     }
 
-    /* Chillgriff Overlay & Fliegende Köpfe */
+    /* Chillgriff Overlay */
     #chillgriff-overlay {
       display: none;
       position: fixed;
@@ -622,9 +702,9 @@
       z-index: 9998;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle, rgba(240, 253, 250, 0.6) 0%, rgba(15, 23, 42, 0.5) 100%);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      background: radial-gradient(circle, rgba(240, 253, 250, 0.65) 0%, rgba(15, 23, 42, 0.55) 100%);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
     #chillgriff-overlay.active {
       display: flex;
@@ -681,7 +761,7 @@
       100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)) scale(1.25); opacity: 0; }
     }
 
-    /* Partymodus (30 Sekunden - Sanft) */
+    /* Partymodus */
     #party-stage {
       display: none;
       position: fixed;
@@ -729,12 +809,13 @@
       background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
       color: white;
       padding: 16px 28px;
+      border: 2px solid rgba(255, 255, 255, 0.8);
       border-radius: 24px;
       font-family: 'Montserrat', sans-serif;
       font-size: clamp(1.25rem, 4.5vw, 2.1rem);
       font-weight: 900;
       text-align: center;
-      box-shadow: 0 12px 35px rgba(236, 72, 153, 0.35);
+      box-shadow: 0 12px 35px rgba(236, 72, 153, 0.4);
       text-transform: uppercase;
       letter-spacing: 1px;
     }
@@ -746,7 +827,7 @@
       border-radius: 999px;
       font-weight: 800;
       font-size: 0.95rem;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.12);
     }
 
     body.party-celebration .dash-card,
@@ -979,6 +1060,11 @@
         </div>
       </div>
     </main>
+
+    <!-- Ganz unten: Geheim-Totenkopf für cursed.jpg -->
+    <div class="skull-footer">
+      <button type="button" class="skull-btn" onclick="triggerCursedMode()" title="💀">💀</button>
+    </div>
   </div>
 
   <!-- MODAL: LOGIN -->
@@ -986,7 +1072,7 @@
     <div class="modal-box">
       <h2 style="font-family:'Dancing Script', cursive; font-size: 2.2rem; margin-bottom: 8px;">Willkommen 🤍</h2>
       <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 16px;">Wann sind wir zusammengekommen?</p>
-      <input type="text" id="login-date" placeholder="TT.MM.JJJJ" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1; text-align: center; font-size: 1.1rem; margin-bottom: 12px;">
+      <input type="text" id="login-date" placeholder="TT.MM.JJJJ" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid #cbd5e1; text-align: center; font-size: 1.1rem; margin-bottom: 12px;">
       <p id="login-error" style="color: #ef4444; font-size: 0.85rem; display: none; margin-bottom: 10px;">Identität fragwürdig 🤨</p>
       <button class="primary-btn" style="width: 100%;" onclick="checkAuth()">Prüfen ✨</button>
     </div>
@@ -1010,11 +1096,11 @@
       <form onsubmit="saveEditedTermin(event)">
         <input type="hidden" id="edit-termin-index">
         <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-          <input type="date" id="edit-termin-date" required style="flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
-          <input type="time" id="edit-termin-time" required style="width: 110px; padding: 10px 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+          <input type="date" id="edit-termin-date" required style="flex: 1; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 0.95rem;">
+          <input type="time" id="edit-termin-time" required style="width: 110px; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 0.95rem;">
         </div>
         <div style="margin-bottom: 12px;">
-          <select id="edit-termin-category" style="width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+          <select id="edit-termin-category" style="width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 0.95rem;">
             <option value="geburtstag">Geburtstag 🎂 (Blau)</option>
             <option value="date">Date ❤️ (Rot)</option>
             <option value="event">Veranstaltung 🎟️ (Grün)</option>
@@ -1023,7 +1109,7 @@
           </select>
         </div>
         <div style="margin-bottom: 20px;">
-          <input type="text" id="edit-termin-title" placeholder="Beschreibung..." required style="width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.95rem;">
+          <input type="text" id="edit-termin-title" placeholder="Beschreibung..." required style="width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 0.95rem;">
         </div>
         <div style="display: flex; gap: 10px;">
           <button type="button" class="icon-btn" style="flex: 1; justify-content: center; padding: 10px;" onclick="closeEditTerminModal()">Abbrechen</button>
@@ -1064,6 +1150,7 @@
     let secretTimeout = null;
     let secretInterval = null;
     let bokTimeout = null;
+    let cursedTimeout = null;
 
     let ponyCounter = parseInt(localStorage.getItem('planer_pony_counter')) || 0;
 
@@ -1145,6 +1232,23 @@
       if (daysEl) {
         daysEl.textContent = diffDays >= 0 ? diffDays : 0;
       }
+    }
+
+    // ==========================================
+    // EASTER EGG: CURSED HINTERGRUND (10 SEKUNDEN)
+    // ==========================================
+    function triggerCursedMode() {
+      clearTimeout(cursedTimeout);
+      const bg = document.getElementById('bg-photo');
+      if (!bg) return;
+
+      bg.style.backgroundImage = "url('cursed.jpg')";
+      bg.classList.add('cursed-active');
+
+      cursedTimeout = setTimeout(() => {
+        bg.style.backgroundImage = "url('hintergrund.jpeg')";
+        bg.classList.remove('cursed-active');
+      }, 10000);
     }
 
     // ==========================================
