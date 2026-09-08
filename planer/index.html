@@ -390,7 +390,7 @@
     }
     .muell-preview-img:hover { transform: scale(1.01); }
 
-    /* Zoom Modal mit echtem Pinch-to-Zoom Support */
+    /* Zoom Modal */
     #muell-zoom-modal {
       display: none;
       position: fixed;
@@ -757,7 +757,7 @@
   <div id="bg-photo"></div>
   <div id="bg-overlay"></div>
 
-  <!-- Vollbild-Zoom Modal für Mülltermine (mit Zoom-Buttons & echtem Zoomen) -->
+  <!-- Vollbild-Zoom Modal für Mülltermine -->
   <div id="muell-zoom-modal">
     <button class="muell-zoom-close" onclick="closeMuellZoom()">✕</button>
     <div class="muell-zoom-wrapper" id="zoom-wrapper">
@@ -815,6 +815,7 @@
       <button class="nav-tab" data-tab="todos" onclick="showTab('todos')">📋 ToDos</button>
       <button class="nav-tab" data-tab="termine" onclick="showTab('termine')">📅 Termine</button>
       <button class="nav-tab" data-tab="muell" onclick="showTab('muell')">🗑️ Müll</button>
+      <button class="nav-tab" data-tab="galerie" onclick="showTab('galerie')">🖼️ Erinnerungen</button>
       <button class="nav-tab" id="tab-date-btn" data-tab="date" style="display:none;" onclick="showTab('date')">❤️ Date</button>
     </nav>
 
@@ -986,7 +987,29 @@
         </div>
       </div>
 
-      <!-- TAB 6: DATE (FABIAN) -->
+      <!-- TAB 6: GALERIE & DIASHOW -->
+      <div id="tab-galerie" class="tab-content">
+        <div class="section-card" style="text-align: center;">
+          <div class="section-title">Unsere Momente 🤍</div>
+          
+          <!-- Diashow Vorschau -->
+          <div style="width: 100%; height: 240px; border-radius: 16px; overflow: hidden; background: #000; position: relative; margin-bottom: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+            <img id="slideshow-img" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 1s ease-in-out; opacity: 0;" alt="Diashow">
+            <div style="position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,0.5); color: white; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem;">Zufällige Diashow ✨</div>
+          </div>
+
+          <!-- Multi-Upload Formular -->
+          <label class="muell-upload-box" for="gallery-file-input">
+            <div style="font-size: 2rem; margin-bottom: 6px;">📸✨</div>
+            <div style="font-weight: 600; color: var(--text);">Mehrere Bilder auswählen</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">(Werden in Google Drive gespeichert)</div>
+            <input type="file" id="gallery-file-input" accept="image/*" multiple style="display: none;" onchange="handleGalleryUpload(event)">
+          </label>
+          <div id="upload-status" style="font-size: 0.85rem; color: var(--blue-dark); font-weight: 600; margin-top: 8px;"></div>
+        </div>
+      </div>
+
+      <!-- TAB 7: DATE (FABIAN) -->
       <div id="tab-date" class="tab-content">
         <div class="section-card">
           <div class="section-title">Geheime Date-Einladung ❤️</div>
@@ -1113,7 +1136,9 @@
       termine: [],
       dateEinladung: null,
       ponyCounter: 0,
-      muellTitle: "Müllkalender bis Januar"
+      muellTitle: "Müllkalender bis Januar",
+      muellFile: null,
+      galleryImages: []
     };
 
     let currentUser = localStorage.getItem('planer_user') || null;
@@ -1128,6 +1153,7 @@
       renderAll();
       updateLoveTicker();
       setupSwipeGestures();
+      setTimeout(startSlideshow, 800);
       if (GOOGLE_SCRIPT_URL) {
         fetchRemoteData();
         setInterval(fetchRemoteData, 10000);
@@ -1175,7 +1201,7 @@
     }
 
     // ==========================================
-    // MÜLLTERMINE: TITEL, UPLOAD & ZOOM
+    // MÜLLTERMINE: TITEL, UPLOAD & ZOOM (CLOUD GESYNCT)
     // ==========================================
     function enableMuellTitleEdit() {
       document.getElementById('muell-title-edit-box').style.display = 'block';
@@ -1201,19 +1227,20 @@
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        const fileData = {
+        appData.muellFile = {
           data: e.target.result,
-          title: appData.muellTitle || "Müllkalender bis Januar"
+          name: file.name
         };
-        localStorage.setItem('planer_muell_file', JSON.stringify(fileData));
         renderMuellView();
+        syncData();
       };
       reader.readAsDataURL(file);
     }
 
     function clearMuellFile() {
-      localStorage.removeItem('planer_muell_file');
+      appData.muellFile = null;
       renderMuellView();
+      syncData();
     }
 
     function renderMuellView() {
@@ -1225,24 +1252,22 @@
 
       titleEl.textContent = appData.muellTitle || "Müllkalender bis Januar";
 
-      const savedFile = localStorage.getItem('planer_muell_file');
-      if (!savedFile) {
+      if (!appData.muellFile) {
         displayArea.style.display = 'none';
         emptyNotice.style.display = 'block';
         return;
       }
 
       try {
-        const fileObj = JSON.parse(savedFile);
         emptyNotice.style.display = 'none';
         displayArea.style.display = 'block';
 
-        if (fileObj.data.startsWith('data:image/') || fileObj.data.match(/\.(jpeg|jpg|png|webp)$/i)) {
-          imgPreview.src = fileObj.data;
+        if (appData.muellFile.data.startsWith('data:image/') || appData.muellFile.data.match(/\.(jpeg|jpg|png|webp)$/i)) {
+          imgPreview.src = appData.muellFile.data;
           imgPreview.style.display = 'block';
           pdfPreview.style.display = 'none';
         } else {
-          pdfPreview.src = fileObj.data;
+          pdfPreview.src = appData.muellFile.data;
           pdfPreview.style.display = 'block';
           imgPreview.style.display = 'none';
         }
@@ -1285,6 +1310,90 @@
     }
 
     // ==========================================
+    // GALERIE & DIASHOW LOGIK
+    // ==========================================
+    function handleGalleryUpload(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      const statusEl = document.getElementById('upload-status');
+      statusEl.textContent = `${files.length} Bild(er) werden hochgeladen... ⏳`;
+
+      let processedCount = 0;
+      const base64Images = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          base64Images.push({
+            base64: e.target.result,
+            type: file.type,
+            name: file.name
+          });
+          
+          processedCount++;
+          if (processedCount === files.length) {
+            sendImagesToCloud(base64Images, statusEl);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function sendImagesToCloud(imagesArray, statusEl) {
+      if (!GOOGLE_SCRIPT_URL) {
+        statusEl.textContent = "Fehler: Keine Cloud-URL!";
+        return;
+      }
+
+      // 1. Lokal zur Diashow hinzufügen
+      imagesArray.forEach(img => {
+        if (!appData.galleryImages) appData.galleryImages = [];
+        appData.galleryImages.push(img.base64);
+      });
+      syncData();
+      startSlideshow();
+
+      // 2. An Google Drive schicken
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: "uploadImages", images: imagesArray })
+      }).then(() => {
+        statusEl.textContent = "Erfolgreich in Google Drive & App gespeichert! 🎉";
+        setTimeout(() => { statusEl.textContent = ""; }, 4000);
+      }).catch(() => {
+        statusEl.textContent = "In App gespeichert (Drive-Sync Hinweis).";
+      });
+    }
+
+    let slideshowInterval = null;
+    function startSlideshow() {
+      const imgEl = document.getElementById('slideshow-img');
+      if (!imgEl) return;
+
+      const images = (appData.galleryImages && appData.galleryImages.length > 0) 
+        ? appData.galleryImages 
+        : ['image1.png', 'hintergrund.jpeg'];
+
+      function showRandomImage() {
+        imgEl.style.opacity = 0;
+        setTimeout(() => {
+          const randomIndex = Math.floor(Math.random() * images.length);
+          imgEl.src = images[randomIndex];
+          imgEl.style.opacity = 1;
+        }, 500);
+      }
+
+      showRandomImage();
+      if (slideshowInterval) clearInterval(slideshowInterval);
+      slideshowInterval = setInterval(showRandomImage, 4500);
+    }
+
+    // ==========================================
     // TOUCH WISCHGESTEN (GLOBAL AUF GANZEN BILDSCHIRM)
     // ==========================================
     function setupSwipeGestures() {
@@ -1310,7 +1419,7 @@
         const diffY = touchEndY - touchStartY;
 
         if (Math.abs(diffX) > 65 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
-          const tabs = ['home', 'einkauf', 'todos', 'termine', 'muell'];
+          const tabs = ['home', 'einkauf', 'todos', 'termine', 'muell', 'galerie'];
           if (currentUser === 'fabian') {
             tabs.push('date');
           }
@@ -1980,12 +2089,18 @@
 
             const localPony = appData.ponyCounter;
             const localMuellTitle = appData.muellTitle;
+            const localMuellFile = appData.muellFile;
+            const localGallery = appData.galleryImages;
+
             appData = data;
             if (appData.ponyCounter === undefined) appData.ponyCounter = localPony;
             if (appData.muellTitle === undefined) appData.muellTitle = localMuellTitle || "Müllkalender bis Januar";
+            if (appData.muellFile === undefined) appData.muellFile = localMuellFile || null;
+            if (appData.galleryImages === undefined) appData.galleryImages = localGallery || [];
 
             renderAll();
             checkPendingDateForVanessa();
+            startSlideshow();
 
             if (appData.dateEinladung && appData.dateEinladung.status === 'accepted') {
               const partyKey = appData.dateEinladung.date + '_' + appData.dateEinladung.time;
