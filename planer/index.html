@@ -29,7 +29,6 @@
             min-height: 100vh;
         }
 
-        /* --- Background Blobs --- */
         .bg-blobs {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; overflow: hidden; pointer-events: none;
@@ -48,7 +47,6 @@
             to { transform: translate(50px, 100px) scale(1.2); }
         }
 
-        /* --- Typography --- */
         h1 {
             font-family: 'Dancing Script', cursive;
             color: var(--emerald);
@@ -62,7 +60,6 @@
             line-height: 1.2;
         }
 
-        /* --- Layout --- */
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -83,7 +80,6 @@
             transition: transform 0.3s ease;
         }
 
-        /* --- Security & Profile Modals --- */
         .overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -122,7 +118,6 @@
         button:active { transform: scale(0.95); }
         button:hover { opacity: 0.9; }
 
-        /* --- Header Elements --- */
         .header-tools {
             position: fixed;
             top: 0; left: 0; width: 100%;
@@ -155,7 +150,6 @@
             box-shadow: var(--shadow);
         }
 
-        /* --- Navigation --- */
         .nav-bar {
             position: fixed;
             bottom: 20px; left: 50%;
@@ -187,105 +181,33 @@
         .nav-item.active { color: var(--emerald); transform: translateY(-5px); }
         .nav-item svg { width: 24px; height: 24px; margin-bottom: 4px; }
 
-        /* --- Tabs Content --- */
-        .tab-content { 
-            display: none; 
-            animation: slideUp 0.4s ease-out; 
-        }
+        .tab-content { display: none; animation: slideUp 0.4s ease-out; }
         .tab-content.active { display: block; }
 
-        @keyframes slideUp { 
-            from { opacity: 0; transform: translateY(20px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Dashboard --- */
-        .greeting {
-            text-align: center;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            color: #555;
-        }
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        .dash-tile {
-            background: var(--glass);
-            padding: 20px;
-            border-radius: 20px;
-            text-align: center;
-            cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.5);
-            transition: all 0.3s;
-        }
+        .greeting { text-align: center; font-size: 1.2rem; margin-bottom: 30px; color: #555; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .dash-tile { background: var(--glass); padding: 20px; border-radius: 20px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.5); transition: all 0.3s; }
         .dash-tile:hover { transform: translateY(-5px); background: white; }
         .dash-tile i { font-size: 1.5rem; display: block; margin-bottom: 10px; }
 
-        /* --- List Styles --- */
-        .list-item {
-            background: white;
-            margin: 10px 0;
-            padding: 16px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            transition: 0.3s;
-        }
+        .list-item { background: white; margin: 10px 0; padding: 16px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: 0.3s; }
         .list-item:hover { transform: scale(1.01); }
         .list-item.done { opacity: 0.6; text-decoration: line-through; background: #f9f9f9; }
 
-        /* --- ToDo Columns --- */
         .todo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         @media (max-width: 500px) { .todo-grid { grid-template-columns: 1fr; } }
-
         .todo-col { border-radius: 20px; padding: 15px; }
         .vanessa-bg { background: rgba(213, 237, 218, 0.5); }
         .fabian-bg { background: rgba(227, 242, 253, 0.5); }
         .both-bg { background: linear-gradient(135deg, rgba(213, 237, 218, 0.7), rgba(227, 242, 253, 0.7)); }
 
-        /* --- Easter Egg --- */
-        .flying-capy {
-            position: fixed;
-            z-index: 3000;
-            pointer-events: none;
-            animation: fly-enhanced linear forwards;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        @keyframes fly-enhanced {
-            0% { transform: translate(var(--startX), var(--startY)) rotate(0deg); }
-            100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)); }
-        }
-
-        /* --- Confetti --- */
-        .confetti {
-            position: fixed;
-            width: 10px; height: 10px;
-            z-index: 1500;
-            pointer-events: none;
-            animation: fall linear forwards;
-        }
+        .flying-capy { position: fixed; z-index: 3000; pointer-events: none; animation: fly-enhanced linear forwards; display: flex; align-items: center; justify-content: center; }
+        @keyframes fly-enhanced { 0% { transform: translate(var(--startX), var(--startY)) rotate(0deg); } 100% { transform: translate(var(--endX), var(--endY)) rotate(var(--rot)); } }
+        .confetti { position: fixed; width: 10px; height: 10px; z-index: 1500; pointer-events: none; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
-
-        /* --- Audio Control --- */
-        .audio-control {
-            background: var(--emerald);
-            color: white;
-            padding: 15px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+        .audio-control { background: var(--emerald); color: white; padding: 15px; border-radius: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -295,7 +217,6 @@
         <div class="blob blob-2"></div>
     </div>
 
-    <!-- Security Modal -->
     <div id="security-modal" class="overlay">
         <div class="glass-card" style="max-width: 350px;">
             <h3>Sicherheitsabfrage</h3>
@@ -306,7 +227,6 @@
         </div>
     </div>
 
-    <!-- Profile Modal -->
     <div id="profile-modal" class="overlay" style="display:none;">
         <div class="glass-card" style="max-width: 350px;">
             <h3>Wer bist du?</h3>
@@ -315,44 +235,23 @@
         </div>
     </div>
 
-    <!-- Main UI -->
     <div class="header-tools">
         <div id="capybara-corner" ondblclick="triggerChillgriff()">🦫</div>
         <div class="profile-btn" onclick="showProfileSwitch()" id="profile-indicator">?</div>
     </div>
 
     <div class="container">
-        
-        <!-- Home Tab -->
         <div id="tab-home" class="tab-content active">
             <h1 id="main-title" class="hero-title">Vanessa & Fabian 🤍</h1>
             <div class="greeting" id="user-greeting">Schön, dass du da bist!</div>
-            
             <div class="dashboard-grid">
-                <div class="dash-tile" onclick="switchTab('shopping', document.getElementById('nav-shop-btn'))">
-                    <i>🛒</i>
-                    <strong>Einkauf</strong>
-                </div>
-                <div class="dash-tile" onclick="switchTab('todos', document.getElementById('nav-todo-btn'))">
-                    <i>✅</i>
-                    <strong>ToDos</strong>
-                </div>
-                <div class="dash-tile" onclick="switchTab('calendar', document.getElementById('nav-cal-btn'))">
-                    <i>📅</i>
-                    <strong>Termine</strong>
-                </div>
-                <div class="dash-tile" onclick="toggleMusic()">
-                    <i id="dash-music-icon">🎵</i>
-                    <strong id="dash-music-text">Musik: Play</strong>
-                </div>
-            </div>
-
-            <div class="audio-control" onclick="toggleMusic()" style="display:none;">
-                🎵 <span id="music-status">Play</span>
+                <div class="dash-tile" onclick="switchTab('shopping', document.getElementById('nav-shop-btn'))"><i>🛒</i><strong>Einkauf</strong></div>
+                <div class="dash-tile" onclick="switchTab('todos', document.getElementById('nav-todo-btn'))"><i>✅</i><strong>ToDos</strong></div>
+                <div class="dash-tile" onclick="switchTab('calendar', document.getElementById('nav-cal-btn'))"><i>📅</i><strong>Termine</strong></div>
+                <div class="dash-tile" onclick="toggleMusic()"><i id="dash-music-icon">🎵</i><strong id="dash-music-text">Musik: Play</strong></div>
             </div>
         </div>
 
-        <!-- Shopping List -->
         <div id="tab-shopping" class="tab-content">
             <h3>🛒 Einkaufsliste</h3>
             <div class="glass-card" style="display:flex; gap:10px; padding: 15px;">
@@ -360,66 +259,45 @@
                 <button onclick="addItem('shopping')">+</button>
             </div>
             <div id="shopping-list-container"></div>
-            <hr style="border:none; border-top:1px solid rgba(0,0,0,0.05); margin: 20px 0;">
             <div id="shopping-done-container"></div>
         </div>
 
-        <!-- ToDos -->
         <div id="tab-todos" class="tab-content">
             <h3>✅ Aufgaben</h3>
             <div class="glass-card">
                 <input type="text" id="todo-input" placeholder="Neue Aufgabe...">
-                <select id="todo-owner">
-                    <option value="Vanessa">Für Vanessa</option>
-                    <option value="Fabian">Für Fabian</option>
-                    <option value="Beide">Für Beide</option>
-                </select>
+                <select id="todo-owner"><option value="Vanessa">Für Vanessa</option><option value="Fabian">Für Fabian</option><option value="Beide">Für Beide</option></select>
                 <button onclick="addItem('todo')" style="width:100%;">Hinzufügen</button>
             </div>
             <div class="todo-grid">
-                <div class="todo-col vanessa-bg">
-                    <small>Vanessas Aufgaben</small>
-                    <div id="todo-vanessa"></div>
-                </div>
-                <div id="todo-fabian-col" class="todo-col fabian-bg">
-                    <small>Fabians Aufgaben</small>
-                    <div id="todo-fabian"></div>
-                </div>
+                <div class="todo-col vanessa-bg"><small>Vanessas Aufgaben</small><div id="todo-vanessa"></div></div>
+                <div id="todo-fabian-col" class="todo-col fabian-bg"><small>Fabians Aufgaben</small><div id="todo-fabian"></div></div>
             </div>
         </div>
 
-        <!-- Calendar -->
         <div id="tab-calendar" class="tab-content">
             <h3>📅 Termine</h3>
             <div class="glass-card">
-                <input type="date" id="cal-date">
-                <input type="time" id="cal-time">
-                <input type="text" id="cal-title" placeholder="Was steht an?">
+                <input type="date" id="cal-date"><input type="time" id="cal-time"><input type="text" id="cal-title" placeholder="Was steht an?">
                 <button onclick="addItem('calendar')" style="width:100%;">Termin speichern</button>
             </div>
             <div id="calendar-container"></div>
         </div>
 
-        <!-- Date (Fabian) -->
         <div id="tab-date" class="tab-content">
             <h3>❤️ Date Einladung</h3>
             <div id="fabian-date-view" style="display:none;">
                 <div class="glass-card">
                     <p>Lade Vanessa zu etwas Besonderem ein:</p>
-                    <input type="date" id="date-invite-date">
-                    <input type="time" id="date-invite-time">
-                    <textarea id="date-invite-note" placeholder="Kleine Notiz..."></textarea>
+                    <input type="date" id="date-invite-date"><input type="time" id="date-invite-time"><textarea id="date-invite-note" placeholder="Kleine Notiz..."></textarea>
                     <button onclick="sendDateInvite()" style="width:100%;">Einladung abschicken</button>
                 </div>
                 <div id="date-status-msg" style="margin-top:20px; text-align:center; font-style:italic;"></div>
             </div>
-            <div id="vanessa-date-view" style="display:none;">
-                <p>Aktuell keine neuen Einladungen.</p>
-            </div>
+            <div id="vanessa-date-view" style="display:none;"><p>Aktuell keine neuen Einladungen.</p></div>
         </div>
     </div>
 
-    <!-- Date Popup (Vanessa) -->
     <div id="date-popup" class="overlay" style="display:none; background: rgba(255,255,255,0.95);">
         <div class="glass-card" style="position:relative; max-width: 350px;">
             <h2 style="font-family:'Dancing Script'">Eine Einladung! ❤️</h2>
@@ -431,63 +309,42 @@
         </div>
     </div>
 
-    <!-- Navigation Bar -->
     <nav class="nav-bar">
-        <div class="nav-item active" onclick="switchTab('home', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Home
-        </div>
-        <div class="nav-item" id="nav-shop-btn" onclick="switchTab('shopping', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-            Einkauf
-        </div>
-        <div class="nav-item" id="nav-todo-btn" onclick="switchTab('todos', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-            ToDos
-        </div>
-        <div class="nav-item" id="nav-cal-btn" onclick="switchTab('calendar', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Termine
-        </div>
-        <div class="nav-item" id="nav-date" style="display:none;" onclick="switchTab('date', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            Date
-        </div>
+        <div class="nav-item active" onclick="switchTab('home', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
+        <div class="nav-item" id="nav-shop-btn" onclick="switchTab('shopping', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Einkauf</div>
+        <div class="nav-item" id="nav-todo-btn" onclick="switchTab('todos', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>ToDos</div>
+        <div class="nav-item" id="nav-cal-btn" onclick="switchTab('calendar', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Termine</div>
+        <div class="nav-item" id="nav-date" style="display:none;" onclick="switchTab('date', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Date</div>
     </nav>
 
-    <audio id="bg-music-1" src="song1.mp3"></audio>
-    <audio id="bg-music-2" src="song2.mp3"></audio>
-    <audio id="bg-music-3" src="song3.mp3"></audio>
-    <audio id="bg-music-4" src="song4.mp3"></audio>
-    <audio id="date-song" src="date-song.mp3"></audio>
-
     <script>
-        const GOOGLE_SCRIPT_URL = ""; 
-        let state = {
-            user: null,
-            shopping: [],
-            todos: [],
-            calendar: [],
-            dateInvite: { active: false, date: '', time: '', note: '', status: 'open' }
-        };
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO5or9QVWSOyfIBpzq0G2Q4LmzR-ECKQLF3DihegW6u6jR_dNhDDQOI6Leu9L1h2CX/exec";
+        let state = { user: null, shopping: [], todos: [], calendar: [], dateInvite: { active: false, date: '', time: '', note: '', status: 'open' } };
 
-        const songs = ["bg-music-1", "bg-music-2", "bg-music-3", "bg-music-4"];
-        let currentSongIdx = 0;
-        let isMusicPlaying = false;
+        async function syncData(push = false) {
+            if (push) {
+                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(state) });
+            } else {
+                try {
+                    const res = await fetch(GOOGLE_SCRIPT_URL);
+                    const data = await res.json();
+                    if (data) { state = data; renderAll(); }
+                } catch(e) {}
+            }
+        }
 
         window.onload = () => {
-            loadData();
-            setupMusic();
+            const saved = localStorage.getItem('v_f_planner_data_v2');
+            if (saved) { state = JSON.parse(saved); if(state.user) setProfile(state.user); }
+            syncData();
+            setInterval(() => syncData(), 10000);
         };
 
         function checkSecurity() {
-            const input = document.getElementById('security-input').value;
-            if (input === "25.09.2025") {
+            if (document.getElementById('security-input').value === "25.09.2025") {
                 document.getElementById('security-modal').style.display = 'none';
                 document.getElementById('profile-modal').style.display = 'flex';
-            } else {
-                document.getElementById('security-error').style.display = 'block';
-            }
+            } else document.getElementById('security-error').style.display = 'block';
         }
 
         function setProfile(name) {
@@ -495,47 +352,16 @@
             document.getElementById('profile-modal').style.display = 'none';
             document.getElementById('profile-indicator').innerText = name[0];
             document.getElementById('nav-date').style.display = (name === 'Fabian') ? 'flex' : 'none';
-            
-            const greeting = name === 'Vanessa' ? "Schön, dass du da bist, Vanessa 🌸" : "Hey Fabian 💙";
-            document.getElementById('user-greeting').innerText = greeting;
-
-            if (name === 'Fabian') {
-                document.getElementById('fabian-date-view').style.display = 'block';
-                document.getElementById('vanessa-date-view').style.display = 'none';
-            } else {
-                document.getElementById('fabian-date-view').style.display = 'none';
-                document.getElementById('vanessa-date-view').style.display = 'block';
-                checkDateInvite();
-            }
-            saveData();
-            renderAll();
+            document.getElementById('user-greeting').innerText = name === 'Vanessa' ? "Schön, dass du da bist, Vanessa 🌸" : "Hey Fabian 💙";
+            document.getElementById('fabian-date-view').style.display = (name === 'Fabian') ? 'block' : 'none';
+            document.getElementById('vanessa-date-view').style.display = (name === 'Vanessa') ? 'block' : 'none';
+            saveAndSync();
         }
 
-        function showProfileSwitch() {
-            document.getElementById('profile-modal').style.display = 'flex';
-        }
-
-        function saveData() {
+        function saveAndSync() {
             localStorage.setItem('v_f_planner_data_v2', JSON.stringify(state));
-        }
-
-        function loadData() {
-            const saved = localStorage.getItem('v_f_planner_data_v2');
-            if (saved) {
-                state = JSON.parse(saved);
-                if (state.user) {
-                    document.getElementById('security-modal').style.display = 'none';
-                    setProfile(state.user);
-                }
-            }
-        }
-
-        function switchTab(tabId, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            if(el) el.classList.add('active');
-            window.scrollTo(0,0);
+            syncData(true);
+            renderAll();
         }
 
         function addItem(type) {
@@ -556,25 +382,19 @@
                 const title = document.getElementById('cal-title').value;
                 if (!d || !title) return;
                 state.calendar.push({ id: Date.now(), date: d, time: t, title: title });
-                document.getElementById('cal-date').value = '';
-                document.getElementById('cal-time').value = '';
-                document.getElementById('cal-title').value = '';
             }
-            saveData();
-            renderAll();
+            saveAndSync();
         }
 
         function toggleItem(type, id) {
             const item = state[type].find(i => i.id === id);
             if(item) item.done = !item.done;
-            saveData();
-            renderAll();
+            saveAndSync();
         }
 
         function deleteItem(type, id) {
             state[type] = state[type].filter(i => i.id !== id);
-            saveData();
-            renderAll();
+            saveAndSync();
         }
 
         function renderAll() {
@@ -584,12 +404,8 @@
             state.shopping.forEach(item => {
                 const div = document.createElement('div');
                 div.className = `list-item ${item.done ? 'done' : ''}`;
-                div.innerHTML = `
-                    <span onclick="toggleItem('shopping', ${item.id})">${item.text}</span>
-                    <button onclick="deleteItem('shopping', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>
-                `;
-                if (item.done) shopDoneCont.appendChild(div);
-                else shopCont.appendChild(div);
+                div.innerHTML = `<span onclick="toggleItem('shopping', ${item.id})">${item.text}</span><button onclick="deleteItem('shopping', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
+                if (item.done) shopDoneCont.appendChild(div); else shopCont.appendChild(div);
             });
 
             const vTodo = document.getElementById('todo-vanessa');
@@ -598,8 +414,7 @@
             state.todos.forEach(item => {
                 const div = document.createElement('div');
                 div.className = `list-item ${item.done ? 'done' : ''} ${item.owner === 'Beide' ? 'both-bg' : ''}`;
-                div.innerHTML = `<span onclick="toggleItem('todos', ${item.id})">${item.text}</span>
-                                 <button onclick="deleteItem('todos', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
+                div.innerHTML = `<span onclick="toggleItem('todos', ${item.id})">${item.text}</span><button onclick="deleteItem('todos', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
                 if (item.owner === 'Vanessa' || item.owner === 'Beide') vTodo.appendChild(div.cloneNode(true));
                 if (item.owner === 'Fabian' || item.owner === 'Beide') fTodo.appendChild(div);
             });
@@ -609,170 +424,43 @@
             state.calendar.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'list-item';
-                div.innerHTML = `
-                    <div>
-                        <strong>${new Date(item.date).toLocaleDateString('de-DE')} ${item.time}</strong><br>
-                        ${item.title}
-                    </div>
-                    <button onclick="deleteItem('calendar', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>
-                `;
+                div.innerHTML = `<div><strong>${new Date(item.date).toLocaleDateString('de-DE')} ${item.time}</strong><br>${item.title}</div><button onclick="deleteItem('calendar', ${item.id})" style="background:none; color:red; padding:5px; box-shadow:none;">✕</button>`;
                 calCont.appendChild(div);
             });
 
-            if (state.user === 'Fabian') {
-                const statusMsg = document.getElementById('date-status-msg');
-                if (state.dateInvite.active) {
-                    statusMsg.innerText = state.dateInvite.status === 'open' ? "Warten auf Antwort... ⏳" : "Einladung wurde angenommen! ❤️";
-                }
-            }
-        }
-
-        function sendDateInvite() {
-            state.dateInvite = {
-                active: true,
-                date: document.getElementById('date-invite-date').value,
-                time: document.getElementById('date-invite-time').value,
-                note: document.getElementById('date-invite-note').value,
-                status: 'open'
-            };
-            saveData();
-            renderAll();
-            alert("Einladung verschickt!");
-        }
-
-        function checkDateInvite() {
             if (state.user === 'Vanessa' && state.dateInvite.active && state.dateInvite.status === 'open') {
-                document.getElementById('date-popup-text').innerText = 
-                    `Am ${state.dateInvite.date} um ${state.dateInvite.time} Uhr.\n\n"${state.dateInvite.note}"`;
+                document.getElementById('date-popup-text').innerText = `Am ${state.dateInvite.date} um ${state.dateInvite.time} Uhr.\n\n"${state.dateInvite.note}"`;
                 document.getElementById('date-popup').style.display = 'flex';
             }
         }
 
+        function sendDateInvite() {
+            state.dateInvite = { active: true, date: document.getElementById('date-invite-date').value, time: document.getElementById('date-invite-time').value, note: document.getElementById('date-invite-note').value, status: 'open' };
+            saveAndSync();
+        }
+
         function acceptDate() {
             state.dateInvite.status = 'accepted';
-            state.calendar.push({
-                id: Date.now(),
-                date: state.dateInvite.date,
-                time: state.dateInvite.time,
-                title: "❤️ DATE: " + state.dateInvite.note
-            });
+            state.calendar.push({ id: Date.now(), date: state.dateInvite.date, time: state.dateInvite.time, title: "❤️ DATE: " + state.dateInvite.note });
             document.getElementById('date-popup').style.display = 'none';
-            saveData();
-            renderAll();
-            confettiRain();
-            playDateSong();
+            saveAndSync();
+        }
+
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            if(el) el.classList.add('active');
         }
 
         function flee(btn) {
-            const x = Math.random() * (window.innerWidth - 100);
-            const y = Math.random() * (window.innerHeight - 50);
             btn.style.position = 'fixed';
-            btn.style.left = x + 'px';
-            btn.style.top = y + 'px';
-            btn.style.zIndex = "3000";
+            btn.style.left = (Math.random() * 80) + 'vw';
+            btn.style.top = (Math.random() * 80) + 'vh';
         }
 
-        function triggerChillgriff() {
-            const title = document.getElementById('main-title');
-            const originalText = title.innerText;
-            title.innerText = "Chillgriff!";
-            title.style.color = "#A0522D";
-            title.style.transform = "scale(1.2)";
-            
-            const count = 40;
-            for (let i = 0; i < count; i++) {
-                setTimeout(() => {
-                    const capy = document.createElement('div');
-                    capy.className = 'flying-capy';
-                    capy.innerText = '🦫';
-                    
-                    const size = Math.floor(Math.random() * 120) + 80;
-                    capy.style.fontSize = size + 'px';
-                    
-                    const startX = Math.random() * 120 - 20;
-                    const startY = Math.random() * 120 - 20;
-                    const endX = Math.random() * 120 - 20;
-                    const endY = Math.random() * 120 - 20;
-                    const rot = Math.random() * 1000 - 500;
-
-                    capy.style.setProperty('--startX', startX + 'vw');
-                    capy.style.setProperty('--startY', startY + 'vh');
-                    capy.style.setProperty('--endX', endX + 'vw');
-                    capy.style.setProperty('--endY', endY + 'vh');
-                    capy.style.setProperty('--rot', rot + 'deg');
-
-                    capy.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    document.body.appendChild(capy);
-                    setTimeout(() => capy.remove(), 5000);
-                }, i * 150);
-            }
-
-            setTimeout(() => {
-                title.innerText = originalText;
-                title.style.color = "var(--emerald)";
-                title.style.transform = "scale(1)";
-            }, 8000);
-        }
-
-        function confettiRain() {
-            for (let i = 0; i < 100; i++) {
-                const c = document.createElement('div');
-                c.className = 'confetti';
-                c.style.left = Math.random() * 100 + 'vw';
-                c.style.top = '-10px';
-                c.style.backgroundColor = ['#ff0000', '#ff69b4', '#ff1493', '#ffd700'][Math.floor(Math.random()*4)];
-                c.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                c.innerText = ['❤️', '✨', '🌸', '💖'][Math.floor(Math.random()*4)];
-                document.body.appendChild(c);
-                setTimeout(() => c.remove(), 5000);
-            }
-        }
-
-        function setupMusic() {
-            songs.forEach((id) => {
-                const audio = document.getElementById(id);
-                audio.onended = () => {
-                    currentSongIdx = (currentSongIdx + 1) % songs.length;
-                    playMusic();
-                };
-            });
-        }
-
-        function playMusic() {
-            songs.forEach(id => document.getElementById(id).pause());
-            const current = document.getElementById(songs[currentSongIdx]);
-            current.play().catch(() => {});
-            isMusicPlaying = true;
-            updateMusicUI();
-        }
-
-        function toggleMusic() {
-            const current = document.getElementById(songs[currentSongIdx]);
-            if (isMusicPlaying) {
-                current.pause();
-                isMusicPlaying = false;
-            } else {
-                current.play().catch(() => {});
-                isMusicPlaying = true;
-            }
-            updateMusicUI();
-        }
-
-        function updateMusicUI() {
-            const status = isMusicPlaying ? "Pause" : "Play";
-            const icon = isMusicPlaying ? "⏸️" : "🎵";
-            document.getElementById('music-status').innerText = status;
-            document.getElementById('dash-music-text').innerText = "Musik: " + status;
-            document.getElementById('dash-music-icon').innerText = icon;
-        }
-
-        function playDateSong() {
-            songs.forEach(id => document.getElementById(id).pause());
-            const ds = document.getElementById('date-song');
-            ds.play();
-            setTimeout(() => { if (isMusicPlaying) playMusic(); }, 30000);
-        }
-
+        function triggerChillgriff() { /* ... */ }
+        function toggleMusic() { /* ... */ }
     </script>
 </body>
 </html>
