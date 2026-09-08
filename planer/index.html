@@ -351,7 +351,7 @@
     .ticker-subtext { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
     .ticker-since { font-size: 0.82rem; color: #64748b; font-weight: 500; }
 
-    /* Mülltermine Upload & Zoom */
+    /* Mülltermine Upload & Vorschau */
     .muell-upload-box {
       border: 2px dashed #94a3b8;
       border-radius: 18px;
@@ -378,7 +378,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 12px;
+      padding: 14px;
     }
     .muell-preview-img {
       width: 100%;
@@ -390,20 +390,18 @@
     }
     .muell-preview-img:hover { transform: scale(1.01); }
 
-    /* Zoom Modal mit echtem Pinch-to-Zoom Support */
+    /* Vollbild Zoom Modal mit echtem Zoom & Pan */
     #muell-zoom-modal {
       display: none;
       position: fixed;
       inset: 0;
       z-index: 10020;
-      background: rgba(0, 0, 0, 0.94);
+      background: rgba(0, 0, 0, 0.95);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       align-items: center;
       justify-content: center;
-      padding: 0;
-      overflow: auto; /* Ermöglicht Scrollen und Zoomen auf Handys */
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
     }
     #muell-zoom-modal.active { display: flex; }
     
@@ -414,15 +412,48 @@
       align-items: center;
       justify-content: center;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
       position: relative;
     }
     #muell-zoom-img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
-      transition: transform 0.2s ease;
+      transition: transform 0.1s ease-out;
       transform-origin: center center;
+      cursor: grab;
     }
+    #muell-zoom-img:active { cursor: grabbing; }
+
+    .muell-zoom-controls {
+      position: fixed;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      z-index: 10030;
+      background: rgba(15, 23, 42, 0.75);
+      padding: 8px 16px;
+      border-radius: 99px;
+      backdrop-filter: blur(10px);
+    }
+    .zoom-ctrl-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .zoom-ctrl-btn:active { background: rgba(255, 255, 255, 0.4); }
+
     .muell-zoom-close {
       position: fixed;
       top: 20px;
@@ -439,9 +470,7 @@
       align-items: center;
       justify-content: center;
       z-index: 10030;
-      transition: background 0.2s;
     }
-    .muell-zoom-close:hover { background: rgba(255, 255, 255, 0.45); }
 
     /* Bok-Vollbild */
     #bok-overlay {
@@ -727,11 +756,16 @@
   <div id="bg-photo"></div>
   <div id="bg-overlay"></div>
 
-  <!-- Vollbild-Zoom Modal für Mülltermine (mit Pinch-to-Zoom Support) -->
-  <div id="muell-zoom-modal" onclick="closeMuellZoom()">
+  <!-- Vollbild-Zoom Modal mit Zoom-Buttons & Pinch Support -->
+  <div id="muell-zoom-modal">
     <button class="muell-zoom-close" onclick="closeMuellZoom()">✕</button>
-    <div class="muell-zoom-wrapper">
+    <div class="muell-zoom-wrapper" id="zoom-wrapper">
       <img id="muell-zoom-img" src="" alt="Vergrößerter Kalender">
+    </div>
+    <div class="muell-zoom-controls">
+      <button class="zoom-ctrl-btn" onclick="zoomInImg()">+</button>
+      <button class="zoom-ctrl-btn" onclick="zoomOutImg()">-</button>
+      <button class="zoom-ctrl-btn" onclick="resetZoomImg()" style="font-size: 0.9rem;">1:1</button>
     </div>
   </div>
 
@@ -779,7 +813,7 @@
       <button class="nav-tab" data-tab="einkauf" onclick="showTab('einkauf')">🛒 Einkaufsliste</button>
       <button class="nav-tab" data-tab="todos" onclick="showTab('todos')">📋 ToDos</button>
       <button class="nav-tab" data-tab="termine" onclick="showTab('termine')">📅 Termine</button>
-      <button class="nav-tab" data-tab="muell" onclick="showTab('muell')">🗑️ Müll</button>
+      <button class="nav-tab" data-tab="muell" onclick="showTab('muell')">🗑️ Mülltermine</button>
       <button class="nav-tab" id="tab-date-btn" data-tab="date" style="display:none;" onclick="showTab('date')">❤️ Date</button>
     </nav>
 
@@ -911,18 +945,7 @@
       <!-- TAB 5: MÜLLTERMINE -->
       <div id="tab-muell" class="tab-content">
         <div class="section-card">
-          <div class="section-title">
-            <span id="muell-title-text" style="cursor: pointer;" onclick="enableMuellTitleEdit()" title="Titel bearbeiten">Mülltermine 🗑️ ✏️</span>
-          </div>
-          
-          <!-- Editier-Leiste für den Titel (Standardmäßig versteckt) -->
-          <div id="muell-title-edit-box" style="display: none; margin-bottom: 12px;">
-            <div class="input-bar">
-              <input type="text" id="muell-title-input" placeholder="Z.B. Müllkalender bis Januar...">
-              <button type="button" class="primary-btn" onclick="saveMuellTitle()">Speichern</button>
-            </div>
-          </div>
-
+          <div class="section-title">Mülltermine 🗑️</div>
           <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 14px;">
             Lade hier den aktuellen Müllkalender (Bild oder PDF) hoch:
           </p>
@@ -936,7 +959,21 @@
 
           <div id="muell-display-area" style="display: none;">
             <div class="muell-preview-container">
-              <div id="muell-file-name" style="font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; color: var(--blue-dark);"></div>
+              
+              <!-- Bearbeitbarer Titel statt Dateiname -->
+              <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 8px; width: 100%;">
+                <span id="muell-file-title" style="font-weight: 700; font-size: 1rem; color: var(--blue-dark);">Müllkalender</span>
+                <button type="button" class="icon-action-btn" onclick="enableMuellTitleEdit()" title="Titel bearbeiten">✏️</button>
+              </div>
+
+              <!-- Editierfeld (Standardmäßig versteckt) -->
+              <div id="muell-title-edit-box" style="display: none; margin-bottom: 10px; width: 100%;">
+                <div class="input-bar" style="margin-bottom: 0;">
+                  <input type="text" id="muell-title-input" placeholder="Z.B. Müllkalender bis Januar...">
+                  <button type="button" class="primary-btn" onclick="saveMuellTitle()">OK</button>
+                </div>
+              </div>
+
               <img id="muell-img-preview" class="muell-preview-img" style="display: none;" alt="Müllkalender Vorschau" onclick="openMuellZoom()" title="Zum Vergrößern antippen">
               <iframe id="muell-pdf-preview" style="width: 100%; height: 500px; border: none; display: none; border-radius: 8px;"></iframe>
               <button type="button" class="icon-btn" style="margin-top: 12px; background: #fee2e2; color: #991b1b; border-color: #fecaca;" onclick="clearMuellFile()">🗑️ Kalender löschen</button>
@@ -1075,7 +1112,7 @@
       termine: [],
       dateEinladung: null,
       ponyCounter: 0,
-      muellTitle: "Mülltermine 🗑️"
+      muellTitle: "Müllkalender bis Januar"
     };
 
     let currentUser = localStorage.getItem('planer_user') || null;
@@ -1137,11 +1174,11 @@
     }
 
     // ==========================================
-    // MÜLLTERMINE: UPLOAD, TITEL & ZOOM
+    // MÜLLTERMINE: TITEL, UPLOAD & ZOOM
     // ==========================================
     function enableMuellTitleEdit() {
       document.getElementById('muell-title-edit-box').style.display = 'block';
-      document.getElementById('muell-title-input').value = appData.muellTitle || "Mülltermine 🗑️";
+      document.getElementById('muell-title-input').value = appData.muellTitle || "Müllkalender";
       document.getElementById('muell-title-input').focus();
     }
 
@@ -1150,7 +1187,7 @@
       if (val) {
         appData.muellTitle = val;
       } else {
-        appData.muellTitle = "Mülltermine 🗑️";
+        appData.muellTitle = "Müllkalender";
       }
       document.getElementById('muell-title-edit-box').style.display = 'none';
       renderMuellView();
@@ -1165,7 +1202,7 @@
       reader.onload = function(e) {
         const fileData = {
           data: e.target.result,
-          name: file.name
+          title: appData.muellTitle || "Müllkalender"
         };
         localStorage.setItem('planer_muell_file', JSON.stringify(fileData));
         renderMuellView();
@@ -1181,12 +1218,11 @@
     function renderMuellView() {
       const displayArea = document.getElementById('muell-display-area');
       const emptyNotice = document.getElementById('muell-empty-notice');
-      const titleText = document.getElementById('muell-title-text');
-      const nameEl = document.getElementById('muell-file-name');
+      const titleEl = document.getElementById('muell-file-title');
       const imgPreview = document.getElementById('muell-img-preview');
       const pdfPreview = document.getElementById('muell-pdf-preview');
 
-      titleText.innerHTML = `${appData.muellTitle || "Mülltermine 🗑️"} ✏️`;
+      titleEl.textContent = appData.muellTitle || "Müllkalender";
 
       const savedFile = localStorage.getItem('planer_muell_file');
       if (!savedFile) {
@@ -1199,7 +1235,6 @@
         const fileObj = JSON.parse(savedFile);
         emptyNotice.style.display = 'none';
         displayArea.style.display = 'block';
-        nameEl.textContent = fileObj.name || "Müllkalender";
 
         if (fileObj.data.startsWith('data:image/') || fileObj.data.match(/\.(jpeg|jpg|png|webp)$/i)) {
           imgPreview.src = fileObj.data;
@@ -1216,19 +1251,36 @@
       }
     }
 
+    let currentZoomScale = 1;
     function openMuellZoom() {
       const imgPreview = document.getElementById('muell-img-preview');
       const zoomModal = document.getElementById('muell-zoom-modal');
       const zoomImg = document.getElementById('muell-zoom-img');
       if (imgPreview && imgPreview.src) {
         zoomImg.src = imgPreview.src;
-        zoomImg.style.transform = 'scale(1)'; // Reset Zoom
+        currentZoomScale = 1;
+        zoomImg.style.transform = `scale(${currentZoomScale})`;
         zoomModal.classList.add('active');
       }
     }
 
     function closeMuellZoom() {
       document.getElementById('muell-zoom-modal').classList.remove('active');
+    }
+
+    function zoomInImg() {
+      currentZoomScale = Math.min(currentZoomScale + 0.5, 4);
+      document.getElementById('muell-zoom-img').style.transform = `scale(${currentZoomScale})`;
+    }
+
+    function zoomOutImg() {
+      currentZoomScale = Math.max(currentZoomScale - 0.5, 1);
+      document.getElementById('muell-zoom-img').style.transform = `scale(${currentZoomScale})`;
+    }
+
+    function resetZoomImg() {
+      currentZoomScale = 1;
+      document.getElementById('muell-zoom-img').style.transform = `scale(${currentZoomScale})`;
     }
 
     // ==========================================
@@ -1888,7 +1940,7 @@
             appData.ponyCounter = parseInt(localStorage.getItem('planer_pony_counter'), 10) || 0;
           }
           if (appData.muellTitle === undefined) {
-            appData.muellTitle = "Mülltermine 🗑️";
+            appData.muellTitle = "Müllkalender bis Januar";
           }
           lastKnownInviteStatus = appData.dateEinladung ? appData.dateEinladung.status : null;
         } catch(e){}
@@ -1929,7 +1981,7 @@
             const localMuellTitle = appData.muellTitle;
             appData = data;
             if (appData.ponyCounter === undefined) appData.ponyCounter = localPony;
-            if (appData.muellTitle === undefined) appData.muellTitle = localMuellTitle || "Mülltermine 🗑️";
+            if (appData.muellTitle === undefined) appData.muellTitle = localMuellTitle || "Müllkalender bis Januar";
 
             renderAll();
             checkPendingDateForVanessa();
