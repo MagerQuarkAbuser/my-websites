@@ -123,7 +123,8 @@
     
     .todo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 600px) { .todo-grid { grid-template-columns: 1fr; } }
-    .todo-card { border-radius: 16px; padding: 13px; margin-bottom: 8px; border: 1.5px solid; border-left-width: 6px; cursor: pointer; min-height: 48px; }
+    .todo-card { border-radius: 16px; padding: 13px; margin-bottom: 8px; border: 1.5px solid; border-left-width: 6px; cursor: pointer; min-height: 48px; transition: all 0.2s; }
+    .todo-card:active { transform: scale(0.99); }
     .todo-vanessa { background: var(--vanessa-card); border-color: #86efac; border-left-color: var(--vanessa-border); }
     .todo-fabian { background: var(--fabian-card); border-color: #7dd3fc; border-left-color: var(--fabian-border); }
     .todo-both { background: var(--both-card); border-color: #a7f3d0; border-left-color: #06b6d4; }
@@ -516,7 +517,7 @@
     
     // Spielfigur
     let playerImg = new Image();
-    playerImg.src = 'image1.png';
+    playerImg.src = 'jump1.png'; // Hier wurde das Bild zu jump1.png geändert
     let isPlayerImgLoaded = false;
     playerImg.onload = () => isPlayerImgLoaded = true;
 
@@ -605,26 +606,29 @@
         ctx.fillRect(player.x, player.y, player.width, player.height);
       }
 
-      // Hindernisse
+      // Hindernisse (Bäume)
       gameFrameCount++;
       if (gameFrameCount % Math.floor(Math.random() * 50 + 60) === 0) { // Spawnt zufällig
-        let obsHeight = 25 + Math.random() * 25;
-        obstacles.push({ x: canvas.width, y: 190 - obsHeight, width: 20 + Math.random() * 15, height: obsHeight });
+        let obsHeight = 35 + Math.random() * 15; // Größe des Baumes
+        let treeEmoji = Math.random() > 0.5 ? '🌳' : '🌲'; // Zufälliger Baum
+        obstacles.push({ x: canvas.width, y: 190 - obsHeight, width: obsHeight * 0.8, height: obsHeight, emoji: treeEmoji });
       }
 
       for (let i = 0; i < obstacles.length; i++) {
         let obs = obstacles[i];
         obs.x -= obstacleSpeed;
         
-        ctx.fillStyle = '#ef4444'; // Rotes Hindernis
-        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+        ctx.font = Math.floor(obs.height) + "px sans-serif";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(obs.emoji, obs.x, 192); // Zeichnet den Baum auf die Linie
         
-        // Hitbox Kollision (etwas kleiner als das Bild)
-        let hitMargin = 8;
-        if (player.x + hitMargin < obs.x + obs.width &&
-            player.x + player.width - hitMargin > obs.x &&
-            player.y + hitMargin < obs.y + obs.height &&
-            player.y + player.height - hitMargin > obs.y) {
+        // Hitbox Kollision (Verzeihender als das Bild selbst)
+        let hitMarginX = 8;
+        let hitMarginY = 10;
+        if (player.x + hitMarginX < obs.x + obs.width - hitMarginX &&
+            player.x + player.width - hitMarginX > obs.x + hitMarginX &&
+            player.y + hitMarginY < obs.y + obs.height &&
+            player.y + player.height - hitMarginY > obs.y + hitMarginY) {
           gameOverMiniGame();
         }
       }
@@ -794,7 +798,7 @@
     function dodgeNoButton(e) { if (e) e.preventDefault(); const btn = document.getElementById('btn-no'); btn.style.transform = `translate(${(Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 80) + 70)}px, ${(Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 60) + 40)}px)`; }
     function acceptDate() { document.getElementById('date-popup-modal').style.display = 'none'; appData.dateEinladung.status = 'accepted'; lastKnownInviteStatus = 'accepted'; appData.termine.push({ date: appData.dateEinladung.date, time: appData.dateEinladung.time, title: `Date: ${appData.dateEinladung.text} ❤️`, category: 'date' }); syncData(); renderAll(); if (currentUser === 'vanessa') { startGentlePartyMode(); } }
 
-    function startGentlePartyMode() { document.getElementById('party-stage').style.display = 'block'; const partyEmojis = ['🍾', '🥂', '🎉', '💖', '✨']; partyParticleInterval = setInterval(() => { const p = document.createElement('div'); p.className = 'party-particle'; p.textContent = partyEmojis[Math.floor(Math.random() * partyEmojis.length)]; p.style.setProperty('--startX', (Math.random() * 95) + 'vw'); p.style.setProperty('--endX', ((Math.random() - 0.5) * 40) + 'vw'); document.body.appendChild(p); setTimeout(() => p.remove(), 4000); }, 280); setTimeout(() => { clearInterval(partyParticleInterval); document.getElementById('party-stage').style.display = 'none'; document.querySelectorAll('.party-particle').forEach(p => p.remove()); }, 30000); }
+    function startGentlePartyMode() { document.getElementById('party-stage').style.display = 'block'; const partyEmojis = ['🍾', '🥂', '🎉', '💖', '✨']; partyParticleInterval = setInterval(() => { const p = document.createElement('div'); p.className = 'party-particle'; p.textContent = partyEmojis[Math.floor(Math.random() * partyEmojis.length)]; p.style.setProperty('--startX', (Math.random() * 95) + 'vw'); p.style.setProperty('--endX', ((Math.random() - 0.5) * 40) + 'vw'); p.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg'); document.body.appendChild(p); setTimeout(() => p.remove(), 4000); }, 280); setTimeout(() => { clearInterval(partyParticleInterval); document.getElementById('party-stage').style.display = 'none'; document.querySelectorAll('.party-particle').forEach(p => p.remove()); }, 30000); }
 
     function renderAll() { renderEinkauf(); renderTodos(); renderTermine(); renderDateStatus(); renderMuellView(); document.getElementById('pony-display').textContent = `Pony ${appData.ponyCounter || 0}`; const galEl = document.getElementById('dash-galerie-count'); if (galEl) { galEl.textContent = (appData.galleryImages ? appData.galleryImages.length : 0) + " Bilder"; } }
     function loadLocalData() { const saved = localStorage.getItem('planer_data'); if (saved) { try { appData = JSON.parse(saved); lastKnownInviteStatus = appData.dateEinladung ? appData.dateEinladung.status : null; } catch(e){} } }
