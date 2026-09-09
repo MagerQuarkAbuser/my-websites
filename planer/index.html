@@ -207,6 +207,7 @@
 
   <div id="toast-notification" class="toast-notification"></div>
   <div id="bok-overlay" onclick="closeBokOverlay()"><img id="bok-image" src="" alt="Bok"></div>
+  
   <div id="chillgriff-overlay"><div class="chillgriff-huge-text">CHILLGRIFF!</div></div>
   <div id="party-stage"><div class="party-glow-overlay"></div><div style="position: absolute; top: 18%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 620px;"><div class="party-banner-main">🔥 DATE ANGENOMMEN! PARTY! 🔥</div></div></div>
 
@@ -383,7 +384,6 @@
           <div class="section-title" style="justify-content: center;">Chillfried's Abenteuer 🎮</div>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Tippe auf das Feld oder drücke die Leertaste zum Springen!</p>
           
-          <!-- Das Canvas Spiel -->
           <div id="game-container">
             <canvas id="gameCanvas" width="600" height="220"></canvas>
             <div id="game-overlay" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px);">
@@ -464,14 +464,50 @@
     const secretAudio = new Audio('geheimmodus.mp3');
     const customBokAudio = new Audio('bok.mp3');
     
-    // NEU: Audio für das Minispiel
+    // Audio für das Minispiel
     const gameBgm = new Audio('spielsong.mp3');
     gameBgm.loop = true;
-    const jumpSound = new Audio('jump.mp3');
-    const gameOverSound = new Audio('verloren.mp3');
+    
+    // Web Audio API für Synth-Sounds
+    let gameAudioCtx;
+    function initGameAudio() {
+      if (!gameAudioCtx) { gameAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+      if (gameAudioCtx.state === 'suspended') { gameAudioCtx.resume(); }
+    }
+
+    function playJumpSound() {
+      if(!gameAudioCtx) return;
+      const osc = gameAudioCtx.createOscillator();
+      const gain = gameAudioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(400, gameAudioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, gameAudioCtx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.1, gameAudioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, gameAudioCtx.currentTime + 0.1);
+      osc.connect(gain);
+      gain.connect(gameAudioCtx.destination);
+      osc.start();
+      osc.stop(gameAudioCtx.currentTime + 0.1);
+    }
+
+    function playGameOverSound() {
+      if(!gameAudioCtx) return;
+      const osc = gameAudioCtx.createOscillator();
+      const gain = gameAudioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(200, gameAudioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(50, gameAudioCtx.currentTime + 0.4);
+      gain.gain.setValueAtTime(0.15, gameAudioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, gameAudioCtx.currentTime + 0.4);
+      osc.connect(gain);
+      gain.connect(gameAudioCtx.destination);
+      osc.start();
+      osc.stop(gameAudioCtx.currentTime + 0.4);
+    }
     
     let isAudioUnlocked = false;
 
+    // Timer-Variablen für Geheimmodus & Party
     let partyTimeout = null, partyParticleInterval = null, secretTimeout = null, secretInterval = null, bokTimeout = null, cursedTimeout = null;
     let isFirstFetch = true, lastKnownInviteStatus = null;
     let currentUser = localStorage.getItem('planer_user') || null;
@@ -506,7 +542,7 @@
       const unlock = () => { 
         if (!isAudioUnlocked) { 
           isAudioUnlocked = true; 
-          // Verhindere Autoplay von Playlist, wenn das Spiel aktiv ist
+          initGameAudio(); 
           if(!isGameRunning && document.querySelector('.tab-content.active').id !== 'tab-game') {
             bgAudio.play().then(() => updatePlayIcon(true)).catch(() => {}); 
           }
@@ -521,23 +557,21 @@
     function updatePlayIcon(isPlaying) { document.getElementById('btn-toggle-play').textContent = isPlaying ? '⏸️' : '▶️'; }
 
     // ==========================================
-    // SPIEL: CHILLFRIED'S ABENTEUER (T-Rex Clone)
+    // SPIEL: CHILLFRIED'S ABENTEUER
     // ==========================================
     let canvas, ctx, gameLoopId;
     let isGameRunning = false;
     let gameScore = 0;
     let obstacleSpeed = 5.5;
-    let gameFrameCount = 0;
+    let framesUntilNextTree = 0;
     let obstacles = [];
     
-    // Spielfigur: Größer gemacht! (60x60)
     let playerImg = new Image();
     playerImg.src = 'jump1.png';
     let isPlayerImgLoaded = false;
     playerImg.onload = () => isPlayerImgLoaded = true;
 
-    // y = 130, weil Boden bei 190 ist (190 - 60 = 130)
-    let player = { x: 50, y: 130, width: 60, height: 60, velocityY: 0, gravity: 0.8, jumpForce: -13, isJumping: false };
+    let player = { x: 50, y: 110, width: 80, height: 80, velocityY: 0, gravity: 0.8, jumpForce: -13, isJumping: false };
 
     function initMiniGame() {
       canvas = document.getElementById('gameCanvas');
@@ -569,16 +603,16 @@
 
     function startMiniGame(e) {
       if(e) e.preventDefault();
+      initGameAudio();
       document.getElementById('game-overlay').style.display = 'none';
       isGameRunning = true;
       gameScore = 0;
       obstacleSpeed = 6;
       obstacles = [];
-      gameFrameCount = 0;
-      player.y = 130;
+      framesUntilNextTree = 50; 
+      player.y = 110;
       player.velocityY = 0;
       
-      // Audio stoppen und Spielsong starten
       bgAudio.pause();
       updatePlayIcon(false);
       gameBgm.currentTime = 0;
@@ -592,17 +626,13 @@
       if (!player.isJumping) {
         player.velocityY = player.jumpForce;
         player.isJumping = true;
-        
-        jumpSound.currentTime = 0;
-        jumpSound.play().catch(() => {});
+        playJumpSound();
       }
     }
 
     function drawGameFrame() {
       ctx.fillStyle = '#f8fafc';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Bodenlinie
       ctx.beginPath();
       ctx.moveTo(0, 190);
       ctx.lineTo(600, 190);
@@ -615,16 +645,14 @@
       if (!isGameRunning) return;
       drawGameFrame();
       
-      // Physik
       player.velocityY += player.gravity;
       player.y += player.velocityY;
-      if (player.y >= 130) {
-        player.y = 130;
+      if (player.y >= 110) {
+        player.y = 110;
         player.isJumping = false;
         player.velocityY = 0;
       }
 
-      // Spieler zeichnen
       if (isPlayerImgLoaded) {
         ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
       } else {
@@ -632,12 +660,12 @@
         ctx.fillRect(player.x, player.y, player.width, player.height);
       }
 
-      // Hindernisse (Bäume)
-      gameFrameCount++;
-      if (gameFrameCount % Math.floor(Math.random() * 50 + 60) === 0) { 
+      framesUntilNextTree--;
+      if (framesUntilNextTree <= 0) { 
         let obsHeight = 35 + Math.random() * 15; 
         let treeEmoji = Math.random() > 0.5 ? '🌳' : '🌲'; 
         obstacles.push({ x: canvas.width, y: 190 - obsHeight, width: obsHeight * 0.8, height: obsHeight, emoji: treeEmoji });
+        framesUntilNextTree = Math.floor(Math.random() * 50) + 60;
       }
 
       for (let i = 0; i < obstacles.length; i++) {
@@ -648,9 +676,8 @@
         ctx.textBaseline = "bottom";
         ctx.fillText(obs.emoji, obs.x, 192); 
         
-        // Verzeihendere Hitbox: Stirbt nicht sofort am äußeren Pixelrand
-        let hitMarginX = 12;
-        let hitMarginY = 15;
+        let hitMarginX = 20;
+        let hitMarginY = 20;
         
         if (player.x + hitMarginX < obs.x + obs.width - hitMarginX &&
             player.x + player.width - hitMarginX > obs.x + hitMarginX &&
@@ -672,8 +699,7 @@
     function gameOverMiniGame() {
       isGameRunning = false;
       gameBgm.pause();
-      gameOverSound.currentTime = 0;
-      gameOverSound.play().catch(() => {});
+      playGameOverSound();
       
       const overlay = document.getElementById('game-overlay');
       overlay.style.display = 'flex';
@@ -691,7 +717,6 @@
       const targetTab = document.getElementById('tab-' + name);
       if (!targetTab) return;
 
-      // Wenn das Spiel verlassen wird, pausiere/beende es
       if (name !== 'game') {
         isGameRunning = false;
         gameBgm.pause();
@@ -716,7 +741,6 @@
       localStorage.setItem('planer_last_tab', name);
     }
 
-    // Wischgesten
     function setupSwipeGestures() {
       let touchStartX = 0; let touchStartY = 0;
       window.addEventListener('touchstart', e => {
@@ -803,9 +827,69 @@
     function triggerBok() { const overlay = document.getElementById('bok-overlay'); document.getElementById('bok-image').src = (currentUser === 'fabian') ? 'vanessa.png' : 'fabian.png'; overlay.classList.add('active'); setTimeout(() => { overlay.classList.remove('active'); }, 3000); }
     function closeBokOverlay() { document.getElementById('bok-overlay').classList.remove('active'); }
 
-    let lastTap = 0; document.getElementById('capy-trigger').addEventListener('click', () => { const now = Date.now(); if (now - lastTap < 400) { triggerChillgriff(); } lastTap = now; });
-    function triggerChillgriff() { const overlay = document.getElementById('chillgriff-overlay'); overlay.classList.add('active'); for (let i = 0; i < 25; i++) { spawnHead(); } setTimeout(() => { overlay.classList.remove('active'); document.querySelectorAll('.flying-capy').forEach(f => f.remove()); }, 15000); }
-    function spawnHead() { const img = document.createElement('img'); img.className = 'flying-capy'; img.src = 'image1.png'; const size = Math.floor(Math.random() * 55) + 65; img.style.width = size + 'px'; img.style.height = size + 'px'; img.style.setProperty('--startX', (Math.random() * 100) + 'vw'); img.style.setProperty('--startY', (Math.random() * 100) + 'vh'); img.style.setProperty('--endX', ((Math.random() - 0.5) * 180) + 'vw'); img.style.setProperty('--endY', ((Math.random() - 0.5) * 180) + 'vh'); img.style.setProperty('--rot', (Math.random() * 1440 - 720) + 'deg'); document.body.appendChild(img); setTimeout(() => img.remove(), 5500); }
+    // ==========================================
+    // REPARIERTER GEHEIMMODUS (CHILLGRIFF)
+    // ==========================================
+    let lastTap = 0; 
+    document.getElementById('capy-trigger').addEventListener('click', () => { 
+      const now = Date.now(); 
+      if (now - lastTap < 400) { triggerChillgriff(); } 
+      lastTap = now; 
+    });
+
+    function triggerChillgriff() { 
+      clearTimeout(secretTimeout);
+      clearInterval(secretInterval);
+
+      const overlay = document.getElementById('chillgriff-overlay'); 
+      overlay.classList.add('active'); 
+
+      bgAudio.pause();
+      secretAudio.currentTime = 0;
+      secretAudio.play().catch(e => console.log('Secret Audio Blocked:', e));
+
+      function spawnHead() { 
+        const img = document.createElement('img'); 
+        img.className = 'flying-capy'; 
+        img.src = 'image1.png'; 
+        img.onerror = function() {
+          this.onerror = null;
+          this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🦫</text></svg>';
+        };
+        const size = Math.floor(Math.random() * 55) + 65; 
+        img.style.width = size + 'px'; 
+        img.style.height = size + 'px'; 
+        img.style.setProperty('--startX', (Math.random() * 100) + 'vw'); 
+        img.style.setProperty('--startY', (Math.random() * 100) + 'vh'); 
+        img.style.setProperty('--endX', ((Math.random() - 0.5) * 180) + 'vw'); 
+        img.style.setProperty('--endY', ((Math.random() - 0.5) * 180) + 'vh'); 
+        img.style.setProperty('--rot', (Math.random() * 1440 - 720) + 'deg'); 
+        img.style.animationDuration = (Math.random() * 2 + 3.8) + 's'; 
+        document.body.appendChild(img); 
+        setTimeout(() => img.remove(), 5500); 
+      }
+
+      // Initiale Explosion von 25 Capybaras
+      for (let i = 0; i < 25; i++) { spawnHead(); } 
+
+      // Stetig nachrückende Capybaras
+      secretInterval = setInterval(() => {
+        for (let i = 0; i < 3; i++) { spawnHead(); }
+      }, 280);
+
+      // Beendet das Spektakel nach exakt 15 Sekunden
+      secretTimeout = setTimeout(() => { 
+        clearInterval(secretInterval);
+        overlay.classList.remove('active'); 
+        document.querySelectorAll('.flying-capy').forEach(f => f.remove()); 
+        
+        secretAudio.pause();
+        secretAudio.currentTime = 0;
+        
+        bgAudio.play().catch(() => {});
+        updatePlayIcon(true);
+      }, 15000); 
+    }
 
     function renderEinkauf() { const openCont = document.getElementById('einkauf-list'); const doneCont = document.getElementById('einkauf-done-list'); openCont.innerHTML = ''; doneCont.innerHTML = ''; let openCount = 0; appData.einkauf.forEach((item, idx) => { const el = document.createElement('div'); el.className = 'list-item' + (item.done ? ' done' : ''); el.innerHTML = `<span class="item-text">${item.text}</span><button class="icon-action-btn del-btn" onclick="deleteEinkauf(event, ${idx})">✕</button>`; el.onclick = (e) => { if (e.target.closest('.icon-action-btn')) return; el.classList.add('striking'); setTimeout(() => { appData.einkauf[idx].done = !appData.einkauf[idx].done; renderEinkauf(); syncData(); }, 350); }; if (item.done) doneCont.appendChild(el); else { openCont.appendChild(el); openCount++; } }); document.getElementById('dash-einkauf-count').textContent = `${openCount} offene Einträge`; }
     function addEinkauf(e) { e.preventDefault(); const input = document.getElementById('einkauf-input'); const val = input.value.trim(); if (!val) return; appData.einkauf.unshift({ text: val, done: false }); input.value = ''; renderEinkauf(); syncData(); }
