@@ -463,6 +463,13 @@
     const dateAudio = new Audio('date-song.mp3');
     const secretAudio = new Audio('geheimmodus.mp3');
     const customBokAudio = new Audio('bok.mp3');
+    
+    // NEU: Audio für das Minispiel
+    const gameBgm = new Audio('spielsong.mp3');
+    gameBgm.loop = true;
+    const jumpSound = new Audio('jump.mp3');
+    const gameOverSound = new Audio('verloren.mp3');
+    
     let isAudioUnlocked = false;
 
     let partyTimeout = null, partyParticleInterval = null, secretTimeout = null, secretInterval = null, bokTimeout = null, cursedTimeout = null;
@@ -481,9 +488,8 @@
       renderAll();
       updateLoveTicker();
       setupSwipeGestures();
-      initMiniGame(); // Spiel initialisieren
+      initMiniGame(); 
       
-      // Letzten besuchten Tab automatisch wieder öffnen!
       const lastTab = localStorage.getItem('planer_last_tab') || 'home';
       showTab(lastTab);
 
@@ -497,7 +503,16 @@
     // Audio Setup
     function setupAudio() {
       bgAudio.src = playlist[currentSongIndex]; bgAudio.addEventListener('ended', nextSong);
-      const unlock = () => { if (!isAudioUnlocked) { isAudioUnlocked = true; bgAudio.play().then(() => updatePlayIcon(true)).catch(() => {}); } window.removeEventListener('click', unlock); window.removeEventListener('touchstart', unlock); };
+      const unlock = () => { 
+        if (!isAudioUnlocked) { 
+          isAudioUnlocked = true; 
+          // Verhindere Autoplay von Playlist, wenn das Spiel aktiv ist
+          if(!isGameRunning && document.querySelector('.tab-content.active').id !== 'tab-game') {
+            bgAudio.play().then(() => updatePlayIcon(true)).catch(() => {}); 
+          }
+        } 
+        window.removeEventListener('click', unlock); window.removeEventListener('touchstart', unlock); 
+      };
       window.addEventListener('click', unlock); window.addEventListener('touchstart', unlock);
       document.getElementById('btn-toggle-play').onclick = togglePlay; document.getElementById('btn-next-song').onclick = nextSong;
     }
@@ -515,25 +530,26 @@
     let gameFrameCount = 0;
     let obstacles = [];
     
-    // Spielfigur
+    // Spielfigur: Größer gemacht! (60x60)
     let playerImg = new Image();
-    playerImg.src = 'jump1.png'; // Hier wurde das Bild zu jump1.png geändert
+    playerImg.src = 'jump1.png';
     let isPlayerImgLoaded = false;
     playerImg.onload = () => isPlayerImgLoaded = true;
 
-    let player = { x: 50, y: 150, width: 40, height: 40, velocityY: 0, gravity: 0.8, jumpForce: -13, isJumping: false };
+    // y = 130, weil Boden bei 190 ist (190 - 60 = 130)
+    let player = { x: 50, y: 130, width: 60, height: 60, velocityY: 0, gravity: 0.8, jumpForce: -13, isJumping: false };
 
     function initMiniGame() {
       canvas = document.getElementById('gameCanvas');
       ctx = canvas.getContext('2d');
-      drawGameFrame(); // Einmal zeichnen für den Hintergrund
+      drawGameFrame(); 
 
       const jumpHandler = (e) => {
         const gameTab = document.getElementById('tab-game');
         if (!gameTab || !gameTab.classList.contains('active')) return; 
 
         if (e.type === 'keydown') {
-          if (e.code === 'Space') e.preventDefault(); else return; // Nur Leertaste blockiert scrollen
+          if (e.code === 'Space') e.preventDefault(); else return; 
         }
         
         if (!isGameRunning && document.getElementById('game-overlay').style.display !== 'none') {
@@ -559,8 +575,15 @@
       obstacleSpeed = 6;
       obstacles = [];
       gameFrameCount = 0;
-      player.y = 150;
+      player.y = 130;
       player.velocityY = 0;
+      
+      // Audio stoppen und Spielsong starten
+      bgAudio.pause();
+      updatePlayIcon(false);
+      gameBgm.currentTime = 0;
+      gameBgm.play().catch(() => {});
+
       if (gameLoopId) cancelAnimationFrame(gameLoopId);
       runGameLoop();
     }
@@ -569,6 +592,9 @@
       if (!player.isJumping) {
         player.velocityY = player.jumpForce;
         player.isJumping = true;
+        
+        jumpSound.currentTime = 0;
+        jumpSound.play().catch(() => {});
       }
     }
 
@@ -592,8 +618,8 @@
       // Physik
       player.velocityY += player.gravity;
       player.y += player.velocityY;
-      if (player.y >= 150) {
-        player.y = 150;
+      if (player.y >= 130) {
+        player.y = 130;
         player.isJumping = false;
         player.velocityY = 0;
       }
@@ -608,9 +634,9 @@
 
       // Hindernisse (Bäume)
       gameFrameCount++;
-      if (gameFrameCount % Math.floor(Math.random() * 50 + 60) === 0) { // Spawnt zufällig
-        let obsHeight = 35 + Math.random() * 15; // Größe des Baumes
-        let treeEmoji = Math.random() > 0.5 ? '🌳' : '🌲'; // Zufälliger Baum
+      if (gameFrameCount % Math.floor(Math.random() * 50 + 60) === 0) { 
+        let obsHeight = 35 + Math.random() * 15; 
+        let treeEmoji = Math.random() > 0.5 ? '🌳' : '🌲'; 
         obstacles.push({ x: canvas.width, y: 190 - obsHeight, width: obsHeight * 0.8, height: obsHeight, emoji: treeEmoji });
       }
 
@@ -620,11 +646,12 @@
         
         ctx.font = Math.floor(obs.height) + "px sans-serif";
         ctx.textBaseline = "bottom";
-        ctx.fillText(obs.emoji, obs.x, 192); // Zeichnet den Baum auf die Linie
+        ctx.fillText(obs.emoji, obs.x, 192); 
         
-        // Hitbox Kollision (Verzeihender als das Bild selbst)
-        let hitMarginX = 8;
-        let hitMarginY = 10;
+        // Verzeihendere Hitbox: Stirbt nicht sofort am äußeren Pixelrand
+        let hitMarginX = 12;
+        let hitMarginY = 15;
+        
         if (player.x + hitMarginX < obs.x + obs.width - hitMarginX &&
             player.x + player.width - hitMarginX > obs.x + hitMarginX &&
             player.y + hitMarginY < obs.y + obs.height &&
@@ -637,13 +664,17 @@
       
       gameScore++;
       document.getElementById('game-score').innerText = Math.floor(gameScore / 10);
-      if (gameScore % 400 === 0) obstacleSpeed += 0.5; // Schneller werden
+      if (gameScore % 400 === 0) obstacleSpeed += 0.5; 
 
       gameLoopId = requestAnimationFrame(runGameLoop);
     }
 
     function gameOverMiniGame() {
       isGameRunning = false;
+      gameBgm.pause();
+      gameOverSound.currentTime = 0;
+      gameOverSound.play().catch(() => {});
+      
       const overlay = document.getElementById('game-overlay');
       overlay.style.display = 'flex';
       document.getElementById('game-overlay-title').innerText = "Game Over!";
@@ -663,6 +694,7 @@
       // Wenn das Spiel verlassen wird, pausiere/beende es
       if (name !== 'game') {
         isGameRunning = false;
+        gameBgm.pause();
         document.getElementById('game-overlay').style.display = 'flex';
         document.querySelector('#game-overlay button').innerText = "Start / Jump";
       }
@@ -672,7 +704,6 @@
         targetTab.classList.add('active');
       }
 
-      // Aktiver Button und weiches Mitscrollen in der Navigation
       document.querySelectorAll('.nav-tab').forEach(el => {
         if (el.getAttribute('data-tab') === name) {
           el.classList.add('active');
@@ -682,7 +713,7 @@
         }
       });
 
-      localStorage.setItem('planer_last_tab', name); // Speichern für Reload
+      localStorage.setItem('planer_last_tab', name);
     }
 
     // Wischgesten
@@ -697,7 +728,7 @@
         const diffX = e.changedTouches[0].screenX - touchStartX;
         const diffY = e.changedTouches[0].screenY - touchStartY;
         if (Math.abs(diffX) > 65 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
-          const tabs = ['home', 'einkauf', 'todos', 'termine', 'muell', 'galerie', 'game']; // Game hinzugefügt
+          const tabs = ['home', 'einkauf', 'todos', 'termine', 'muell', 'galerie', 'game']; 
           if (currentUser === 'fabian') tabs.push('date');
           const currentTabId = document.querySelector('.tab-content.active').id.replace('tab-', '');
           const currentIndex = tabs.indexOf(currentTabId);
