@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown zu Überraschung</title>
+    <style>
+        :root {
+            --bg-deep: #050b18;
+            --bg-gradient: linear-gradient(135deg, #050b18 0%, #0a0e1a 100%);
+            --indigo: #4b0082;
+            --indigo-light: #6366f1;
+            --silver: #c0c0c0;
+            --silver-bright: #e8e8e8;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(192, 192, 192, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--silver-bright);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .background-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            height: 80vw;
+            background: radial-gradient(circle, rgba(75, 0, 130, 0.15) 0%, rgba(5, 11, 24, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            font-weight: 300;
+            letter-spacing: 0.3rem;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            color: var(--silver);
+            text-shadow: 0 0 20px rgba(192, 192, 192, 0.3);
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .countdown-container {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .time-block {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            min-width: 140px;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .time-block:hover {
+            transform: translateY(-5px);
+            border-color: var(--indigo-light);
+        }
+
+        .number {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            background: linear-gradient(to bottom, #ffffff 0%, #c0c0c0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            color: var(--indigo-light);
+            font-weight: 600;
+        }
+
+        .separator {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .time-block {
+                min-width: 110px;
+                padding: 1.5rem 0.5rem;
+            }
+            .countdown-container {
+                gap: 1rem;
+            }
+        }
+
+        /* Subtle animation for the glow */
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.5; }
+        }
+
+        .glow-dot {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--silver);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: pulse 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <h1>Countdown to Überraschung</h1>
+
+    <div class="countdown-container">
+        <div class="time-block">
+            <span class="number" id="days">00</span>
+            <span class="label">Tage</span>
+        </div>
+        <div class="time-block">
+            <span class="number" id="hours">00</span>
+            <span class="label">Stunden</span>
+        </div>
+        <div class="time-block">
+            <span class="number" id="minutes">00</span>
+            <span class="label">Minuten</span>
+        </div>
+        <div class="time-block">
+            <span class="number" id="seconds">00</span>
+            <span class="label">Sekunden</span>
+        </div>
+    </div>
+
+    <script>
+        // Ziel-Datum: 25.09.2026 um 08:00 Uhr
+        const targetDate = new Date('September 25, 2026 08:00:00').getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.querySelector('.countdown-container').innerHTML = "<h2>Es ist soweit!</h2>";
+                document.querySelector('h1').innerText = "Überraschung!";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = days.toString().padStart(2, '0');
+            document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+        }
+
+        // Initialer Aufruf
+        updateCountdown();
+        
+        // Jede Sekunde aktualisieren
+        setInterval(updateCountdown, 1000);
+
+        // Hintergrund-Effekt: Sterne/Punkte generieren
+        function createStars() {
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'glow-dot';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.animationDelay = Math.random() * 5 + 's';
+                document.body.appendChild(star);
+            }
+        }
+        createStars();
+    </script>
+</body>
+</html>
