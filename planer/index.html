@@ -208,7 +208,6 @@
   <div id="toast-notification" class="toast-notification"></div>
   <div id="bok-overlay" onclick="closeBokOverlay()"><img id="bok-image" src="" alt="Bok"></div>
   
-  <!-- WICHTIG: Das Overlay muss erhalten bleiben für den Geheimmodus! -->
   <div id="chillgriff-overlay"><div class="chillgriff-huge-text">CHILLGRIFF!</div></div>
   <div id="party-stage"><div class="party-glow-overlay"></div><div style="position: absolute; top: 18%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 620px;"><div class="party-banner-main">🔥 DATE ANGENOMMEN! PARTY! 🔥</div></div></div>
 
@@ -663,10 +662,11 @@
 
       framesUntilNextTree--;
       if (framesUntilNextTree <= 0) { 
-        let obsHeight = 35 + Math.random() * 15; 
+        let obsHeight = 30 + Math.random() * 40; // Mehr Höhenunterschied (30 bis 70 hoch)
         let treeEmoji = Math.random() > 0.5 ? '🌳' : '🌲'; 
         obstacles.push({ x: canvas.width, y: 190 - obsHeight, width: obsHeight * 0.8, height: obsHeight, emoji: treeEmoji });
-        framesUntilNextTree = Math.floor(Math.random() * 50) + 60;
+        // Mehr Abstands-Unterschied (schnell hintereinander bis lange Pause)
+        framesUntilNextTree = Math.floor(Math.random() * 90) + 45;
       }
 
       for (let i = 0; i < obstacles.length; i++) {
@@ -711,7 +711,7 @@
     }
 
     // ==========================================
-    // TABS & NAVIGATION (FEHLERBEHOBEN!)
+    // TABS & NAVIGATION 
     // ==========================================
     function showTab(name) {
       const currentActive = document.querySelector('.tab-content.active');
@@ -733,7 +733,6 @@
       document.querySelectorAll('.nav-tab').forEach(el => {
         if (el.getAttribute('data-tab') === name) {
           el.classList.add('active');
-          // Sanftes, wackelfreies Scrollen der Navigation ohne Page-Jump!
           const navBar = document.querySelector('nav');
           const scrollPos = el.offsetLeft - (navBar.clientWidth / 2) + (el.clientWidth / 2);
           navBar.scrollTo({ left: scrollPos, behavior: 'smooth' });
@@ -750,7 +749,6 @@
       window.addEventListener('touchstart', e => {
         touchStartX = null; touchStartY = null;
         
-        // WICHTIG: Kein Tab-Wechsel, wenn in der Nav-Leiste oder im Minispiel gewischt wird!
         if (e.target.closest('nav') || e.target.closest('#game-container')) return; 
         
         if (document.querySelector('.modal-overlay[style*="display: flex"]') || document.getElementById('bok-overlay').classList.contains('active') || document.getElementById('chillgriff-overlay').classList.contains('active') || document.getElementById('muell-zoom-modal').classList.contains('active')) return;
