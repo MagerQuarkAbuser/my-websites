@@ -972,7 +972,6 @@
           <div id="muell-display-area" style="display: none;">
             <div class="muell-preview-container">
               <img id="muell-img-preview" class="muell-preview-img" style="display: none;" alt="Müllkalender Vorschau" onclick="openMuellZoom()" title="Zum Vergrößern antippen">
-              <iframe id="muell-pdf-preview" style="width: 100%; height: 500px; border: none; display: none; border-radius: 8px;"></iframe>
               
               <!-- Bearbeitbarer Titel unter dem Bild -->
               <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px; width: 100%;">
@@ -1120,7 +1119,7 @@
     // ==========================================
     // KONFIGURATION & AUDIO
     // ==========================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO5or9QVWSOyfIBpzq0G2Q4LmzR-ECKQLF3DihegW6u6jR_dNhDDQOI6Leu9L1h2CX/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIBSxSi6IQ-5zuwp5p_PU61jqCyv80cqQhfhM162j7P3aIC6y0pDGRzuWEsLwOT127/exec";
 
     const playlist = ['song1.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3'];
     let currentSongIndex = 0;
@@ -1239,13 +1238,13 @@
       reader.onload = function(e) {
         const fileObj = {
           action: "uploadMuell",
+          muellTitle: appData.muellTitle || "Müllkalender bis Januar",
           muellFile: {
             data: e.target.result,
             name: file.name,
             type: file.type
           }
         };
-        // Direkt an Server senden zum Speichern in Drive
         fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
@@ -1269,7 +1268,6 @@
       const emptyNotice = document.getElementById('muell-empty-notice');
       const titleEl = document.getElementById('muell-file-title');
       const imgPreview = document.getElementById('muell-img-preview');
-      const pdfPreview = document.getElementById('muell-pdf-preview');
 
       if (titleEl) titleEl.textContent = appData.muellTitle || "Müllkalender bis Januar";
 
@@ -1362,7 +1360,7 @@
         body: JSON.stringify({ action: "uploadImages", images: imagesArray })
       }).then(() => {
         if (statusEl) {
-          statusEl.textContent = "Erfolglich in Google Drive gespeichert! 🎉";
+          statusEl.textContent = "Erfolgreich in Google Drive gespeichert! 🎉";
           setTimeout(() => { statusEl.textContent = ""; }, 3500);
         }
         setTimeout(fetchRemoteData, 1500);
@@ -2097,10 +2095,9 @@
             isFirstFetch = false;
 
             const localPony = appData.ponyCounter;
-            const localMuellTitle = appData.muellTitle;
             appData = data;
             if (appData.ponyCounter === undefined) appData.ponyCounter = localPony;
-            if (appData.muellTitle === undefined) appData.muellTitle = localMuellTitle || "Müllkalender bis Januar";
+            if (appData.muellTitle === undefined) appData.muellTitle = "Müllkalender bis Januar";
 
             renderAll();
             checkPendingDateForVanessa();
