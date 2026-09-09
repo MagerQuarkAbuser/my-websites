@@ -135,6 +135,30 @@
             opacity: 0.3;
             animation: pulse 3s infinite ease-in-out;
         }
+
+        .reveal-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 1.5rem 3rem;
+            background: var(--glass);
+            border: 1px solid var(--indigo-light);
+            color: var(--silver-bright);
+            text-decoration: none;
+            border-radius: 15px;
+            font-weight: 600;
+            letter-spacing: 0.2rem;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .reveal-link:hover {
+            background: var(--indigo-light);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -170,7 +194,12 @@
             const distance = targetDate - now;
 
             if (distance < 0) {
-                document.querySelector('.countdown-container').innerHTML = "<h2>Es ist soweit!</h2>";
+                document.querySelector('.countdown-container').innerHTML = `
+                    <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+                        <h2 style="font-weight: 300; letter-spacing: 0.1rem; margin-bottom: 2rem; color: var(--silver-bright);">Es ist soweit!</h2>
+                        <a href="https://magerquarkabuser.github.io/my-websites/planer/" class="reveal-link">Zum Planer</a>
+                    </div>
+                `;
                 document.querySelector('h1').innerText = "Überraschung!";
                 return;
             }
