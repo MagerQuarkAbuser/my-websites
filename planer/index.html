@@ -1374,9 +1374,14 @@
       const imgEl = document.getElementById('slideshow-img');
       if (!imgEl) return;
 
-      const images = (appData.galleryImages && appData.galleryImages.length > 0) 
-        ? appData.galleryImages 
-        : ['image1.png', 'hintergrund.jpeg'];
+      // Wir nehmen AUSSCHLIESSLICH die echten Bilder aus dem Google Drive
+      const images = appData.galleryImages || [];
+
+      // Wenn noch keine Bilder geladen wurden oder der Ordner leer ist, brechen wir ab
+      if (images.length === 0) {
+        imgEl.style.opacity = 0;
+        return;
+      }
 
       function showRandomImage() {
         imgEl.style.opacity = 0;
