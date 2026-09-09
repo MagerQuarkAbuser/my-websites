@@ -208,6 +208,7 @@
   <div id="toast-notification" class="toast-notification"></div>
   <div id="bok-overlay" onclick="closeBokOverlay()"><img id="bok-image" src="" alt="Bok"></div>
   
+  <!-- WICHTIG: Das Overlay muss erhalten bleiben für den Geheimmodus! -->
   <div id="chillgriff-overlay"><div class="chillgriff-huge-text">CHILLGRIFF!</div></div>
   <div id="party-stage"><div class="party-glow-overlay"></div><div style="position: absolute; top: 18%; left: 50%; transform: translateX(-50%); width: 90%; max-width: 620px;"><div class="party-banner-main">🔥 DATE ANGENOMMEN! PARTY! 🔥</div></div></div>
 
@@ -710,7 +711,7 @@
     }
 
     // ==========================================
-    // TABS & NAVIGATION
+    // TABS & NAVIGATION (FEHLERBEHOBEN!)
     // ==========================================
     function showTab(name) {
       const currentActive = document.querySelector('.tab-content.active');
@@ -732,7 +733,10 @@
       document.querySelectorAll('.nav-tab').forEach(el => {
         if (el.getAttribute('data-tab') === name) {
           el.classList.add('active');
-          el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          // Sanftes, wackelfreies Scrollen der Navigation ohne Page-Jump!
+          const navBar = document.querySelector('nav');
+          const scrollPos = el.offsetLeft - (navBar.clientWidth / 2) + (el.clientWidth / 2);
+          navBar.scrollTo({ left: scrollPos, behavior: 'smooth' });
         } else {
           el.classList.remove('active');
         }
@@ -742,13 +746,21 @@
     }
 
     function setupSwipeGestures() {
-      let touchStartX = 0; let touchStartY = 0;
+      let touchStartX = null; let touchStartY = null;
       window.addEventListener('touchstart', e => {
+        touchStartX = null; touchStartY = null;
+        
+        // WICHTIG: Kein Tab-Wechsel, wenn in der Nav-Leiste oder im Minispiel gewischt wird!
+        if (e.target.closest('nav') || e.target.closest('#game-container')) return; 
+        
         if (document.querySelector('.modal-overlay[style*="display: flex"]') || document.getElementById('bok-overlay').classList.contains('active') || document.getElementById('chillgriff-overlay').classList.contains('active') || document.getElementById('muell-zoom-modal').classList.contains('active')) return;
-        touchStartX = e.changedTouches[0].screenX; touchStartY = e.changedTouches[0].screenY;
+        
+        touchStartX = e.changedTouches[0].screenX; 
+        touchStartY = e.changedTouches[0].screenY;
       }, { passive: true });
 
       window.addEventListener('touchend', e => {
+        if (touchStartX === null || touchStartY === null) return;
         const diffX = e.changedTouches[0].screenX - touchStartX;
         const diffY = e.changedTouches[0].screenY - touchStartY;
         if (Math.abs(diffX) > 65 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
@@ -869,15 +881,12 @@
         setTimeout(() => img.remove(), 5500); 
       }
 
-      // Initiale Explosion von 25 Capybaras
       for (let i = 0; i < 25; i++) { spawnHead(); } 
 
-      // Stetig nachrückende Capybaras
       secretInterval = setInterval(() => {
         for (let i = 0; i < 3; i++) { spawnHead(); }
       }, 280);
 
-      // Beendet das Spektakel nach exakt 15 Sekunden
       secretTimeout = setTimeout(() => { 
         clearInterval(secretInterval);
         overlay.classList.remove('active'); 
