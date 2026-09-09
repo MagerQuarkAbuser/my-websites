@@ -136,7 +136,7 @@
             animation: pulse 3s infinite ease-in-out;
         }
 
-        .reveal-link {
+        .reveal-link, .curiosity-btn {
             display: inline-block;
             margin-top: 20px;
             padding: 1.5rem 3rem;
@@ -151,13 +151,25 @@
             transition: all 0.3s ease;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
+            cursor: pointer;
+            font-family: inherit;
         }
 
-        .reveal-link:hover {
+        .reveal-link:hover, .curiosity-btn:hover {
             background: var(--indigo-light);
             color: white;
             transform: scale(1.05);
             box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+        }
+
+        #laugh-message {
+            margin-top: 30px;
+            font-size: 1.2rem;
+            color: var(--silver);
+            font-style: italic;
+            text-align: center;
+            display: none;
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
@@ -185,6 +197,11 @@
         </div>
     </div>
 
+    <div id="curiosity-section">
+        <button id="curiosity-btn" class="curiosity-btn">Ich bin neugierig und will meine Überraschung sehen</button>
+        <div id="laugh-message">Hahaha! 😂 Netter Versuch, aber du musst dich noch gedulden!</div>
+    </div>
+
     <script>
         // Ziel-Datum: 25.09.2026 um 08:00 Uhr
         const targetDate = new Date('September 25, 2026 08:00:00').getTime();
@@ -201,6 +218,7 @@
                     </div>
                 `;
                 document.querySelector('h1').innerText = "Überraschung!";
+                document.getElementById('curiosity-section').style.display = 'none';
                 return;
             }
 
@@ -214,6 +232,12 @@
             document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
             document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
         }
+
+        // Curiosity Button Logic
+        document.getElementById('curiosity-btn').addEventListener('click', function() {
+            this.style.display = 'none';
+            document.getElementById('laugh-message').style.display = 'block';
+        });
 
         // Initialer Aufruf
         updateCountdown();
