@@ -177,7 +177,7 @@
     .icon-btn:hover { background: white; transform: translateY(-1px); }
     .icon-btn:active { transform: translateY(1px); }
 
-    /* Navigation */
+    /* Navigation - Scrollbar für PC sichtbar gemacht & Flex-Shrink blockiert */
     nav {
       width: 100%;
       max-width: 720px;
@@ -187,11 +187,23 @@
       gap: 8px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+      scroll-behavior: smooth;
     }
-    nav::-webkit-scrollbar { display: none; }
+    nav::-webkit-scrollbar {
+      height: 6px;
+    }
+    nav::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    nav::-webkit-scrollbar-thumb {
+      background-color: rgba(148, 163, 184, 0.4);
+      border-radius: 10px;
+    }
 
     .nav-tab {
+      flex-shrink: 0; /* Verhindert das Zusammenquetschen auf dem PC */
       padding: 10px 16px;
       border-radius: 14px;
       background: rgba(255, 255, 255, 0.92);
@@ -225,13 +237,11 @@
       padding: 10px 16px 24px 16px;
     }
 
-    /* Moderne Seitenübergänge */
     .tab-content { display: none; }
     .tab-content.active {
       display: block;
       animation: tabEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-
     @keyframes tabEnter {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
@@ -499,7 +509,7 @@
       100% { transform: scale(1); opacity: 1; border-radius: 0; }
     }
 
-    /* Listen & Formulare */
+    /* Listen & Formulare - Allgemeine Box */
     .section-card {
       background: var(--card-bg);
       backdrop-filter: blur(16px);
@@ -515,6 +525,7 @@
       display: flex; align-items: center; justify-content: space-between;
     }
 
+    /* Standard Input-Bar (z.B. für Einkaufsliste & Todos) */
     .input-bar {
       display: flex;
       gap: 8px;
@@ -536,6 +547,37 @@
       border-color: var(--blue-dark); 
       box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
     }
+    
+    /* GESTAPELTE FORMULARE FÜR TERMINE UND DATE (Verhindert Quetschen am PC) */
+    .form-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .form-stack .row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+    .form-stack input, .form-stack select {
+      flex: 1;
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #cbd5e1;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.98);
+      outline: none;
+      min-height: 48px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: border 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    .form-stack input:focus, .form-stack select:focus {
+      border-color: var(--blue-dark);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
     .primary-btn {
       background: linear-gradient(135deg, #22c55e 0%, #0ea5e9 100%);
       color: white;
@@ -931,14 +973,14 @@
         </div>
       </div>
 
-      <!-- TAB 4: TERMINE -->
+      <!-- TAB 4: TERMINE (Gestapelt für perfekte PC & Handy Ansicht) -->
       <div id="tab-termine" class="tab-content">
         <div class="section-card">
           <div class="section-title">Neuer Termin 📅</div>
-          <form class="input-bar" onsubmit="addTermin(event)">
-            <div style="display: flex; gap: 8px; width: 100%;">
-              <input type="date" id="termin-date" required style="flex: 1;">
-              <input type="time" id="termin-time" required style="width: 110px;">
+          <form class="form-stack" onsubmit="addTermin(event)">
+            <div class="row">
+              <input type="date" id="termin-date" required>
+              <input type="time" id="termin-time" required style="flex: 0 0 120px;">
             </div>
             <select id="termin-category">
               <option value="geburtstag">Geburtstag 🎂 (Blau)</option>
@@ -1004,7 +1046,6 @@
           <!-- Diashow Vorschau -->
           <div style="width: 100%; height: 280px; border-radius: 16px; overflow: hidden; background: #0f172a; position: relative; margin-bottom: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center;">
             <img id="slideshow-img" style="max-width: 100%; max-height: 100%; object-fit: contain; transition: opacity 0.8s ease-in-out; opacity: 0;" alt="Diashow">
-            <div style="position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,0.6); color: white; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem;">Zufällige Diashow ✨</div>
           </div>
 
           <!-- Multi-Upload Formular -->
@@ -1018,21 +1059,17 @@
         </div>
       </div>
 
-      <!-- TAB 7: DATE (FABIAN) -->
+      <!-- TAB 7: DATE (FABIAN) - Gestapelt -->
       <div id="tab-date" class="tab-content">
         <div class="section-card">
           <div class="section-title">Geheime Date-Einladung ❤️</div>
-          <form onsubmit="sendDateInvite(event)">
-            <div class="input-bar" style="margin-bottom: 10px;">
-              <div style="display: flex; gap: 8px; width: 100%;">
-                <input type="date" id="date-invite-date" required style="flex: 1;">
-                <input type="time" id="date-invite-time" required style="width: 110px;">
-              </div>
+          <form class="form-stack" onsubmit="sendDateInvite(event)">
+            <div class="row">
+              <input type="date" id="date-invite-date" required>
+              <input type="time" id="date-invite-time" required style="flex: 0 0 120px;">
             </div>
-            <div class="input-bar">
-              <input type="text" id="date-invite-text" placeholder="Notiz für Vanessa..." required>
-              <button type="submit" class="primary-btn">Abschicken 💌</button>
-            </div>
+            <input type="text" id="date-invite-text" placeholder="Notiz für Vanessa..." required>
+            <button type="submit" class="primary-btn">Abschicken 💌</button>
           </form>
           <div id="date-status-box" style="margin-top: 15px; font-size: 0.95rem; color: var(--text-muted);"></div>
 
@@ -1077,25 +1114,21 @@
   <div class="modal-overlay" id="edit-termin-modal" style="display: none;">
     <div class="modal-box">
       <h3 style="font-size: 1.3rem; margin-bottom: 16px; font-weight: 700;">Termin bearbeiten ✏️</h3>
-      <form onsubmit="saveEditedTermin(event)">
+      <form class="form-stack" onsubmit="saveEditedTermin(event)">
         <input type="hidden" id="edit-termin-index">
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-          <input type="date" id="edit-termin-date" required style="flex: 1; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 16px; min-height: 44px;">
-          <input type="time" id="edit-termin-time" required style="width: 110px; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 16px; min-height: 44px;">
+        <div class="row">
+          <input type="date" id="edit-termin-date" required>
+          <input type="time" id="edit-termin-time" required style="flex: 0 0 120px;">
         </div>
-        <div style="margin-bottom: 12px;">
-          <select id="edit-termin-category" style="width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 16px; min-height: 44px;">
-            <option value="geburtstag">Geburtstag 🎂 (Blau)</option>
-            <option value="date">Date ❤️ (Rot)</option>
-            <option value="event">Veranstaltung 🎟️ (Grün)</option>
-            <option value="arzt">Arzt / Pflichttermin 🩺 (Gelb)</option>
-            <option value="sonstiges">Sonstiges 📌 (Lila)</option>
-          </select>
-        </div>
-        <div style="margin-bottom: 20px;">
-          <input type="text" id="edit-termin-title" placeholder="Beschreibung..." required style="width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; font-size: 16px; min-height: 44px;">
-        </div>
-        <div style="display: flex; gap: 10px;">
+        <select id="edit-termin-category">
+          <option value="geburtstag">Geburtstag 🎂 (Blau)</option>
+          <option value="date">Date ❤️ (Rot)</option>
+          <option value="event">Veranstaltung 🎟️ (Grün)</option>
+          <option value="arzt">Arzt / Pflichttermin 🩺 (Gelb)</option>
+          <option value="sonstiges">Sonstiges 📌 (Lila)</option>
+        </select>
+        <input type="text" id="edit-termin-title" placeholder="Beschreibung..." required>
+        <div class="row" style="margin-top: 8px;">
           <button type="button" class="icon-btn" style="flex: 1; justify-content: center; padding: 12px;" onclick="closeEditTerminModal()">Abbrechen</button>
           <button type="submit" class="primary-btn" style="flex: 1; padding: 12px;">Speichern</button>
         </div>
@@ -1245,7 +1278,6 @@
             type: file.type
           }
         };
-        // Cache Buster Parameter hinzugefügt ?t=...
         fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime(), {
           method: 'POST',
           mode: 'no-cors',
@@ -1284,7 +1316,6 @@
         imgPreview.src = appData.muellFileUrl;
         imgPreview.style.display = 'block';
         
-        // Fallback, falls Google das Bild kurz blockiert
         imgPreview.onerror = function() {
            imgPreview.style.display = 'none';
            if (emptyNotice) {
@@ -1363,7 +1394,6 @@
     function sendImagesToCloud(imagesArray, statusEl) {
       if (!GOOGLE_SCRIPT_URL) return;
 
-      // Cache Buster Parameter hinzugefügt ?t=...
       fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime(), {
         method: 'POST',
         mode: 'no-cors',
@@ -1388,7 +1418,6 @@
       function showRandomImage() {
         const images = appData.galleryImages || [];
 
-        // Wenn noch keine Bilder geladen wurden, brich ab
         if (images.length === 0) {
           imgEl.style.opacity = 0;
           return;
@@ -1400,12 +1429,10 @@
           const randomIndex = Math.floor(Math.random() * images.length);
           imgEl.src = images[randomIndex];
           
-          // Wird erst sichtbar, wenn das Bild fehlerfrei geladen ist
           imgEl.onload = () => {
             imgEl.style.opacity = 1;
           };
           
-          // Wenn Google das Bild blockiert (z.B. privat), sofort das nächste versuchen!
           imgEl.onerror = () => {
             setTimeout(showRandomImage, 1000); 
           };
@@ -2092,7 +2119,6 @@
     function syncData() {
       localStorage.setItem('planer_data', JSON.stringify(appData));
       if (GOOGLE_SCRIPT_URL) {
-        // Cache Buster Parameter hinzugefügt ?t=...
         fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime(), {
           method: 'POST',
           mode: 'no-cors',
@@ -2104,7 +2130,6 @@
 
     function fetchRemoteData() {
       if (!GOOGLE_SCRIPT_URL) return;
-      // Cache Buster Parameter hinzugefügt ?t=...
       fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime())
         .then(res => res.json())
         .then(data => {
@@ -2129,7 +2154,6 @@
             renderAll();
             checkPendingDateForVanessa();
             
-            // Verhindert doppelte Startaufrufe der Diashow
             if (!slideshowInterval) {
                startSlideshow();
             }
