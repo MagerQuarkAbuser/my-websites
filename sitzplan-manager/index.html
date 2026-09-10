@@ -14,11 +14,9 @@
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         primary: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' },
-                        surface: '#f8fafc',
                     },
                     boxShadow: {
-                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-                        'card': '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03)'
+                        'card': '0 2px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.05)'
                     }
                 }
             }
@@ -29,15 +27,17 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
         
         body { background-color: #f1f5f9; color: #0f172a; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Punktemuster-Hintergrund für leichten Kontrast zum weißen Grid */
+        .dot-bg {
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
 
-        /* DRUCK-OPTIMIERUNG: Hier passiert die Magie für Seite 1 & 2 */
+        /* DRUCK-OPTIMIERUNG */
         @media print {
             body { background: white !important; }
             .no-print { display: none !important; }
@@ -47,24 +47,24 @@
         }
         .print-only { display: none; }
         
-        .segmented-control { display: flex; background-color: #f1f5f9; border-radius: 999px; padding: 4px; position: relative; }
-        .segmented-btn { flex: 1; text-align: center; padding: 8px 16px; border-radius: 999px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; z-index: 10; position: relative; color: #64748b; }
+        .segmented-control { display: flex; background-color: #e2e8f0; border-radius: 8px; padding: 4px; position: relative; }
+        .segmented-btn { flex: 1; text-align: center; padding: 8px 16px; border-radius: 6px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; z-index: 10; position: relative; color: #64748b; }
         .segmented-btn.active { color: #0f172a; }
-        .segmented-highlight { position: absolute; top: 4px; bottom: 4px; background: white; border-radius: 999px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; }
+        .segmented-highlight { position: absolute; top: 4px; bottom: 4px; background: white; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; }
 
-        @keyframes select-pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
-        .seat-selected { animation: select-pulse 1.5s infinite; border-color: #3b82f6 !important; background-color: #eff6ff !important; transform: scale(1.05); z-index: 20; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes select-pulse { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6); } 70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); } 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); } }
+        .seat-selected { animation: select-pulse 1.5s infinite; border-color: #f59e0b !important; background-color: #fffbeb !important; transform: scale(1.05); z-index: 20; }
+        
+        button, select, input { min-height: 40px; }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col">
+<body class="dot-bg antialiased min-h-screen flex flex-col">
 
     <div id="app" class="flex-1 w-full max-w-[1600px] mx-auto flex flex-col"></div>
 
     <script>
         // --- 1. STATE & DATENSTRUKTUR ---
-        const STORAGE_KEY = 'sitzplan_data_v4'; // V4 wegen der neuen Grid-Logik
+        const STORAGE_KEY = 'sitzplan_data_v5'; // V5 für hohen Kontrast & Fixes
         
         let state = {
             className: 'Klasse 10A',
@@ -120,30 +120,29 @@
             
             app.innerHTML = `
                 <!-- HEADER -->
-                <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
-                    <div class="max-w-[1600px] mx-auto px-4 md:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                <header class="bg-white border-b border-slate-300 sticky top-0 z-40 shadow-sm no-print">
+                    <div class="max-w-[1600px] mx-auto px-4 md:px-8 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
                         <div class="flex items-center gap-4">
-                            <div class="h-10 w-10 bg-primary-100 text-primary-600 rounded-xl flex items-center justify-center text-lg">
-                                <i class="fa-solid fa-layer-group"></i>
+                            <div class="h-10 w-10 bg-slate-800 text-white rounded-lg flex items-center justify-center text-lg shadow-sm">
+                                <i class="fa-solid fa-users"></i>
                             </div>
                             <div>
-                                <h1 class="text-xl font-bold text-slate-900 leading-tight">${state.className}</h1>
-                                <button onclick="editClassName()" class="text-xs text-slate-500 hover:text-primary-600 font-medium transition flex items-center gap-1">
-                                    <i class="fa-solid fa-pen text-[10px]"></i> Klasse umbenennen
+                                <h1 class="text-2xl font-black text-slate-900 leading-tight">${state.className}</h1>
+                                <button onclick="editClassName()" class="text-xs font-bold text-slate-500 hover:text-slate-800 transition flex items-center gap-1">
+                                    <i class="fa-solid fa-pen text-[10px]"></i> Name ändern
                                 </button>
                             </div>
                         </div>
                         
                         <div class="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                            <button onclick="openQRModal()" class="whitespace-nowrap px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 transition shadow-card">
-                                <i class="fa-solid fa-qrcode mr-1.5 text-slate-400"></i> Schüler einladen
+                            <button onclick="openQRModal()" class="whitespace-nowrap px-4 py-2 bg-white border-2 border-slate-300 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 hover:border-slate-400 transition">
+                                <i class="fa-solid fa-qrcode mr-1 text-slate-500"></i> Schüler einladen
                             </button>
-                            <button onclick="window.print()" class="whitespace-nowrap px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-50 hover:border-slate-300 transition shadow-card">
-                                <i class="fa-solid fa-print mr-1.5 text-slate-400"></i> Drucken
+                            <button onclick="window.print()" class="whitespace-nowrap px-4 py-2 bg-white border-2 border-slate-300 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 hover:border-slate-400 transition">
+                                <i class="fa-solid fa-print mr-1 text-slate-500"></i> PDF / Drucken
                             </button>
-                            <div class="w-px h-6 bg-slate-200 mx-1 hidden md:block"></div>
-                            <button onclick="generatePlan()" class="whitespace-nowrap px-5 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-semibold hover:bg-primary-700 transition shadow-sm flex items-center gap-2">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i> KI-Plan berechnen
+                            <button onclick="generatePlan()" class="whitespace-nowrap px-5 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 transition shadow-sm flex items-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Plan berechnen
                             </button>
                         </div>
                     </div>
@@ -154,8 +153,8 @@
                     <aside class="w-full lg:w-80 flex-shrink-0 space-y-6 no-print">
                         
                         <!-- KLICK-MODUS -->
-                        <div class="bg-white rounded-2xl p-5 shadow-card border border-slate-100">
-                            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Interaktions-Modus</h2>
+                        <div class="bg-white rounded-xl p-4 shadow-card border-2 border-slate-200">
+                            <h2 class="text-sm font-black text-slate-800 uppercase tracking-wider mb-3"><i class="fa-solid fa-hand-pointer text-slate-400 mr-1"></i> Modus</h2>
                             <div class="segmented-control">
                                 <div class="segmented-highlight" style="left: ${state.isSwapMode ? '50%' : '4px'}; right: ${state.isSwapMode ? '4px' : '50%'}"></div>
                                 <div class="segmented-btn ${!state.isSwapMode ? 'active' : ''}" onclick="setSwapMode(false)">
@@ -165,25 +164,25 @@
                                     <i class="fa-solid fa-people-arrows mr-1"></i> Tauschen
                                 </div>
                             </div>
-                            <p class="text-[11px] font-medium text-slate-500 mt-3 text-center">
-                                ${!state.isSwapMode ? 'Klicke auf Tische, um Gänge zu erstellen.' : state.swapStartSeatId ? '<span class="text-primary-600 font-bold">Ziel-Platz auswählen...</span>' : 'Schüler zum Umsetzen anklicken.'}
+                            <p class="text-xs font-bold text-slate-500 mt-3 text-center bg-slate-50 p-2 rounded border border-slate-100">
+                                ${!state.isSwapMode ? 'Klicke auf Tische, um Gänge zu erstellen.' : state.swapStartSeatId ? '<span class="text-amber-600 font-black">Ziel-Platz auswählen...</span>' : 'Schüler zum Umsetzen anklicken.'}
                             </p>
                         </div>
 
                         <!-- SCHÜLER LISTE -->
-                        <div class="bg-white rounded-2xl shadow-card border border-slate-100 flex flex-col h-[400px]">
-                            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
-                                <h2 class="text-sm font-bold text-slate-900">Schüler (${state.students.length})</h2>
+                        <div class="bg-white rounded-xl shadow-card border-2 border-slate-200 flex flex-col h-[400px]">
+                            <div class="p-4 border-b-2 border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-xl">
+                                <h2 class="text-base font-black text-slate-900"><i class="fa-solid fa-users text-slate-400 mr-1"></i> Schüler (${state.students.length})</h2>
                                 <input type="file" id="csvUpload" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
-                                <button onclick="document.getElementById('csvUpload').click()" class="text-xs text-primary-600 hover:text-primary-700 font-semibold" title="CSV Liste importieren">
+                                <button onclick="document.getElementById('csvUpload').click()" class="text-xs text-primary-600 hover:text-primary-700 font-bold bg-white px-2 py-1 rounded border border-slate-200" title="CSV Liste importieren">
                                     <i class="fa-solid fa-file-arrow-up mr-1"></i> Import
                                 </button>
                             </div>
                             
-                            <div class="p-4 border-b border-slate-50">
-                                <div class="relative">
-                                    <input type="text" id="newStudentName" placeholder="Neuer Name..." class="w-full bg-slate-50 border border-slate-200 text-sm rounded-lg pl-3 pr-10 py-2 outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition" onkeypress="if(event.key === 'Enter') addStudent()">
-                                    <button onclick="addStudent()" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary-600 p-1">
+                            <div class="p-3 border-b-2 border-slate-100 bg-white">
+                                <div class="flex gap-2">
+                                    <input type="text" id="newStudentName" placeholder="Neuer Name..." class="w-full bg-slate-50 border-2 border-slate-200 text-sm font-bold rounded-lg px-3 py-2 outline-none focus:border-primary-500 transition" onkeypress="if(event.key === 'Enter') addStudent()">
+                                    <button onclick="addStudent()" class="bg-slate-800 text-white rounded-lg px-4 font-bold hover:bg-slate-700">
                                         <i class="fa-solid fa-plus"></i>
                                     </button>
                                 </div>
@@ -192,30 +191,31 @@
                             <div class="flex-1 overflow-y-auto p-2" id="studentList"></div>
                             
                             ${state.students.length > 0 ? `
-                            <div class="p-3 border-t border-slate-100 bg-slate-50 rounded-b-2xl">
-                                <button onclick="resetVotes()" class="w-full text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
-                                    <i class="fa-solid fa-rotate-left mr-1"></i> Alle Wünsche zurücksetzen
+                            <div class="p-3 border-t-2 border-slate-100 bg-slate-50 rounded-b-xl">
+                                <button onclick="resetVotes()" class="w-full text-xs font-bold text-slate-600 hover:text-red-600 transition flex justify-center items-center gap-1">
+                                    <i class="fa-solid fa-rotate-left"></i> Wünsche zurücksetzen
                                 </button>
                             </div>` : ''}
                         </div>
 
                         <!-- REGELN -->
-                        <div class="bg-white rounded-2xl shadow-card border border-slate-100">
-                            <div class="p-5 border-b border-slate-100">
-                                <h2 class="text-sm font-bold text-slate-900">Zwingende Regeln</h2>
+                        <div class="bg-white rounded-xl shadow-card border-2 border-slate-200">
+                            <div class="p-4 border-b-2 border-slate-100 bg-slate-50 rounded-t-xl">
+                                <h2 class="text-base font-black text-slate-900"><i class="fa-solid fa-shield-halved text-slate-400 mr-1"></i> Zwingende Regeln</h2>
                             </div>
                             <div class="p-4 space-y-3">
-                                <select id="ruleType" class="w-full bg-slate-50 border border-slate-200 text-sm rounded-lg p-2 outline-none focus:border-primary-500" onchange="renderRuleInputs()">
+                                <select id="ruleType" class="w-full bg-slate-50 border-2 border-slate-200 text-sm font-bold rounded-lg p-2 outline-none focus:border-primary-500" onchange="renderRuleInputs()">
                                     <option value="not_next_to">Darf NICHT sitzen neben</option>
                                     <option value="force_next_to">MUSS sitzen neben</option>
                                     <option value="sit_alone">Muss alleine sitzen</option>
                                     <option value="force_first_row">Muss in die 1. Reihe (Vorne)</option>
                                 </select>
                                 <div id="ruleInputs" class="space-y-3"></div>
-                                <button onclick="addRule()" class="w-full bg-slate-800 text-white text-sm font-semibold rounded-lg py-2 hover:bg-slate-700 transition">Regel hinzufügen</button>
+                                <button onclick="addRule()" class="w-full bg-slate-800 text-white text-sm font-bold rounded-lg py-2 hover:bg-slate-700 transition">+ Regel hinzufügen</button>
                             </div>
-                            <div class="border-t border-slate-100 p-2 max-h-40 overflow-y-auto" id="ruleList"></div>
+                            <div class="border-t-2 border-slate-100 p-2 max-h-40 overflow-y-auto bg-slate-50 rounded-b-xl" id="ruleList"></div>
                         </div>
+
                     </aside>
 
                     <!-- HAUPTBEREICH (RECHTS) -->
@@ -223,36 +223,36 @@
                         
                         <!-- KI SCORE BADGE -->
                         ${state.lastScore !== null ? `
-                            <div class="mb-6 flex justify-center no-print fade-in">
-                                <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2 rounded-full text-sm font-semibold shadow-sm flex items-center gap-2">
-                                    <i class="fa-solid fa-check-circle text-emerald-500"></i>
-                                    <span>Optimierung abgeschlossen: <span class="font-black">${state.lastScore} Punkte</span></span>
+                            <div class="mb-6 flex justify-center no-print">
+                                <div class="bg-green-100 border-2 border-green-400 text-green-900 px-5 py-2 rounded-xl text-sm font-bold shadow-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-check-circle text-green-600"></i>
+                                    <span>Optimierung abgeschlossen: <span class="font-black text-lg">${state.lastScore} Punkte</span></span>
                                 </div>
                             </div>
                         ` : ''}
                         
                         <!-- SEITE 1: NORMALANSICHT -->
-                        <div class="bg-white p-6 md:p-10 rounded-2xl shadow-soft border border-slate-100 flex-1 relative print:shadow-none print:border-none print:p-0">
+                        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-card border-2 border-slate-200 flex-1 relative print:shadow-none print:border-none print:p-0">
                             <h2 class="print-only text-2xl font-black mb-6 text-center border-b-2 border-black pb-2">Sitzplan: ${state.className} (Normalansicht)</h2>
                             
                             <div class="flex justify-center mb-8">
-                                <div class="bg-slate-800 text-white text-xs font-bold uppercase tracking-[0.2em] py-1.5 px-8 rounded shadow-sm print:bg-white print:text-black print:border-2 print:border-black">
+                                <div class="bg-slate-800 text-white text-xs font-black uppercase tracking-[0.2em] py-2 px-10 rounded-lg shadow-sm print:bg-white print:text-black print:border-2 print:border-black">
                                     Tafel / Vorne
                                 </div>
                             </div>
 
-                            <div id="seatingGrid" class="mx-auto" style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 0.75rem; max-width: 900px;"></div>
+                            <!-- WICHTIG: Explicit Grid für fehlerfreies Layouting -->
+                            <div id="seatingGrid" class="mx-auto" style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 0.5rem; max-width: 950px;"></div>
                         </div>
 
                         <!-- SEITE 2: LEHRERANSICHT (NUR IM DRUCK SICHTBAR) -->
                         <div class="print-only" style="page-break-before: always; padding-top: 2rem;">
                             <h2 class="text-2xl font-black mb-6 text-center border-b-2 border-black pb-2">Sitzplan: ${state.className} (Lehrersicht)</h2>
                             
-                            <!-- Der gedrehte Grid-Container -->
-                            <div id="seatingGridTeacher" class="mx-auto" style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 0.75rem; max-width: 900px;"></div>
+                            <div id="seatingGridTeacher" class="mx-auto" style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 0.5rem; max-width: 950px;"></div>
                             
                             <div class="flex justify-center mt-8">
-                                <div class="bg-white text-black text-xs font-bold uppercase tracking-[0.2em] py-1.5 px-8 rounded border-2 border-black">
+                                <div class="bg-white text-black text-xs font-black uppercase tracking-[0.2em] py-2 px-10 rounded-lg border-2 border-black">
                                     Tafel / Vorne (Dein Pult)
                                 </div>
                             </div>
@@ -261,18 +261,18 @@
                 </main>
 
                 <!-- MODAL: QR CODE -->
-                <div id="qrModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 no-print fade-in">
-                    <div class="bg-white p-8 rounded-2xl text-center shadow-2xl max-w-sm w-full">
-                        <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-xl mx-auto mb-4">
+                <div id="qrModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 no-print">
+                    <div class="bg-white p-8 rounded-2xl text-center shadow-2xl max-w-sm w-full border-4 border-slate-200">
+                        <div class="w-12 h-12 bg-slate-100 text-slate-800 rounded-xl flex items-center justify-center text-xl mx-auto mb-4">
                             <i class="fa-solid fa-mobile-screen"></i>
                         </div>
-                        <h2 class="text-xl font-bold text-slate-900 mb-2">Schüler-Wahl</h2>
-                        <p class="text-sm text-slate-500 mb-6">Lass Schüler diesen Code scannen, um ihre Wünsche abzugeben.</p>
+                        <h2 class="text-xl font-black text-slate-900 mb-2">Schüler-Wahl</h2>
+                        <p class="text-sm font-bold text-slate-500 mb-6">QR Code scannen für Wünsche.</p>
                         
-                        <div id="qrcode" class="flex justify-center mb-6 p-4 bg-white border border-slate-100 rounded-xl shadow-sm"></div>
+                        <div id="qrcode" class="flex justify-center mb-6 p-4 bg-white border-2 border-slate-200 rounded-xl"></div>
                         
-                        <input type="text" id="qrLink" readonly class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-center font-mono text-xs text-primary-600 mb-4 outline-none select-all">
-                        <button onclick="closeQRModal()" class="w-full bg-slate-900 text-white py-2.5 rounded-lg font-semibold hover:bg-slate-800 transition">Fenster schließen</button>
+                        <input type="text" id="qrLink" readonly class="w-full p-2.5 bg-slate-50 border-2 border-slate-200 rounded-lg text-center font-mono text-xs font-bold text-primary-600 mb-4 outline-none select-all">
+                        <button onclick="closeQRModal()" class="w-full bg-slate-900 text-white py-2.5 rounded-lg font-bold hover:bg-slate-800 transition">Schließen</button>
                     </div>
                 </div>
             `;
@@ -284,19 +284,16 @@
         function populateSidebar() {
             const stList = document.getElementById('studentList');
             stList.innerHTML = state.students.length === 0 
-                ? `<div class="p-4 text-center text-sm text-slate-400 font-medium">Noch keine Schüler angelegt.</div>` 
+                ? `<div class="p-4 text-center text-sm text-slate-400 font-bold">Noch keine Schüler angelegt.</div>` 
                 : state.students.map(s => `
-                <div class="group flex justify-between items-center px-3 py-2 hover:bg-slate-50 rounded-lg transition">
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600 flex-shrink-0">
-                            ${s.name.charAt(0).toUpperCase()}
-                        </div>
+                <div class="group flex justify-between items-center px-3 py-2 border-b border-slate-100 hover:bg-slate-50 transition">
+                    <div class="flex items-center gap-2 overflow-hidden">
                         <div class="flex flex-col truncate">
-                            <span class="text-sm font-semibold text-slate-800 truncate">${s.name}</span>
-                            <span class="text-[10px] font-bold uppercase ${s.hasVoted ? 'text-emerald-500' : 'text-slate-400'}">${s.hasVoted ? 'Wunsch abgeben' : 'Ausstehend'}</span>
+                            <span class="text-sm font-black text-slate-800 truncate">${s.name}</span>
+                            <span class="text-[10px] font-bold uppercase ${s.hasVoted ? 'text-green-600' : 'text-amber-500'}">${s.hasVoted ? 'Wunsch da' : 'Fehlt'}</span>
                         </div>
                     </div>
-                    <button onclick="deleteStudent('${s.id}')" class="text-slate-300 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition focus:opacity-100">
+                    <button onclick="deleteStudent('${s.id}')" class="text-slate-300 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition">
                         <i class="fa-solid fa-trash-can text-sm"></i>
                     </button>
                 </div>
@@ -306,19 +303,19 @@
 
             const rList = document.getElementById('ruleList');
             rList.innerHTML = state.rules.length === 0 
-                ? `<div class="p-3 text-center text-xs text-slate-400 font-medium">Keine aktiven Regeln.</div>` 
+                ? `<div class="p-3 text-center text-xs text-slate-400 font-bold">Keine aktiven Regeln.</div>` 
                 : state.rules.map(r => {
                     const s1 = getStudentName(r.studentId);
                     const s2 = r.targetId ? getStudentName(r.targetId) : '';
                     let icon = '', txt = '';
-                    if(r.type === 'not_next_to') { icon = '<i class="fa-solid fa-ban text-red-500"></i>'; txt = `${s1} <span class="text-slate-400 font-normal">nicht neben</span> ${s2}`; }
-                    if(r.type === 'force_next_to') { icon = '<i class="fa-solid fa-link text-primary-500"></i>'; txt = `${s1} <span class="text-slate-400 font-normal">neben</span> ${s2}`; }
-                    if(r.type === 'sit_alone') { icon = '<i class="fa-solid fa-user-shield text-amber-500"></i>'; txt = `${s1} <span class="text-slate-400 font-normal">sitzt alleine</span>`; }
-                    if(r.type === 'force_first_row') { icon = '<i class="fa-solid fa-arrow-up text-indigo-500"></i>'; txt = `${s1} <span class="text-slate-400 font-normal">in 1. Reihe</span>`; }
+                    if(r.type === 'not_next_to') { icon = '<i class="fa-solid fa-ban text-red-500"></i>'; txt = `${s1} <span class="text-slate-500 font-medium">nicht neben</span> ${s2}`; }
+                    if(r.type === 'force_next_to') { icon = '<i class="fa-solid fa-link text-primary-500"></i>'; txt = `${s1} <span class="text-slate-500 font-medium">neben</span> ${s2}`; }
+                    if(r.type === 'sit_alone') { icon = '<i class="fa-solid fa-user-shield text-amber-500"></i>'; txt = `${s1} <span class="text-slate-500 font-medium">sitzt alleine</span>`; }
+                    if(r.type === 'force_first_row') { icon = '<i class="fa-solid fa-arrow-up text-indigo-500"></i>'; txt = `${s1} <span class="text-slate-500 font-medium">in 1. Reihe</span>`; }
                     
                     return `
-                    <div class="flex justify-between items-center px-3 py-2 bg-slate-50 border border-slate-100 rounded-lg mb-2">
-                        <div class="flex items-center gap-2 text-xs font-semibold text-slate-700 truncate mr-2">
+                    <div class="flex justify-between items-center px-3 py-2 bg-white border border-slate-200 rounded-lg mb-2 shadow-sm">
+                        <div class="flex items-center gap-2 text-xs font-bold text-slate-800 truncate mr-2">
                             <span class="w-4 text-center">${icon}</span> 
                             <span class="truncate">${txt}</span>
                         </div>
@@ -332,12 +329,12 @@
             const container = document.getElementById('ruleInputs');
             if(!container) return;
 
-            let html = `<select id="ruleS1" class="w-full bg-white border border-slate-200 text-sm rounded-lg p-2 outline-none focus:border-primary-500"><option value="">1. Schüler wählen...</option>`;
+            let html = `<select id="ruleS1" class="w-full bg-white border-2 border-slate-200 text-sm font-bold rounded-lg p-2 outline-none focus:border-primary-500"><option value="">1. Schüler wählen...</option>`;
             state.students.forEach(s => html += `<option value="${s.id}">${s.name}</option>`);
             html += `</select>`;
 
             if (type === 'not_next_to' || type === 'force_next_to') {
-                html += `<select id="ruleS2" class="w-full bg-white border border-slate-200 text-sm rounded-lg p-2 outline-none focus:border-primary-500"><option value="">2. Schüler wählen...</option>`;
+                html += `<select id="ruleS2" class="w-full bg-white border-2 border-slate-200 text-sm font-bold rounded-lg p-2 outline-none focus:border-primary-500 mt-2"><option value="">2. Schüler wählen...</option>`;
                 state.students.forEach(s => html += `<option value="${s.id}">${s.name}</option>`);
                 html += `</select>`;
             }
@@ -349,50 +346,50 @@
             const gridTeacher = document.getElementById('seatingGridTeacher');
             if (!gridNormal) return;
 
-            // Sortierung: Normal baut von Vorne-Links (y=0, x=0) nach Hinten-Rechts auf.
-            const normalSeats = [...state.seats].sort((a, b) => a.y - b.y || a.x - b.x);
-            // Sortierung: Lehrersicht baut von Hinten-Rechts (y=max, x=max) nach Vorne-Links ab (Spiegelung)
-            const teacherSeats = [...state.seats].sort((a, b) => b.y - a.y || b.x - a.x);
-
-            const buildGridHTML = (seatsArray, isInteractive) => {
-                return seatsArray.map(seat => {
+            const buildGridHTML = (isTeacherView) => {
+                return state.seats.map(seat => {
                     const isSelected = seat.id === state.swapStartSeatId;
                     const isOccupied = !!seat.studentId;
                     const sName = getStudentName(seat.studentId);
                     
-                    let classes = "seat h-14 md:h-20 flex flex-col items-center justify-center rounded-xl transition-all select-none relative ";
-                    if (isInteractive) classes += "cursor-pointer ";
+                    // KORREKTUR: Mathematisch exakte Spiegelung für das CSS Grid
+                    const gridRow = isTeacherView ? (5 - seat.y) : (seat.y + 1);
+                    const gridCol = isTeacherView ? (9 - seat.x) : (seat.x + 1);
+                    const gridPosition = `grid-row: ${gridRow}; grid-column: ${gridCol};`;
+
+                    // KORREKTUR: Hoher Kontrast für die Tische
+                    let classes = "seat h-16 md:h-20 flex flex-col items-center justify-center rounded-lg transition-all select-none relative ";
+                    if (!isTeacherView) classes += "cursor-pointer ";
                     
                     if (seat.disabled) {
-                        classes += "seat-disabled bg-transparent border-2 border-dashed border-slate-200 opacity-40 " + (isInteractive ? "hover:border-slate-300" : "");
-                    } else if (isSelected && isInteractive) {
-                        classes += "seat-selected bg-primary-50 ring-2 ring-primary-500 shadow-md ";
+                        // Deaktiviert (Gang)
+                        classes += "bg-transparent border-2 border-dashed border-slate-300 opacity-40 " + (!isTeacherView ? "hover:border-slate-400" : "");
+                    } else if (isSelected && !isTeacherView) {
+                        // Ausgewählt zum Tauschen
+                        classes += "bg-amber-100 border-2 border-amber-500 shadow-md ring-4 ring-amber-200 animate-pulse z-10 ";
                     } else if (isOccupied) {
-                        classes += "bg-white border border-slate-200 shadow-sm " + (isInteractive ? "hover:shadow-md hover:border-primary-300" : "");
+                        // Besetzt (Schüler sitzt) -> Sehr deutlicher Kontrast!
+                        classes += "bg-blue-50 border-2 border-blue-500 shadow-sm text-blue-900 " + (!isTeacherView ? "hover:shadow-md hover:bg-blue-100" : "");
                     } else {
-                        classes += "bg-slate-50 border border-slate-100 " + (isInteractive ? "hover:bg-white hover:border-slate-300" : "");
+                        // Frei (Aktiv) -> Klarer weißer Kasten mit deutlichem Rand
+                        classes += "bg-white border-2 border-slate-300 text-slate-800 " + (!isTeacherView ? "hover:border-blue-400 hover:shadow-sm" : "");
                     }
 
-                    const onClickAttr = isInteractive ? `onclick="handleSeatClick('${seat.id}')"` : "";
+                    const onClickAttr = !isTeacherView ? `onclick="handleSeatClick('${seat.id}')"` : "";
 
                     return `
-                        <div id="${isInteractive ? seat.id : seat.id+'-teacher'}" class="${classes}" ${onClickAttr}>
+                        <div id="${!isTeacherView ? seat.id : seat.id+'-teacher'}" class="${classes}" style="${gridPosition}" ${onClickAttr}>
                             ${!seat.disabled ? `
-                                <span class="text-[10px] md:text-sm font-bold text-slate-800 text-center px-1 break-words w-full overflow-hidden leading-tight">${sName}</span>
-                                <span class="absolute bottom-1 right-1.5 text-[8px] font-semibold text-slate-300 uppercase no-print">${seat.area.charAt(0)}</span>
+                                <span class="text-[11px] md:text-sm font-black text-center px-1 break-words w-full overflow-hidden leading-tight">${sName}</span>
+                                <span class="absolute bottom-1 right-1.5 text-[9px] font-bold text-slate-400 uppercase no-print">${seat.area.charAt(0)}</span>
                             ` : ''}
                         </div>
                     `;
                 }).join('');
             };
 
-            // Seite 1: Klickbar, für den Bildschirm und den ersten Druck
-            gridNormal.innerHTML = buildGridHTML(normalSeats, true);
-            
-            // Seite 2: Nur für den Druck, statisch, um 180 Grad gespiegelt
-            if (gridTeacher) {
-                gridTeacher.innerHTML = buildGridHTML(teacherSeats, false);
-            }
+            gridNormal.innerHTML = buildGridHTML(false);
+            if (gridTeacher) gridTeacher.innerHTML = buildGridHTML(true);
         }
 
         // --- 4. AKTIONEN & LOGIK ---
@@ -636,56 +633,56 @@
             const app = document.getElementById('app');
             app.innerHTML = `
                 <div class="w-full max-w-md mx-auto my-auto p-4 md:p-0 flex flex-col justify-center min-h-screen">
-                    <div class="bg-white p-8 rounded-3xl shadow-card border border-slate-100 relative overflow-hidden">
+                    <div class="bg-white p-8 rounded-3xl shadow-card border-2 border-slate-200 relative overflow-hidden">
                         
                         <div class="absolute top-0 left-0 w-full h-2 bg-primary-500"></div>
 
                         <div class="text-center mb-8">
-                            <div class="w-16 h-16 bg-primary-50 text-primary-600 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">
+                            <div class="w-16 h-16 bg-slate-800 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">
                                 <i class="fa-solid fa-hand-peace"></i>
                             </div>
-                            <h1 class="text-2xl font-bold text-slate-900">Sitzplatz-Wünsche</h1>
-                            <p class="text-sm text-slate-500 mt-1">Wähle deinen Namen und deine Vorlieben aus.</p>
+                            <h1 class="text-2xl font-black text-slate-900">Sitzplatz-Wünsche</h1>
+                            <p class="text-sm font-bold text-slate-500 mt-1">Wähle deinen Namen und Vorlieben.</p>
                         </div>
                         
                         <div id="studentForm" class="space-y-6">
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-2">Wer bist du?</label>
-                                <select id="studentSelect" onchange="checkStudentStatus()" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition">
+                                <label class="block text-sm font-black text-slate-800 mb-2">Wer bist du?</label>
+                                <select id="studentSelect" onchange="checkStudentStatus()" class="w-full p-3.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-sm font-bold outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition">
                                     <option value="">Bitte Namen wählen...</option>
                                     ${state.students.map(s => `<option value="${s.id}" ${s.hasVoted ? 'disabled' : ''}>${s.name} ${s.hasVoted ? '(Schon abgestimmt)' : ''}</option>`).join('')}
                                 </select>
                             </div>
 
-                            <div id="wishContainer" class="hidden space-y-6 fade-in">
-                                <hr class="border-slate-100">
+                            <div id="wishContainer" class="hidden space-y-6">
+                                <hr class="border-2 border-slate-100">
                                 
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Lieblings-Nachbar <span class="text-slate-400 font-normal">(optional)</span></label>
-                                    <select id="neighborSelect" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold outline-none focus:border-primary-500 transition"></select>
+                                    <label class="block text-sm font-black text-slate-800 mb-2">Lieblings-Nachbar <span class="text-slate-400 font-medium">(optional)</span></label>
+                                    <select id="neighborSelect" class="w-full p-3.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-sm font-bold outline-none focus:border-primary-500 transition"></select>
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Sitzbereich</label>
+                                    <label class="block text-sm font-black text-slate-800 mb-2">Sitzbereich</label>
                                     <div class="grid grid-cols-2 gap-2" id="areaBtns">
                                         ${['vorne', 'mitte', 'hinten', 'egal'].map(a => `
-                                            <button type="button" onclick="selectArea('${a}')" id="btn-${a}" class="py-3 rounded-xl border text-sm font-semibold capitalize transition ${a === 'egal' ? 'bg-primary-600 border-primary-600 text-white shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}">${a}</button>
+                                            <button type="button" onclick="selectArea('${a}')" id="btn-${a}" class="py-3 rounded-xl border-2 text-sm font-black capitalize transition ${a === 'egal' ? 'bg-primary-600 border-primary-600 text-white shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}">${a}</button>
                                         `).join('')}
                                     </div>
                                 </div>
                                 
-                                <button onclick="submitStudentVote()" class="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-card transition flex items-center justify-center gap-2 mt-4">
+                                <button onclick="submitStudentVote()" class="w-full py-4 bg-slate-800 hover:bg-slate-700 text-white font-black text-lg rounded-xl shadow-card transition flex items-center justify-center gap-2 mt-4">
                                     Absenden <i class="fa-solid fa-arrow-right"></i>
                                 </button>
                             </div>
                         </div>
                         
-                        <div id="successMsg" class="hidden text-center py-10 fade-in">
-                            <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <i class="fa-solid fa-check text-4xl text-emerald-500"></i>
+                        <div id="successMsg" class="hidden text-center py-10">
+                            <div class="w-20 h-20 bg-green-100 border-2 border-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i class="fa-solid fa-check text-4xl text-green-600"></i>
                             </div>
-                            <h2 class="text-2xl font-bold text-slate-900 mb-2">Erfolgreich!</h2>
-                            <p class="font-medium text-slate-500 leading-relaxed">
+                            <h2 class="text-2xl font-black text-slate-900 mb-2">Erfolgreich!</h2>
+                            <p class="font-bold text-slate-500 leading-relaxed">
                                 Dein Wunsch wurde gespeichert.<br>Du kannst diese Seite jetzt schließen.
                             </p>
                         </div>
@@ -702,9 +699,9 @@
                 const btn = document.getElementById(`btn-${a}`);
                 if (!btn) return;
                 if (a === area) {
-                    btn.className = `py-3 rounded-xl border text-sm font-semibold capitalize transition bg-primary-600 border-primary-600 text-white shadow-md`;
+                    btn.className = `py-3 rounded-xl border-2 text-sm font-black capitalize transition bg-primary-600 border-primary-600 text-white shadow-md`;
                 } else {
-                    btn.className = `py-3 rounded-xl border text-sm font-semibold capitalize transition bg-white border-slate-200 text-slate-600 hover:bg-slate-50`;
+                    btn.className = `py-3 rounded-xl border-2 text-sm font-black capitalize transition bg-white border-slate-200 text-slate-600 hover:bg-slate-50`;
                 }
             });
         }
