@@ -3,505 +3,546 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mathe-Basisfach: Fit für die Differentialrechnung</title>
+    <title>Analysis Grundlagen | Kursstufe</title>
     
-    <!-- KaTeX für sauberen Formelsatz -->
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- KaTeX für Formelsatz -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="initMath()"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
     <style>
         :root {
             --primary: #4f46e5;
             --primary-hover: #4338ca;
             --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --muted: #64748b;
-            --accent: #0ea5e9;
-            --success: #10b981;
-            --success-bg: #ecfdf5;
-            --error: #ef4444;
-            --error-bg: #fef2f2;
-            --border: #e2e8f0;
-        }
-
-        * {
-            box-sizing: border-box;
+            --surface: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            touch-action: pan-y; /* Verhindert horizontales Scrollen auf iPads */
             -webkit-tap-highlight-color: transparent;
         }
 
-        header {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            color: white;
-            padding: 2.5rem 1rem 2rem;
-            text-align: center;
+        /* Touch-Optimierung */
+        button, input, select, .touch-target {
+            min-height: 44px;
         }
 
-        header h1 {
-            margin: 0 0 0.5rem;
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        header p {
-            margin: 0;
-            opacity: 0.9;
-            font-size: 1.05rem;
-        }
-
-        .container {
-            max-width: 700px;
-            margin: -1.5rem auto 3rem;
-            padding: 0 1rem;
-        }
-
-        .card {
-            background: var(--card);
-            padding: 2rem;
-            border-radius: 1.25rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-            border: 1px solid var(--border);
-        }
-
-        /* Fortschrittsanzeige */
-        .progress-container {
-            margin-bottom: 1.5rem;
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--muted);
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .progress-bar-bg {
-            background-color: #e2e8f0;
-            height: 8px;
-            border-radius: 9999px;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            height: 100%;
-            width: 0%;
-            transition: width 0.4s ease;
-        }
-
-        .topic-badge {
-            display: inline-block;
-            background-color: #e0e7ff;
-            color: var(--primary);
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            margin-bottom: 0.75rem;
-        }
-
-        .question-text {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #0f172a;
-            margin-bottom: 1.5rem;
-            line-height: 1.4;
-        }
-
-        /* Quiz-Optionen */
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .quiz-option {
+        /* Level Map */
+        .map-node {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            padding: 1.1rem 1.25rem;
-            border: 2px solid var(--border);
-            border-radius: 0.85rem;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
             cursor: pointer;
-            font-size: 1.05rem;
-            font-weight: 500;
-            background: white;
-            color: var(--text);
-            transition: all 0.2s ease;
-            text-align: left;
-            min-height: 54px; /* Touch-optimiert für iPads */
+            border: 3px solid #cbd5e1;
+            background: #f8fafc;
+            color: #94a3b8;
+            position: relative;
+            z-index: 10;
         }
-
-        .quiz-option:hover:not(:disabled) {
+        .map-node.active {
             border-color: var(--primary);
-            background: #f5f3ff;
-            transform: translateY(-1px);
-        }
-
-        .quiz-option.correct {
-            border-color: var(--success) !important;
-            background-color: var(--success-bg) !important;
-            color: #065f46 !important;
-            font-weight: 600;
-        }
-
-        .quiz-option.wrong {
-            border-color: var(--error) !important;
-            background-color: var(--error-bg) !important;
-            color: #991b1b !important;
-            animation: shake 0.35s ease;
-        }
-
-        .quiz-option:disabled {
-            cursor: default;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-6px); }
-            40%, 80% { transform: translateX(6px); }
-        }
-
-        /* Feedback-Bereich */
-        .feedback-box {
-            margin-top: 1.5rem;
-            padding: 1.1rem 1.25rem;
-            border-radius: 0.85rem;
-            display: none;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .feedback-box.info {
-            display: block;
-            background-color: #fff7ed;
-            border: 1px solid #fdba74;
-            color: #9a3412;
-        }
-
-        .feedback-box.success {
-            display: block;
-            background-color: var(--success-bg);
-            border: 1px solid #6ee7b7;
-            color: #065f46;
-        }
-
-        .feedback-box.solution {
-            display: block;
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            color: #334155;
-        }
-
-        .formula-display {
-            background: #ffffff;
-            padding: 0.6rem 0.9rem;
-            border-radius: 0.5rem;
-            border: 1px solid #e2e8f0;
-            display: inline-block;
-            margin: 0.5rem 0;
-        }
-
-        .btn-action {
-            display: none;
-            width: 100%;
             background: var(--primary);
             color: white;
-            padding: 1rem;
-            border: none;
-            border-radius: 0.85rem;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 1rem;
-            margin-top: 1.5rem;
-            transition: background 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.4);
         }
-
-        .btn-action:hover {
-            background: var(--primary-hover);
+        .map-node.completed {
+            border-color: #10b981;
+            background: #10b981;
+            color: white;
         }
-
-        .btn-action:active {
-            transform: scale(0.99);
+        .map-line {
+            width: 4px;
+            height: 40px;
+            background: #cbd5e1;
+            margin: -5px auto;
+            position: relative;
+            z-index: 1;
         }
+        .map-line.completed { background: #10b981; }
 
-        /* Zusammenfassungs-Screen */
-        .summary-box {
+        /* Tabs */
+        .tab-btn {
+            flex: 1;
             text-align: center;
-            padding: 1rem 0;
+            padding: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
         }
 
-        .summary-icon {
-            font-size: 3.5rem;
-            margin-bottom: 0.5rem;
+        /* Print Layout für Laufzettel */
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; padding: 2cm; }
+            .no-print { display: none !important; }
         }
 
-        .summary-box h3 {
-            font-size: 1.6rem;
-            color: var(--text);
-            margin: 0.5rem 0;
-        }
-
-        .heft-reminder {
-            background-color: #eff6ff;
-            border: 1px solid #bfdbfe;
-            color: #1e40af;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            margin-top: 1.5rem;
-            text-align: left;
-            font-size: 0.95rem;
-        }
+        .shake { animation: shake 0.4s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     </style>
 </head>
-<body>
+<body class="pb-20">
 
-<header>
-    <h1>Mathe-Basisfach</h1>
-    <p>Fit für die Differentialrechnung (Wiederholung Klasse 10)</p>
-</header>
-
-<div class="container">
-    <section class="card" id="quizCard">
-        <div class="progress-container">
-            <div class="progress-header">
-                <span id="progressText">Aufgabe 1 von 4</span>
-                <span id="percentText">0%</span>
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-indigo-600 to-violet-700 text-white p-6 shadow-md no-print">
+        <div class="max-w-3xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 id="headerTitle" class="text-2xl font-bold select-none cursor-pointer">Differentialrechnung</h1>
+                <p class="text-indigo-100 text-sm">Grundlagen-Repetitorium Kursstufe</p>
             </div>
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="progressBar"></div>
+            <button onclick="openLaufzettel()" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-semibold transition backdrop-blur-sm">
+                Laufzettel
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-3xl mx-auto mt-6 px-4 no-print" id="app">
+        <!-- Startbildschirm (Map) -->
+        <div id="viewMap" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 text-center">
+            <h2 class="text-xl font-bold text-slate-800 mb-6">Lernpfad</h2>
+            <div id="mapContainer" class="flex flex-col items-center">
+                <!-- Map wird per JS generiert -->
             </div>
         </div>
 
-        <div id="quizContent">
-            <span class="topic-badge" id="topicBadge">Steigung von Geraden</span>
-            <div class="question-text" id="questionText"></div>
-            <div class="options-grid" id="optionsGrid"></div>
-            <div id="feedbackBox" class="feedback-box"></div>
-            <button id="nextBtn" class="btn-action" onclick="goToNextQuestion()">Weiter zur nächsten Aufgabe →</button>
-        </div>
-
-        <!-- Abschluss-Screen -->
-        <div id="completionContent" style="display: none;" class="summary-box">
-            <div class="summary-icon">🎉</div>
-            <h3>Grundlagen-Check gemeistert!</h3>
-            <p style="color: var(--muted); font-size: 1.05rem;">Du hast alle Wiederholungsaufgaben erfolgreich bearbeitet.</p>
+        <!-- Level Ansicht -->
+        <div id="viewLevel" class="hidden">
+            <button onclick="showMap()" class="text-indigo-600 font-semibold mb-4 flex items-center hover:text-indigo-800">
+                ← Zurück zur Übersicht
+            </button>
             
-            <div class="heft-reminder">
-                <strong>📝 Arbeitsauftrag fürs Mathe-Heft:</strong>
-                <p style="margin: 0.5rem 0 0;">Vergewissere dich, dass du die Lösungswege zu den bearbeiteten Aufgaben sauber mit Datum und Überschrift in deinem Heft notiert hast. Wir knüpfen in Woche 2 direkt daran an!</p>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-slate-50 p-6 border-b border-slate-200">
+                    <div class="text-sm font-bold text-indigo-600 uppercase tracking-wider" id="lvlBadge">Level 0</div>
+                    <h2 class="text-2xl font-bold text-slate-800 mt-1" id="lvlTitle">Algebraische Werkzeuge</h2>
+                </div>
+
+                <!-- Theorie / Widget -->
+                <div class="p-6 border-b border-slate-200">
+                    <h3 class="font-bold text-slate-700 mb-2">Grundlagen & Theorie</h3>
+                    <div id="lvlTheory" class="text-slate-600 mb-4 bg-slate-50 p-4 rounded-lg border border-slate-100"></div>
+                    <div id="lvlWidget" class="bg-white border border-slate-200 rounded-lg p-4 flex justify-center min-h-[150px] items-center">
+                        <!-- Interaktives Widget -->
+                    </div>
+                </div>
+
+                <!-- Training & Check Navigation -->
+                <div class="flex border-b border-slate-200 bg-slate-50" id="tabsContainer">
+                    <div class="tab-btn active" onclick="switchTab('leicht')">Leicht</div>
+                    <div class="tab-btn" onclick="switchTab('mittel')">Mittel</div>
+                    <div class="tab-btn" onclick="switchTab('schwer')">Schwer</div>
+                    <div class="tab-btn text-emerald-600" onclick="switchTab('check')">Abschluss-Check</div>
+                </div>
+
+                <!-- Aufgaben-Bereich -->
+                <div class="p-6" id="taskArea">
+                    <div id="taskQuestion" class="text-lg font-medium text-slate-800 mb-4"></div>
+                    
+                    <div class="flex flex-col gap-3">
+                        <input type="text" id="taskInput" placeholder="Ergebnis hier eingeben..." class="border-2 border-slate-200 rounded-xl px-4 py-3 text-lg focus:border-indigo-500 focus:outline-none transition" autocomplete="off">
+                        <div class="text-sm text-slate-500" id="taskHint"></div>
+                        
+                        <div class="flex items-center gap-2 mt-2">
+                            <input type="checkbox" id="taskDoc" class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+                            <label for="taskDoc" class="text-slate-700 select-none">Lösungsweg dokumentiert</label>
+                        </div>
+
+                        <button id="taskBtn" onclick="checkAnswer()" class="bg-indigo-600 text-white rounded-xl py-3 font-bold mt-2 hover:bg-indigo-700 transition">Ergebnis prüfen</button>
+                    </div>
+
+                    <!-- Feedback Box -->
+                    <div id="feedbackBox" class="hidden mt-4 p-4 rounded-xl border"></div>
+                </div>
             </div>
-
-            <button class="btn-action" style="display: block; margin-top: 2rem;" onclick="restartQuiz()">Check noch einmal wiederholen ↺</button>
         </div>
-    </section>
-</div>
+    </main>
 
-<script>
-    // Aufgabenkatalog für den Klasse-10-Check
-    const questions = [
-        {
-            topic: "Steigung von Geraden",
-            question: "Berechne die Steigung einer Geraden durch die Punkte \\(P(1 \\mid 2)\\) und \\(Q(3 \\mid 6)\\).",
-            options: [
-                { text: "\\(m = 1\\)", correct: false },
-                { text: "\\(m = 2\\)", correct: true },
-                { text: "\\(m = 4\\)", correct: false }
-            ],
-            formula: "m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{6 - 2}{3 - 1} = \\frac{4}{2} = 2"
-        },
-        {
-            topic: "Satz vom Nullprodukt",
-            question: "Bestimme alle Nullstellen der Funktion \\(f(x) = x^2 - 4x\\).",
-            options: [
-                { text: "\\(x_1 = 0, \\; x_2 = 4\\)", correct: true },
-                { text: "\\(x_1 = 2, \\; x_2 = -2\\)", correct: false },
-                { text: "\\(x = 4\\)", correct: false }
-            ],
-            formula: "x^2 - 4x = 0 \\iff x(x - 4) = 0 \\implies x_1 = 0 \\text{ oder } x_2 = 4"
-        },
-        {
-            topic: "Mittlere Änderungsrate (Differenzenquotient)",
-            question: "Bestimme die mittlere Änderungsrate der Funktion \\(f(x) = x^2\\) im Intervall \\([1; 3]\\).",
-            options: [
-                { text: "\\(m_s = 2\\)", correct: false },
-                { text: "\\(m_s = 4\\)", correct: true },
-                { text: "\\(m_s = 8\\)", correct: false }
-            ],
-            formula: "m_s = \\frac{f(3) - f(1)}{3 - 1} = \\frac{3^2 - 1^2}{2} = \\frac{9 - 1}{2} = \\frac{8}{2} = 4"
-        },
-        {
-            topic: "Ableitungsregeln (Polynom)",
-            question: "Wie lautet die erste Ableitung der Funktion \\(f(x) = 3x^4 - 5x\\)?",
-            options: [
-                { text: "\\(f'(x) = 12x^3 - 5\\)", correct: true },
-                { text: "\\(f'(x) = 7x^3 - 5\\)", correct: false },
-                { text: "\\(f'(x) = 12x^4 - 5x\\)", correct: false }
-            ],
-            formula: "f'(x) = 3 \\cdot 4x^{4-1} - 5 \\cdot 1 = 12x^3 - 5"
-        }
-    ];
+    <!-- Modal: Laufzettel -->
+    <div id="modalLaufzettel" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" id="printArea">
+            <div class="p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Digitaler Laufzettel</h2>
+                        <p class="text-slate-500">Analysis Grundlagen | Kursstufe</p>
+                    </div>
+                    <button onclick="closeLaufzettel()" class="text-slate-400 hover:text-slate-600 no-print text-2xl font-bold">✕</button>
+                </div>
 
-    let currentQuestionIndex = 0;
-    let attempts = 0;
-    const maxAttempts = 3;
-    let isCurrentQuestionSolved = false;
+                <div class="mb-6 grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Name / Kurs</label>
+                        <input type="text" id="studentName" placeholder="Vorname Nachname" class="w-full border-b-2 border-slate-200 px-2 py-1 focus:border-indigo-500 focus:outline-none bg-transparent" onchange="saveName(this.value)">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Datum</label>
+                        <div id="currentDate" class="px-2 py-1 text-slate-800"></div>
+                    </div>
+                </div>
 
-    function initMath() {
-        if (window.renderMathInElement) {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    { left: '$$', right: '$$', display: true },
-                    { left: '\\[', right: '\\]', display: true },
-                    { left: '\\(', right: '\\)', display: false }
-                ],
-                throwOnError: false
-            });
-        }
-    }
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-y border-slate-200">
+                            <th class="py-3 px-4 font-bold text-slate-700">Level / Thema</th>
+                            <th class="py-3 px-4 font-bold text-slate-700 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="laufzettelTable">
+                        <!-- JS generiert -->
+                    </tbody>
+                </table>
 
-    function renderCurrentQuestion() {
-        const q = questions[currentQuestionIndex];
-        attempts = 0;
-        isCurrentQuestionSolved = false;
+                <div class="mt-8 pt-6 border-t border-slate-200 no-print flex justify-end">
+                    <button onclick="window.print()" class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-700 flex items-center gap-2">
+                        Als PDF exportieren / Drucken
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        document.getElementById('topicBadge').textContent = q.topic;
-        document.getElementById('questionText').innerHTML = q.question;
-        
-        const feedbackBox = document.getElementById('feedbackBox');
-        feedbackBox.className = "feedback-box";
-        feedbackBox.style.display = "none";
-        feedbackBox.innerHTML = "";
+    <!-- Anwendungs-Logik -->
+    <script>
+        // Datenstruktur der 6 Level
+        const levelsData = [
+            {
+                id: 0, title: "Algebraische Werkzeuge",
+                theory: "Sicheres Lösen von Gleichungen ist die Basis. Wichtige Werkzeuge: Ausklammern (Satz vom Nullprodukt), Mitternachtsformel und Substitution ($z = x^2$).",
+                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Diskriminante $D = b^2 - 4ac$</div><input type="range" min="-10" max="10" value="5" class="w-full max-w-xs" oninput="document.getElementById('dVal').innerText = this.value; document.getElementById('dRes').innerText = this.value > 0 ? '2 Lösungen' : (this.value == 0 ? '1 Lösung' : 'Keine Lösung');"><div class="mt-2 text-lg">D = <span id="dVal">5</span> $\\rightarrow$ <span id="dRes" class="font-bold text-indigo-600">2 Lösungen</span></div></div>`,
+                tasks: {
+                    leicht: { q: "Löse: $x^2 - 5x = 0$", hint: "(Gib die Lösungen durch Komma getrennt ein, z.B. '0, 5')", a: ["0,5", "5,0"], sol: "$x(x-5)=0 \\Rightarrow x_1=0, x_2=5$" },
+                    mittel: { q: "Bestimme die Nullstellen: $x^2 - 4x + 3 = 0$", hint: "(Tipp: Mitternachtsformel)", a: ["1,3", "3,1"], sol: "$x_{1,2} = \\frac{4 \\pm \\sqrt{16-12}}{2} \\Rightarrow x_1=1, x_2=3$" },
+                    schwer: { q: "Löse: $x^4 - 5x^2 + 4 = 0$", hint: "(Tipp: Substitution $z=x^2$)", a: ["1,-1,2,-2", "-2,-1,1,2", "1,2,-1,-2", "2,1,-2,-1"], sol: "$z^2-5z+4=0 \\Rightarrow z_1=1, z_2=4$. Rücksubstitution: $x_{1,2}=\\pm 1, x_{3,4}=\\pm 2$" },
+                    check:  { q: "Abschluss-Check: Löse $x^3 - 6x^2 + 9x = 0$", hint: "(Ausklammern und Mitternachtsformel)", a: ["0,3", "3,0"], sol: "$x(x^2-6x+9)=0 \\Rightarrow x_1=0, x_2=3$ (doppelte Nullstelle)" }
+                }
+            },
+            {
+                id: 1, title: "Mittlere & Lokale Änderungsrate",
+                theory: "Differenzenquotient (Sekantensteigung): $m_s = \\frac{f(b)-f(a)}{b-a}$. Differentialquotient (Tangentensteigung): Grenzwert für $h \\to 0$.",
+                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Grenzwertprozess $h \\to 0$</div><input type="range" min="0" max="100" value="100" class="w-full max-w-xs" oninput="let h = (this.value/100).toFixed(2); document.getElementById('hVal').innerText = h; document.getElementById('sVal').innerText = h == 0 ? 'Tangente (Lokale Änderung)' : 'Sekante (Mittlere Änderung)';"><div class="mt-2 text-lg">Abstand $h$ = <span id="hVal">1.00</span></div><div id="sVal" class="font-bold text-emerald-600 mt-1">Sekante (Mittlere Änderung)</div></div>`,
+                tasks: {
+                    leicht: { q: "Berechne die mittlere Steigung von $f(x)=x^2$ im Intervall $[1; 3]$.", hint: "(Ergebnis als Zahl)", a: ["4"], sol: "$\\frac{f(3)-f(1)}{3-1} = \\frac{9-1}{2} = 4$" },
+                    mittel: { q: "Ein Auto fährt nach dem Gesetz $s(t) = t^2 - 2t$. Berechne die Durchschnittsgeschwindigkeit in $[2; 4]$.", hint: "", a: ["4"], sol: "$\\frac{s(4)-s(2)}{4-2} = \\frac{8-0}{2} = 4$" },
+                    schwer: { q: "Vereinfache den Differenzenquotienten für $f(x)=x^2$ an der Stelle $x_0$: $\\frac{(x_0+h)^2 - x_0^2}{h}$", hint: "(Löse die Klammer auf und kürze h. Schreibe z.B. 2x+h)", a: ["2x_0+h", "2x+h", "h+2x"], sol: "$\\frac{x_0^2+2x_0h+h^2-x_0^2}{h} = \\frac{h(2x_0+h)}{h} = 2x_0+h$" },
+                    check:  { q: "Berechne die Momentangeschwindigkeit von $s(t) = 3t^2$ zum Zeitpunkt $t=2$.", hint: "(Tipp: Bilde zuerst die Ableitung)", a: ["12"], sol: "$s'(t) = 6t \\Rightarrow s'(2) = 12$" }
+                }
+            },
+            {
+                id: 2, title: "Rechnerisches Ableiten",
+                theory: "Wichtige Regeln: Potenzregel $(x^n)' = n \\cdot x^{n-1}$, Faktorregel $(c \\cdot f)' = c \\cdot f'$ und Summenregel.",
+                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Potenzregel anwenden</div><div class="text-2xl mb-4">$f(x) = x^n \\implies f'(x) = n \\cdot x^{n-1}$</div></div>`,
+                tasks: {
+                    leicht: { q: "Bilde die Ableitung von $f(x) = 3x^2$.", hint: "(Schreibe z.B. 6x)", a: ["6x"], sol: "$f'(x) = 2 \\cdot 3x^{2-1} = 6x$" },
+                    mittel: { q: "Leite ab: $f(x) = 2x^3 - 5x^2 + 4x - 7$", hint: "", a: ["6x^2-10x+4", "6x^2 - 10x + 4"], sol: "$f'(x) = 6x^2 - 10x + 4$" },
+                    schwer: { q: "Leite ab: $f(x) = \\frac{1}{4}x^4 - \\frac{2}{3}x^3 + \\pi$", hint: "(Hinweis: $\\pi$ ist eine Konstante)", a: ["x^3-2x^2", "x^3 - 2x^2"], sol: "$f'(x) = 4 \\cdot \\frac{1}{4}x^3 - 3 \\cdot \\frac{2}{3}x^2 + 0 = x^3 - 2x^2$" },
+                    check:  { q: "Gegeben ist $f(x) = -\\frac{1}{6}x^3 + 2x^2 - 5x + 1$. Berechne $f'(2)$.", hint: "(Zuerst ableiten, dann 2 einsetzen)", a: ["1"], sol: "$f'(x) = -0.5x^2 + 4x - 5 \\Rightarrow f'(2) = -2 + 8 - 5 = 1$" }
+                }
+            },
+            {
+                id: 3, title: "Graphisches Ableiten",
+                theory: "$f'(x) > 0 \\implies f$ steigt. $f'(x) < 0 \\implies f$ fällt. $f'(x) = 0 \\implies$ waagrechte Tangente (Mögliches Extremum).",
+                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Zusammenhang $f$ und $f'$</div><div class="grid grid-cols-3 gap-2 text-sm mt-4"><div class="bg-red-50 p-2 rounded border border-red-200">Graph $f$ fällt<br>$\\implies f' < 0$</div><div class="bg-slate-100 p-2 rounded border border-slate-300">Extremum $f$<br>$\\implies f' = 0$</div><div class="bg-green-50 p-2 rounded border border-green-200">Graph $f$ steigt<br>$\\implies f' > 0$</div></div></div>`,
+                tasks: {
+                    leicht: { q: "Ein Graph $f$ ist streng monoton steigend. Welches Vorzeichen hat $f'$?", hint: "(Antworte mit +, - oder 0)", a: ["+", "positiv"], sol: "Steigend bedeutet positive Steigung, also $f'(x) > 0$." },
+                    mittel: { q: "Die Ableitungsfunktion $f'$ hat bei $x=2$ eine Nullstelle mit Vorzeichenwechsel von + nach -. Welcher Punkt liegt bei $f$ vor?", hint: "(Hochpunkt oder Tiefpunkt?)", a: ["hochpunkt", "hp"], sol: "VZW von + (steigend) nach - (fallend) bedeutet Hochpunkt." },
+                    schwer: { q: "Die Ableitung $f'$ ist eine nach oben geöffnete Parabel, die komplett oberhalb der x-Achse verläuft. Was bedeutet das für $f$?", hint: "(Antworte z.B. mit 'immer steigend')", a: ["immer steigend", "streng monoton steigend", "steigt immer"], sol: "$f'(x) > 0$ überall, also ist $f$ streng monoton steigend." },
+                    check:  { q: "Wenn $f(x)$ eine Funktion 3. Grades ist, welchen Grad hat dann $f'(x)$?", hint: "(Zahl eingeben)", a: ["2"], sol: "Durch die Potenzregel verringert sich der Grad um 1. Aus $x^3$ wird $x^2$." }
+                }
+            },
+            {
+                id: 4, title: "Tangentengleichungen",
+                theory: "Gleichung einer Tangente $t: y = mx + c$. Ansatz: $m = f'(x_0)$ berechnen, dann Punkt $P(x_0 | f(x_0))$ in die Geradengleichung einsetzen, um $c$ zu bestimmen.",
+                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Die Punkt-Steigungs-Form</div><div class="text-xl mt-2 bg-slate-100 p-3 rounded-lg inline-block">$t(x) = f'(x_0) \\cdot (x - x_0) + f(x_0)$</div></div>`,
+                tasks: {
+                    leicht: { q: "Stelle die Geradengleichung auf: $m=3$ durch den Punkt $P(1|2)$.", hint: "(Schreibe z.B. y=3x-1)", a: ["y=3x-1", "3x-1"], sol: "$2 = 3 \\cdot 1 + c \\Rightarrow c = -1 \\implies y = 3x - 1$" },
+                    mittel: { q: "Bestimme die Steigung der Tangente an $f(x)=x^2 - 2x$ an der Stelle $x_0=3$.", hint: "(Nur m berechnen)", a: ["4"], sol: "$f'(x) = 2x - 2 \\Rightarrow f'(3) = 6 - 2 = 4$" },
+                    schwer: { q: "Bestimme die Tangente an $f(x)=-x^3+3x$ bei $x_0=-1$.", hint: "(Form y=mx+c)", a: ["y=-2", "-2"], sol: "$f(-1)=-2$. $f'(x)=-3x^2+3 \\Rightarrow f'(-1)=0$. $y = 0 \\cdot x - 2 = -2$" },
+                    check:  { q: "Berechne den Schnittpunkt der Tangente an $f(x)=x^2$ bei $x_0=2$ mit der x-Achse (Nullstelle der Tangente).", hint: "(Gib den x-Wert an)", a: ["1"], sol: "Tangente: $f'(2)=4, f(2)=4 \\implies y=4x-4$. Nullstelle: $4x-4=0 \\implies x=1$." }
+                }
+            },
+            {
+                id: 5, title: "Extremstellen",
+                theory: "Notwendige Bedingung: $f'(x_0) = 0$. Hinreichende Bedingung: Vorzeichenwechsel (VZW) der Ableitung an der Stelle $x_0$.",
+                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Vorzeichenwechsel (VZW)</div><table class="w-full max-w-sm mx-auto text-sm border border-slate-200 mt-2"><tr class="bg-slate-100"><td class="border p-2">$f'$ VZW</td><td class="border p-2">+ nach -</td><td class="border p-2">- nach +</td></tr><tr><td class="border p-2 font-bold">Folgerung</td><td class="border p-2 text-red-600">Hochpunkt</td><td class="border p-2 text-emerald-600">Tiefpunkt</td></tr></table></div>`,
+                tasks: {
+                    leicht: { q: "$f'(x)=0$ bei $x=2$. Davor ist $f'$ negativ, danach positiv. Was liegt bei $x=2$ vor?", hint: "(Hochpunkt oder Tiefpunkt?)", a: ["tiefpunkt", "tp"], sol: "VZW von - nach + bedeutet, der Graph fällt erst und steigt dann $\\implies$ Tiefpunkt." },
+                    mittel: { q: "Bestimme die x-Koordinate des Extrempunkts von $f(x)=x^2-6x+4$.", hint: "", a: ["3"], sol: "$f'(x)=2x-6 = 0 \\implies 2x=6 \\implies x=3$" },
+                    schwer: { q: "Welche x-Werte sind mögliche Extremstellen von $f(x)=x^3-3x$?", hint: "(Gib die Werte durch Komma getrennt an)", a: ["1,-1", "-1,1"], sol: "$f'(x)=3x^2-3 = 0 \\implies 3x^2=3 \\implies x^2=1 \\implies x = \\pm 1$" },
+                    check:  { q: "Die Funktion $f(x)=2x^3-6x^2$ hat zwei Extremstellen. Eine liegt bei $x=0$. Wo liegt die andere?", hint: "(Gib den x-Wert an)", a: ["2"], sol: "$f'(x)=6x^2-12x = 0 \\implies 6x(x-2)=0 \\implies x_1=0, x_2=2$" }
+                }
+            }
+        ];
 
-        const nextBtn = document.getElementById('nextBtn');
-        nextBtn.style.display = "none";
-        nextBtn.textContent = (currentQuestionIndex === questions.length - 1) 
-            ? "Ergebnis ansehen →" 
-            : "Weiter zur nächsten Aufgabe →";
+        // State Management
+        let unlockedLevel = 0;
+        let progress = {}; 
+        // structure: { 0: { leicht: true, mittel: true, schwer: false, check: true }, ... }
 
-        const progressPercent = Math.round((currentQuestionIndex / questions.length) * 100);
-        document.getElementById('progressBar').style.width = `${progressPercent}%`;
-        document.getElementById('progressText').textContent = `Aufgabe ${currentQuestionIndex + 1} von ${questions.length}`;
-        document.getElementById('percentText').textContent = `${progressPercent}%`;
+        let currentLevelObj = null;
+        let currentTab = 'leicht';
+        let currentAttempts = 0;
+        let teacherClicks = 0;
 
-        const grid = document.getElementById('optionsGrid');
-        grid.innerHTML = "";
-
-        q.options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = "quiz-option";
-            btn.innerHTML = `<span>${opt.text}</span><span class="icon"></span>`;
-            btn.onclick = () => handleChoice(btn, opt.correct, q.formula);
-            grid.appendChild(btn);
+        // Init
+        window.addEventListener('DOMContentLoaded', () => {
+            loadProgress();
+            renderMap();
+            initHeaderBypass();
         });
 
-        initMath();
-    }
-
-    function handleChoice(buttonElement, isCorrect, formulaSolution) {
-        if (isCurrentQuestionSolved) return;
-
-        const feedbackBox = document.getElementById('feedbackBox');
-        const nextBtn = document.getElementById('nextBtn');
-        const allButtons = document.querySelectorAll('.quiz-option');
-
-        if (isCorrect) {
-            isCurrentQuestionSolved = true;
-            buttonElement.classList.add('correct');
-            buttonElement.querySelector('.icon').textContent = '✓';
-            
-            allButtons.forEach(btn => btn.disabled = true);
-
-            feedbackBox.className = "feedback-box success";
-            feedbackBox.innerHTML = `
-                <strong>Richtig gelöst!</strong><br>
-                Rechnung fürs Heft:
-                <div class="formula-display">\\[ ${formulaSolution} \\]</div>
-            `;
-            feedbackBox.style.display = "block";
-            nextBtn.style.display = "block";
-            initMath();
-
-        } else {
-            attempts++;
-            buttonElement.classList.add('wrong');
-            buttonElement.querySelector('.icon').textContent = '✕';
-
-            if (attempts < maxAttempts) {
-                feedbackBox.className = "feedback-box info";
-                feedbackBox.innerHTML = `
-                    <strong>Noch nicht ganz richtig.</strong> Überprüfe deinen Ansatz im Heft und versuche es noch einmal! 
-                    <em>(Versuch ${attempts} von ${maxAttempts})</em>
-                `;
-                feedbackBox.style.display = "block";
-
-                setTimeout(() => {
-                    buttonElement.classList.remove('wrong');
-                    buttonElement.querySelector('.icon').textContent = '';
-                }, 1200);
-
+        // 1. Storage
+        function loadProgress() {
+            const saved = localStorage.getItem('diffBasicsProgress');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                progress = parsed.progress || {};
+                unlockedLevel = parsed.unlockedLevel || 0;
+                if(document.getElementById('studentName')) {
+                    document.getElementById('studentName').value = parsed.studentName || "";
+                }
             } else {
-                isCurrentQuestionSolved = true;
-                allButtons.forEach((btn, index) => {
-                    btn.disabled = true;
-                    if (questions[currentQuestionIndex].options[index].correct) {
-                        btn.classList.add('correct');
-                        btn.querySelector('.icon').textContent = '✓';
-                    }
-                });
-
-                feedbackBox.className = "feedback-box solution";
-                feedbackBox.innerHTML = `
-                    <strong>Hier ist der vollständige Lösungsweg:</strong><br>
-                    <div class="formula-display">\\[ ${formulaSolution} \\]</div><br>
-                    Notiere diesen Lösungsschritt bitte vollständig in deinem Mathe-Heft.
-                `;
-                feedbackBox.style.display = "block";
-                nextBtn.style.display = "block";
-                initMath();
+                levelsData.forEach(l => progress[l.id] = { leicht: false, mittel: false, schwer: false, check: false });
             }
         }
-    }
-
-    function goToNextQuestion() {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < questions.length) {
-            renderCurrentQuestion();
-        } else {
-            document.getElementById('progressBar').style.width = "100%";
-            document.getElementById('percentText').textContent = "100%";
-            document.getElementById('progressText').textContent = "Abgeschlossen";
-            document.getElementById('quizContent').style.display = "none";
-            document.getElementById('completionContent').style.display = "block";
+        function saveProgress() {
+            const name = document.getElementById('studentName') ? document.getElementById('studentName').value : "";
+            localStorage.setItem('diffBasicsProgress', JSON.stringify({ progress, unlockedLevel, studentName: name }));
+            renderMap();
+            updateLaufzettel();
         }
-    }
+        function saveName(val) { saveProgress(); }
 
-    function restartQuiz() {
-        currentQuestionIndex = 0;
-        document.getElementById('quizContent').style.display = "block";
-        document.getElementById('completionContent').style.display = "none";
-        renderCurrentQuestion();
-    }
+        // 2. Lehrer-Bypass
+        function initHeaderBypass() {
+            const title = document.getElementById('headerTitle');
+            title.addEventListener('click', () => {
+                teacherClicks++;
+                if (teacherClicks >= 5) {
+                    teacherClicks = 0;
+                    const code = prompt("Lehrer-Bypass: Bitte Code eingeben:");
+                    if (code === "mathe10") {
+                        unlockedLevel = 5;
+                        levelsData.forEach(l => { progress[l.id].check = true; });
+                        saveProgress();
+                        alert("Alle Level freigeschaltet!");
+                    }
+                }
+                setTimeout(() => teacherClicks = 0, 2000);
+            });
+        }
 
-    window.addEventListener('DOMContentLoaded', () => {
-        renderCurrentQuestion();
-    });
-</script>
+        // 3. Map Rendern
+        function renderMap() {
+            const container = document.getElementById('mapContainer');
+            container.innerHTML = '';
+            
+            levelsData.forEach((lvl, i) => {
+                const isUnlocked = i <= unlockedLevel;
+                const isCompleted = progress[lvl.id] && progress[lvl.id].check;
+                
+                // Node
+                const node = document.createElement('div');
+                node.className = `map-node ${isCompleted ? 'completed' : (isUnlocked ? 'active' : '')}`;
+                node.innerHTML = isCompleted ? '✓' : (isUnlocked ? i : '🔒');
+                
+                if (isUnlocked) {
+                    node.onclick = () => openLevel(i);
+                }
 
+                // Label
+                const label = document.createElement('div');
+                label.className = `text-sm font-semibold mt-2 mb-4 ${isUnlocked ? 'text-slate-800' : 'text-slate-400'}`;
+                label.innerText = lvl.title;
+
+                container.appendChild(node);
+                container.appendChild(label);
+
+                // Line
+                if (i < levelsData.length - 1) {
+                    const line = document.createElement('div');
+                    line.className = `map-line ${isCompleted ? 'completed' : ''}`;
+                    container.appendChild(line);
+                }
+            });
+        }
+
+        // 4. View Switching
+        function showMap() {
+            document.getElementById('viewLevel').classList.add('hidden');
+            document.getElementById('viewMap').classList.remove('hidden');
+            renderMap();
+        }
+
+        function openLevel(id) {
+            currentLevelObj = levelsData[id];
+            document.getElementById('viewMap').classList.add('hidden');
+            document.getElementById('viewLevel').classList.remove('hidden');
+            
+            document.getElementById('lvlBadge').innerText = `Level ${id}`;
+            document.getElementById('lvlTitle').innerText = currentLevelObj.title;
+            document.getElementById('lvlTheory').innerHTML = currentLevelObj.theory;
+            document.getElementById('lvlWidget').innerHTML = currentLevelObj.widgetHtml;
+            
+            // Standardmäßig 'leicht' öffnen
+            switchTab('leicht');
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            currentAttempts = 0;
+
+            // UI Tabs updaten
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText.toLowerCase().includes(tabId)) btn.classList.add('active');
+                if(tabId === 'check' && btn.innerText.includes('Check')) btn.classList.add('active');
+            });
+
+            // Content updaten
+            const task = currentLevelObj.tasks[tabId];
+            document.getElementById('taskQuestion').innerHTML = task.q;
+            document.getElementById('taskHint').innerHTML = task.hint;
+            document.getElementById('taskInput').value = '';
+            document.getElementById('taskInput').disabled = false;
+            document.getElementById('taskDoc').checked = false;
+            document.getElementById('taskBtn').style.display = 'block';
+            
+            const fb = document.getElementById('feedbackBox');
+            fb.classList.add('hidden');
+            fb.className = 'mt-4 p-4 rounded-xl border';
+
+            // KaTeX rendern
+            renderMathInElement(document.getElementById('viewLevel'), {
+                delimiters: [ {left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false} ]
+            });
+        }
+
+        // 5. Checking Logic
+        function normalizeString(str) {
+            return str.toLowerCase().replace(/\s/g, '').replace(/,/g, '.');
+        }
+
+        function checkAnswer() {
+            const inputVal = document.getElementById('taskInput').value;
+            const docChecked = document.getElementById('taskDoc').checked;
+            const fb = document.getElementById('feedbackBox');
+            const task = currentLevelObj.tasks[currentTab];
+
+            if (!inputVal) {
+                alert("Bitte gib ein Ergebnis ein."); return;
+            }
+            if (!docChecked) {
+                alert("Bitte bestätige, dass du den Lösungsweg dokumentiert hast."); return;
+            }
+
+            const normalizedInput = normalizeString(inputVal);
+            const isCorrect = task.a.some(ans => normalizeString(ans) === normalizedInput);
+
+            fb.classList.remove('hidden');
+
+            if (isCorrect) {
+                // Erfolg
+                fb.className = 'mt-4 p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800';
+                fb.innerHTML = `<div class="font-bold mb-2">Korrekt! Hervorragend gelöst.</div><div>Lösungsweg zur Kontrolle: ${task.sol}</div>`;
+                document.getElementById('taskInput').disabled = true;
+                document.getElementById('taskBtn').style.display = 'none';
+
+                // Fortschritt speichern
+                if (!progress[currentLevelObj.id]) progress[currentLevelObj.id] = {};
+                progress[currentLevelObj.id][currentTab] = true;
+
+                // Level Freischaltung prüfen
+                if (currentTab === 'check') {
+                    if (currentLevelObj.id >= unlockedLevel && currentLevelObj.id < levelsData.length - 1) {
+                        unlockedLevel = currentLevelObj.id + 1;
+                        fb.innerHTML += `<div class="mt-4 font-bold text-indigo-600">Neues Level auf der Landkarte freigeschaltet!</div>`;
+                    }
+                }
+                saveProgress();
+                renderMathInElement(fb, { delimiters: [ {left: "$", right: "$", display: false} ] });
+
+            } else {
+                // Fehler
+                currentAttempts++;
+                const inputEl = document.getElementById('taskInput');
+                inputEl.classList.add('shake', 'border-red-500');
+                setTimeout(() => inputEl.classList.remove('shake', 'border-red-500'), 400);
+
+                if (currentAttempts < 3) {
+                    fb.className = 'mt-4 p-4 rounded-xl border border-amber-200 bg-amber-50 text-amber-800';
+                    fb.innerHTML = `<div class="font-bold">Noch nicht ganz richtig.</div><div>Überprüfe deine Lösungsdokumentation und versuche es noch einmal! (Versuch ${currentAttempts} von 3)</div>`;
+                } else {
+                    fb.className = 'mt-4 p-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-800';
+                    fb.innerHTML = `<div class="font-bold mb-2">Hier ist der vollständige Lösungsweg:</div>
+                                    <div class="mb-4">${task.sol}</div>
+                                    <div class="text-sm text-slate-500 mb-4">Bitte notiere diesen Schritt sorgfältig.</div>
+                                    <button onclick="switchTab('${currentTab}')" class="bg-white border border-slate-300 px-4 py-2 rounded shadow-sm hover:bg-slate-50 font-semibold">Wiederholung neu starten ↺</button>`;
+                    document.getElementById('taskInput').disabled = true;
+                    document.getElementById('taskBtn').style.display = 'none';
+                    renderMathInElement(fb, { delimiters: [ {left: "$", right: "$", display: false} ] });
+                }
+            }
+        }
+
+        // 6. Laufzettel
+        function openLaufzettel() {
+            document.getElementById('modalLaufzettel').classList.remove('hidden');
+            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('de-DE');
+            updateLaufzettel();
+        }
+
+        function closeLaufzettel() {
+            document.getElementById('modalLaufzettel').classList.add('hidden');
+        }
+
+        function updateLaufzettel() {
+            const tbody = document.getElementById('laufzettelTable');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            
+            levelsData.forEach(lvl => {
+                const p = progress[lvl.id] || {};
+                const checkDone = p.check ? '<span class="text-emerald-600 font-bold">✓ Bestanden</span>' : '<span class="text-slate-400">Offen</span>';
+                
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-slate-800">${lvl.title}</div>
+                        <div class="text-xs text-slate-500">
+                            Training: 
+                            <span class="${p.leicht ? 'text-emerald-600' : ''}">Leicht</span> | 
+                            <span class="${p.mittel ? 'text-emerald-600' : ''}">Mittel</span> | 
+                            <span class="${p.schwer ? 'text-emerald-600' : ''}">Schwer</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 text-center">${checkDone}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
 </body>
 </html>
