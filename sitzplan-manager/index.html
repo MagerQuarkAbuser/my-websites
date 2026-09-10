@@ -68,9 +68,9 @@
         
         let state = {
             className: 'Klasse 10A',
-            students: [], // { id, name, hasVoted, wishNeighborId, wishArea }
-            rules: [], // { id, type, studentId, targetId }
-            seats: [], // { id, x, y, disabled, studentId, area }
+            students: [], 
+            rules: [], 
+            seats: [], 
             isSwapMode: false,
             swapStartSeatId: null
         };
@@ -81,7 +81,6 @@
             if (saved) {
                 state = { ...state, ...JSON.parse(saved) };
             } else {
-                // Generiere Standard 9x5 Raster
                 for (let y = 0; y < 5; y++) {
                     for (let x = 0; x < 9; x++) {
                         state.seats.push({
@@ -93,7 +92,6 @@
                 saveState();
             }
 
-            // Routing basierend auf URL
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('student')) {
                 renderStudentView();
@@ -109,10 +107,9 @@
                 rules: state.rules,
                 seats: state.seats
             }));
-            renderTeacherView(); // Re-render nach Speicherung
+            renderTeacherView(); 
         }
 
-        // Multi-Tab Sync (ersetzt Firebase für lokale Nutzung)
         window.addEventListener('storage', (e) => {
             if (e.key === STORAGE_KEY) {
                 const newData = JSON.parse(e.newValue);
@@ -160,10 +157,19 @@
                         <!-- SCHÜLER BOX -->
                         <div class="bg-white p-5 rounded-2xl shadow-sm border-t-4 border-amber-400">
                             <h2 class="text-xl font-extrabold mb-4 flex items-center gap-2"><i class="fa-solid fa-users text-amber-500"></i> Schüler (${state.students.length})</h2>
-                            <div class="flex gap-2 mb-4">
-                                <input type="text" id="newStudentName" placeholder="Name eingeben..." class="flex-1 bg-slate-50 border-2 border-slate-200 p-2 rounded-lg font-bold focus:border-amber-400 outline-none" onkeypress="if(event.key === 'Enter') addStudent()">
-                                <button onclick="addStudent()" class="bg-amber-400 text-amber-950 w-12 rounded-lg font-black text-xl hover:bg-amber-500 transition">+</button>
+                            <div class="flex flex-col gap-2 mb-4">
+                                <div class="flex gap-2">
+                                    <input type="text" id="newStudentName" placeholder="Name eingeben..." class="flex-1 bg-slate-50 border-2 border-slate-200 p-2 rounded-lg font-bold focus:border-amber-400 outline-none" onkeypress="if(event.key === 'Enter') addStudent()">
+                                    <button onclick="addStudent()" class="bg-amber-400 text-amber-950 w-12 rounded-lg font-black text-xl hover:bg-amber-500 transition">+</button>
+                                </div>
+                                
+                                <!-- NEUER CSV UPLOAD BUTTON -->
+                                <input type="file" id="csvUpload" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
+                                <button onclick="document.getElementById('csvUpload').click()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-bold p-2 rounded-lg transition flex justify-center items-center gap-2">
+                                    <i class="fa-solid fa-file-csv"></i> Liste importieren (.csv)
+                                </button>
                             </div>
+                            
                             <ul class="max-h-48 overflow-y-auto space-y-2 pr-1" id="studentList"></ul>
                             ${state.students.length > 0 ? `<button onclick="resetVotes()" class="mt-4 w-full text-sm font-bold text-slate-500 hover:text-red-600 p-2 bg-slate-50 rounded-lg"><i class="fa-solid fa-rotate-left"></i> Wünsche zurücksetzen</button>` : ''}
                         </div>
@@ -226,7 +232,6 @@
         }
 
         function populateSidebar() {
-            // Students
             const stList = document.getElementById('studentList');
             stList.innerHTML = state.students.map(s => `
                 <li class="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
@@ -238,10 +243,8 @@
                 </li>
             `).join('');
 
-            // Rule Inputs (Dynamic Selects)
             renderRuleInputs();
 
-            // Rules List
             const rList = document.getElementById('ruleList');
             rList.innerHTML = state.rules.length === 0 
                 ? `<li class="text-xs font-bold text-slate-400 text-center p-2 bg-slate-50 rounded">Keine Regeln aktiv.</li>` 
@@ -329,6 +332,58 @@
             }
         }
 
+        // NEU: CSV Upload Logik
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                // Unterstützt Windows (\r\n) und Mac/Linux (\n) Zeilenumbrüche
+                const lines = text.split(/\r?\n/);
+                let importedCount = 0;
+
+                lines.forEach((line, index) => {
+                    let cleanLine = line.trim();
+                    if (!cleanLine) return;
+                    
+                    // Wir nehmen einfach immer den Eintrag vor dem ersten Komma oder Semikolon
+                    const columns = cleanLine.split(/[,;]/);
+                    let rawName = columns[0].trim();
+                    
+                    // Anführungszeichen entfernen, falls vorhanden (z.B. "Max Mustermann")
+                    rawName = rawName.replace(/^"|"$/g, '').trim();
+
+                    // Ignoriere typische Kopfzeilen (Header)
+                    if (index === 0 && (rawName.toLowerCase() === 'name' || rawName.toLowerCase() === 'schüler' || rawName.toLowerCase() === 'schueler' || rawName.toLowerCase() === 'vorname')) return;
+
+                    if (rawName && state.students.length < 45) {
+                        state.students.push({ 
+                            // Wir hängen den index an, damit die IDs auch beim extrem schnellen Durchlaufen einzigartig bleiben
+                            id: 'st-' + Date.now() + '-' + index, 
+                            name: rawName, 
+                            hasVoted: false, 
+                            wishNeighborId: null, 
+                            wishArea: 'egal' 
+                        });
+                        importedCount++;
+                    }
+                });
+
+                if (importedCount > 0) {
+                    saveState();
+                    alert(`${importedCount} Schüler erfolgreich importiert!`);
+                } else {
+                    alert("Keine Namen in der CSV-Datei gefunden. (Die Datei muss die Namen in der ersten Spalte haben).");
+                }
+                
+                // Setze das Input-Feld zurück, damit die gleiche Datei nochmal hochgeladen werden kann
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
         function deleteStudent(id) {
             if (confirm('Schüler wirklich löschen?')) {
                 state.students = state.students.filter(s => s.id !== id);
@@ -372,7 +427,7 @@
             if (!seat) return;
 
             if (state.isSwapMode) {
-                if (seat.disabled) return; // Ignore aisles during swap
+                if (seat.disabled) return; 
                 if (!state.swapStartSeatId) {
                     state.swapStartSeatId = seatId;
                 } else {
@@ -400,21 +455,17 @@
                 return alert('Fehler: Mehr Schüler als aktive Sitzplätze!');
             }
 
-            // 1. Alle Plätze leeren
             state.seats.forEach(s => s.studentId = null);
             
-            // 2. Schüler-Pool mischen (Fisher-Yates)
             let unassigned = [...state.students];
             for (let i = unassigned.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [unassigned[i], unassigned[j]] = [unassigned[j], unassigned[i]];
             }
 
-            // Helper: Find seat
             const getSeat = (x, y) => state.seats.find(s => s.x === x && s.y === y && !s.disabled);
             const getNeighbors = (s) => [getSeat(s.x-1, s.y), getSeat(s.x+1, s.y)].filter(Boolean);
 
-            // 3. Reihe 1 Zwang
             const firstRowRules = state.rules.filter(r => r.type === 'force_first_row');
             firstRowRules.forEach(rule => {
                 const stIndex = unassigned.findIndex(s => s.id === rule.studentId);
@@ -426,13 +477,11 @@
                 }
             });
 
-            // 4. Einzelgänger (sit_alone)
             const aloneRules = state.rules.filter(r => r.type === 'sit_alone');
             aloneRules.forEach(rule => {
                 const stIndex = unassigned.findIndex(s => s.id === rule.studentId);
                 if (stIndex === -1) return;
                 
-                // Finde Platz mit leeren Nachbarn
                 const emptyIsolatedSeat = activeSeats.find(seat => {
                     if (seat.studentId) return false;
                     const neighbors = getNeighbors(seat);
@@ -445,21 +494,17 @@
                 }
             });
 
-            // 5. Restliche Schüler verteilen + Wünsche/Feinde prüfen
             unassigned.forEach(student => {
                 const enemies = state.rules.filter(r => r.type === 'not_next_to' && (r.studentId === student.id || r.targetId === student.id))
                                            .map(r => r.studentId === student.id ? r.targetId : r.studentId);
                 
                 let bestSeat = null;
-                
-                // Priorisiere Wunschbereich, falls vorhanden
                 let available = activeSeats.filter(s => !s.studentId);
                 if (student.wishArea && student.wishArea !== 'egal') {
                     const areaMatch = available.filter(s => s.area === student.wishArea);
                     if (areaMatch.length > 0) available = areaMatch;
                 }
 
-                // Versuche Feinde zu meiden
                 for (let seat of available) {
                     const neighbors = getNeighbors(seat);
                     const hasEnemy = neighbors.some(n => enemies.includes(n.studentId));
@@ -469,7 +514,6 @@
                     }
                 }
 
-                // Fallback, falls unmöglich
                 if (!bestSeat) bestSeat = activeSeats.find(s => !s.studentId);
                 
                 if (bestSeat) bestSeat.studentId = student.id;
@@ -498,7 +542,6 @@
             document.getElementById('qrModal').classList.add('hidden');
         }
 
-        // SCHÜLER-ANSICHT RENDERER
         function renderStudentView() {
             const app = document.getElementById('app');
             app.innerHTML = `
@@ -540,7 +583,6 @@
                     </div>
                 </div>
             `;
-            // Standardmäßig 'egal' wählen
             setTimeout(() => selectArea('egal'), 50);
         }
 
