@@ -151,10 +151,14 @@
     .muell-preview-container { width: 100%; border-radius: 18px; border: 1.5px solid #cbd5e1; background: white; padding: 14px; display: flex; flex-direction: column; align-items: center; }
     .muell-preview-img { width: 100%; max-height: 350px; object-fit: contain; border-radius: 10px; cursor: zoom-in; }
     
-    #muell-zoom-modal { display: none; position: fixed; inset: 0; z-index: 10020; background: rgba(0, 0, 0, 0.95); align-items: center; justify-content: center; }
+    /* Müll Zoom CSS repariert für Drag & Drop */
+    #muell-zoom-modal { display: none; position: fixed; inset: 0; z-index: 10020; background: rgba(0, 0, 0, 0.95); align-items: center; justify-content: center; overflow: hidden; }
     #muell-zoom-modal.active { display: flex; }
-    #muell-zoom-img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: grab; }
-    .zoom-ctrl-btn { background: rgba(255, 255, 255, 0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; }
+    .muell-zoom-wrapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+    #muell-zoom-img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: grab; transition: transform 0.1s ease-out; }
+    #muell-zoom-img:active { cursor: grabbing; }
+
+    .zoom-ctrl-btn { background: rgba(255, 255, 255, 0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .muell-zoom-close { position: fixed; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.25); color: white; border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 1.5rem; cursor: pointer; z-index: 10030; }
 
     #bok-overlay { display: none; position: fixed; inset: 0; z-index: 10005; background: black; align-items: center; justify-content: center; cursor: pointer; }
@@ -525,6 +529,7 @@
       updateLoveTicker();
       setupSwipeGestures();
       initMiniGame(); 
+      setupZoomDrag(); // Müllkalender Drag & Drop initialisieren
       
       const lastTab = localStorage.getItem('planer_last_tab') || 'home';
       showTab(lastTab);
@@ -662,10 +667,9 @@
 
       framesUntilNextTree--;
       if (framesUntilNextTree <= 0) { 
-        let obsHeight = 30 + Math.random() * 40; // Mehr Höhenunterschied (30 bis 70 hoch)
+        let obsHeight = 30 + Math.random() * 40; 
         let treeEmoji = Math.random() > 0.5 ? '🌳' : '🌲'; 
         obstacles.push({ x: canvas.width, y: 190 - obsHeight, width: obsHeight * 0.8, height: obsHeight, emoji: treeEmoji });
-        // Mehr Abstands-Unterschied (schnell hintereinander bis lange Pause)
         framesUntilNextTree = Math.floor(Math.random() * 90) + 45;
       }
 
@@ -711,7 +715,7 @@
     }
 
     // ==========================================
-    // TABS & NAVIGATION 
+    // TABS & NAVIGATION
     // ==========================================
     function showTab(name) {
       const currentActive = document.querySelector('.tab-content.active');
@@ -733,6 +737,7 @@
       document.querySelectorAll('.nav-tab').forEach(el => {
         if (el.getAttribute('data-tab') === name) {
           el.classList.add('active');
+          // Exaktes Scrollen der Menüleiste, verhindert das nervige "Zucken" der ganzen Website
           const navBar = document.querySelector('nav');
           const scrollPos = el.offsetLeft - (navBar.clientWidth / 2) + (el.clientWidth / 2);
           navBar.scrollTo({ left: scrollPos, behavior: 'smooth' });
@@ -749,6 +754,7 @@
       window.addEventListener('touchstart', e => {
         touchStartX = null; touchStartY = null;
         
+        // Verhindert Tab-Wechsel beim Wischen in der Menüleiste oder im Spiel!
         if (e.target.closest('nav') || e.target.closest('#game-container')) return; 
         
         if (document.querySelector('.modal-overlay[style*="display: flex"]') || document.getElementById('bok-overlay').classList.contains('active') || document.getElementById('chillgriff-overlay').classList.contains('active') || document.getElementById('muell-zoom-modal').classList.contains('active')) return;
@@ -775,8 +781,93 @@
     }
 
     // ==========================================
-    // FUNKTIONEN: MÜLL, GALERIE, LISTEN, DATE
+    // MÜLLKALENDER DRAG & DROP & ZOOM LOGIK
     // ==========================================
+    let currentZoomScale = 1;
+    let currentTranslateX = 0;
+    let currentTranslateY = 0;
+    let isDraggingZoom = false;
+    let startDragX = 0;
+    let startDragY = 0;
+
+    function updateZoomTransform() {
+      const img = document.getElementById('muell-zoom-img');
+      img.style.transform = `translate(${currentTranslateX}px, ${currentTranslateY}px) scale(${currentZoomScale})`;
+    }
+
+    function setupZoomDrag() {
+      const img = document.getElementById('muell-zoom-img');
+      const modal = document.getElementById('muell-zoom-modal');
+      
+      const startDrag = (x, y) => {
+        if (currentZoomScale <= 1) return;
+        isDraggingZoom = true;
+        startDragX = x - currentTranslateX;
+        startDragY = y - currentTranslateY;
+        img.style.cursor = 'grabbing';
+      };
+      
+      const doDrag = (x, y) => {
+        if (!isDraggingZoom) return;
+        currentTranslateX = x - startDragX;
+        currentTranslateY = y - startDragY;
+        updateZoomTransform();
+      };
+      
+      const endDrag = () => {
+        isDraggingZoom = false;
+        img.style.cursor = 'grab';
+      };
+
+      // Maus Events für PC
+      img.addEventListener('mousedown', e => { e.preventDefault(); startDrag(e.clientX, e.clientY); });
+      window.addEventListener('mousemove', e => doDrag(e.clientX, e.clientY));
+      window.addEventListener('mouseup', endDrag);
+
+      // Touch Events für Handy
+      img.addEventListener('touchstart', e => {
+        if(e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: false });
+      
+      modal.addEventListener('touchmove', e => {
+        if(isDraggingZoom && e.touches.length === 1) {
+          e.preventDefault(); // Verhindert globales Scrollen während man das Bild verschiebt
+          doDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: false });
+      
+      modal.addEventListener('touchend', endDrag);
+    }
+
+    function openMuellZoom() { 
+      const preview = document.getElementById('muell-img-preview');
+      if (!preview.src) return;
+      document.getElementById('muell-zoom-img').src = preview.src; 
+      currentZoomScale = 1; currentTranslateX = 0; currentTranslateY = 0;
+      updateZoomTransform();
+      document.getElementById('muell-zoom-modal').classList.add('active'); 
+    }
+    
+    function closeMuellZoom() { 
+      document.getElementById('muell-zoom-modal').classList.remove('active'); 
+    }
+    
+    function zoomInImg() { 
+      currentZoomScale = Math.min(currentZoomScale + 0.5, 4); 
+      updateZoomTransform(); 
+    }
+    
+    function zoomOutImg() { 
+      currentZoomScale = Math.max(currentZoomScale - 0.5, 1); 
+      if(currentZoomScale === 1) { currentTranslateX = 0; currentTranslateY = 0; }
+      updateZoomTransform(); 
+    }
+    
+    function resetZoomImg() { 
+      currentZoomScale = 1; currentTranslateX = 0; currentTranslateY = 0; 
+      updateZoomTransform(); 
+    }
+
     function enableMuellTitleEdit() { document.getElementById('muell-title-edit-box').style.display = 'block'; document.getElementById('muell-title-input').value = appData.muellTitle || "Müllkalender"; document.getElementById('muell-title-input').focus(); }
     function saveMuellTitle() { appData.muellTitle = document.getElementById('muell-title-input').value.trim() || "Müllkalender"; document.getElementById('muell-title-edit-box').style.display = 'none'; renderMuellView(); syncData(); }
     function handleMuellUpload(event) {
@@ -790,12 +881,10 @@
       document.getElementById('muell-display-area').style.display = 'block'; document.getElementById('muell-empty-notice').style.display = 'none';
       const imgPreview = document.getElementById('muell-img-preview'); imgPreview.src = appData.muellFileUrl; imgPreview.style.display = 'block';
     }
-    function openMuellZoom() { document.getElementById('muell-zoom-img').src = document.getElementById('muell-img-preview').src; document.getElementById('muell-zoom-modal').classList.add('active'); }
-    function closeMuellZoom() { document.getElementById('muell-zoom-modal').classList.remove('active'); }
-    function zoomInImg() { let img = document.getElementById('muell-zoom-img'); let scale = parseFloat(img.getAttribute('data-scale')||1) + 0.5; img.style.transform = `scale(${scale})`; img.setAttribute('data-scale', scale); }
-    function zoomOutImg() { let img = document.getElementById('muell-zoom-img'); let scale = Math.max(parseFloat(img.getAttribute('data-scale')||1) - 0.5, 1); img.style.transform = `scale(${scale})`; img.setAttribute('data-scale', scale); }
-    function resetZoomImg() { let img = document.getElementById('muell-zoom-img'); img.style.transform = `scale(1)`; img.setAttribute('data-scale', 1); }
 
+    // ==========================================
+    // GALERIE, LISTEN, DATE, EASTER EGGS
+    // ==========================================
     function handleGalleryUpload(event) {
       const files = event.target.files; if (!files || files.length === 0) return;
       const statusEl = document.getElementById('upload-status'); statusEl.textContent = `${files.length} Bild(er) werden gespeichert... ⏳`;
@@ -837,9 +926,7 @@
     function triggerBok() { const overlay = document.getElementById('bok-overlay'); document.getElementById('bok-image').src = (currentUser === 'fabian') ? 'vanessa.png' : 'fabian.png'; overlay.classList.add('active'); setTimeout(() => { overlay.classList.remove('active'); }, 3000); }
     function closeBokOverlay() { document.getElementById('bok-overlay').classList.remove('active'); }
 
-    // ==========================================
     // REPARIERTER GEHEIMMODUS (CHILLGRIFF)
-    // ==========================================
     let lastTap = 0; 
     document.getElementById('capy-trigger').addEventListener('click', () => { 
       const now = Date.now(); 
