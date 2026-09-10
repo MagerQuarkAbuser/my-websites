@@ -144,7 +144,7 @@
             color: var(--text);
             transition: all 0.2s ease;
             text-align: left;
-            min-height: 54px; /* iPad Touch Target */
+            min-height: 54px; /* Touch-optimiert für iPads */
         }
 
         .quiz-option:hover:not(:disabled) {
@@ -280,7 +280,7 @@
     <section class="card" id="quizCard">
         <div class="progress-container">
             <div class="progress-header">
-                <span id="progressText">Aufgabe 1 von 3</span>
+                <span id="progressText">Aufgabe 1 von 4</span>
                 <span id="percentText">0%</span>
             </div>
             <div class="progress-bar-bg">
@@ -289,7 +289,7 @@
         </div>
 
         <div id="quizContent">
-            <span class="topic-badge" id="topicBadge">Steigung & Sekanten</span>
+            <span class="topic-badge" id="topicBadge">Steigung von Geraden</span>
             <div class="question-text" id="questionText"></div>
             <div class="options-grid" id="optionsGrid"></div>
             <div id="feedbackBox" class="feedback-box"></div>
@@ -380,7 +380,6 @@
         attempts = 0;
         isCurrentQuestionSolved = false;
 
-        // UI-Elemente zurücksetzen
         document.getElementById('topicBadge').textContent = q.topic;
         document.getElementById('questionText').innerHTML = q.question;
         
@@ -395,13 +394,11 @@
             ? "Ergebnis ansehen →" 
             : "Weiter zur nächsten Aufgabe →";
 
-        // Fortschritt aktualisieren
         const progressPercent = Math.round((currentQuestionIndex / questions.length) * 100);
         document.getElementById('progressBar').style.width = `${progressPercent}%`;
         document.getElementById('progressText').textContent = `Aufgabe ${currentQuestionIndex + 1} von ${questions.length}`;
         document.getElementById('percentText').textContent = `${progressPercent}%`;
 
-        // Optionen aufbauen
         const grid = document.getElementById('optionsGrid');
         grid.innerHTML = "";
 
@@ -459,7 +456,6 @@
                 }, 1200);
 
             } else {
-                // Nach 3 Fehlversuchen Lösung aufdecken
                 isCurrentQuestionSolved = true;
                 allButtons.forEach((btn, index) => {
                     btn.disabled = true;
@@ -487,7 +483,6 @@
         if (currentQuestionIndex < questions.length) {
             renderCurrentQuestion();
         } else {
-            // Fertig
             document.getElementById('progressBar').style.width = "100%";
             document.getElementById('percentText').textContent = "100%";
             document.getElementById('progressText').textContent = "Abgeschlossen";
@@ -503,7 +498,6 @@
         renderCurrentQuestion();
     }
 
-    // Beim Laden der Seite initialisieren
     window.addEventListener('DOMContentLoaded', () => {
         renderCurrentQuestion();
     });
