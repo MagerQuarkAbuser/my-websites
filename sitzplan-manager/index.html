@@ -13,10 +13,10 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        primary: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' },
+                        primary: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' },
                     },
                     boxShadow: {
-                        'card': '0 2px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.05)'
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1)'
                     }
                 }
             }
@@ -29,42 +29,43 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
         
-        body { background-color: #f1f5f9; color: #0f172a; }
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
         
-        /* Punktemuster-Hintergrund für leichten Kontrast zum weißen Grid */
-        .dot-bg {
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 20px 20px;
+        /* Dezent gemusterter Dark-Mode Hintergrund */
+        .dark-grid-bg {
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 24px 24px;
         }
 
-        /* DRUCK-OPTIMIERUNG */
+        /* DRUCK-OPTIMIERUNG: Erzwingt reines Weiß für den Druck */
         @media print {
-            body { background: white !important; }
+            body { background: white !important; color: black !important; }
             .no-print { display: none !important; }
             .print-only { display: block !important; }
-            .seat { border: 2px solid #000 !important; box-shadow: none !important; background: white !important; }
+            .seat { border: 2px solid #000 !important; box-shadow: none !important; background: white !important; color: black !important; }
             .seat-disabled { border: 2px dashed #ccc !important; visibility: hidden; }
+            header, aside { background: white !important; color: black !important; border: none !important; }
         }
         .print-only { display: none; }
         
-        .segmented-control { display: flex; background-color: #e2e8f0; border-radius: 8px; padding: 4px; position: relative; }
-        .segmented-btn { flex: 1; text-align: center; padding: 8px 16px; border-radius: 6px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; z-index: 10; position: relative; color: #64748b; }
-        .segmented-btn.active { color: #0f172a; }
-        .segmented-highlight { position: absolute; top: 4px; bottom: 4px; background: white; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; }
+        .segmented-control { display: flex; background-color: #1e293b; border-radius: 8px; padding: 4px; position: relative; border: 1px solid #334155; }
+        .segmented-btn { flex: 1; text-align: center; padding: 8px 16px; border-radius: 6px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; z-index: 10; position: relative; color: #94a3b8; }
+        .segmented-btn.active { color: #ffffff; }
+        .segmented-highlight { position: absolute; top: 4px; bottom: 4px; background: #3b82f6; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; }
 
-        @keyframes select-pulse { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6); } 70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); } 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); } }
-        .seat-selected { animation: select-pulse 1.5s infinite; border-color: #f59e0b !important; background-color: #fffbeb !important; transform: scale(1.05); z-index: 20; }
+        @keyframes select-pulse { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.8); } 70% { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0); } 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); } }
+        .seat-selected { animation: select-pulse 1.5s infinite; border-color: #f59e0b !important; background-color: #78350f !important; color: #fef3c7 !important; transform: scale(1.05); z-index: 20; }
         
         button, select, input { min-height: 40px; }
     </style>
 </head>
-<body class="dot-bg antialiased min-h-screen flex flex-col">
+<body class="dark-grid-bg antialiased min-h-screen flex flex-col">
 
     <div id="app" class="flex-1 w-full max-w-[1600px] mx-auto flex flex-col"></div>
 
     <script>
         // --- 1. STATE & DATENSTRUKTUR ---
-        const STORAGE_KEY = 'sitzplan_data_v5'; // V5 für hohen Kontrast & Fixes
+        const STORAGE_KEY = 'sitzplan_data_v6'; // V6 für Dark-Mode Optimierung
         
         let state = {
             className: 'Klasse 10A',
@@ -120,28 +121,28 @@
             
             app.innerHTML = `
                 <!-- HEADER -->
-                <header class="bg-white border-b border-slate-300 sticky top-0 z-40 shadow-sm no-print">
+                <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-40 shadow-md no-print">
                     <div class="max-w-[1600px] mx-auto px-4 md:px-8 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
                         <div class="flex items-center gap-4">
-                            <div class="h-10 w-10 bg-slate-800 text-white rounded-lg flex items-center justify-center text-lg shadow-sm">
+                            <div class="h-10 w-10 bg-primary-600 text-white rounded-xl flex items-center justify-center text-lg shadow">
                                 <i class="fa-solid fa-users"></i>
                             </div>
                             <div>
-                                <h1 class="text-2xl font-black text-slate-900 leading-tight">${state.className}</h1>
-                                <button onclick="editClassName()" class="text-xs font-bold text-slate-500 hover:text-slate-800 transition flex items-center gap-1">
+                                <h1 class="text-2xl font-black text-white leading-tight">${state.className}</h1>
+                                <button onclick="editClassName()" class="text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-1">
                                     <i class="fa-solid fa-pen text-[10px]"></i> Name ändern
                                 </button>
                             </div>
                         </div>
                         
                         <div class="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                            <button onclick="openQRModal()" class="whitespace-nowrap px-4 py-2 bg-white border-2 border-slate-300 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 hover:border-slate-400 transition">
-                                <i class="fa-solid fa-qrcode mr-1 text-slate-500"></i> Schüler einladen
+                            <button onclick="openQRModal()" class="whitespace-nowrap px-4 py-2 bg-slate-700 border border-slate-600 text-slate-200 rounded-lg text-sm font-bold hover:bg-slate-600 transition">
+                                <i class="fa-solid fa-qrcode mr-1 text-slate-400"></i> Schüler einladen
                             </button>
-                            <button onclick="window.print()" class="whitespace-nowrap px-4 py-2 bg-white border-2 border-slate-300 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 hover:border-slate-400 transition">
-                                <i class="fa-solid fa-print mr-1 text-slate-500"></i> PDF / Drucken
+                            <button onclick="window.print()" class="whitespace-nowrap px-4 py-2 bg-slate-700 border border-slate-600 text-slate-200 rounded-lg text-sm font-bold hover:bg-slate-600 transition">
+                                <i class="fa-solid fa-print mr-1 text-slate-400"></i> PDF / Drucken
                             </button>
-                            <button onclick="generatePlan()" class="whitespace-nowrap px-5 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 transition shadow-sm flex items-center gap-2">
+                            <button onclick="generatePlan()" class="whitespace-nowrap px-5 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-500 transition shadow-sm flex items-center gap-2">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i> Plan berechnen
                             </button>
                         </div>
@@ -153,8 +154,8 @@
                     <aside class="w-full lg:w-80 flex-shrink-0 space-y-6 no-print">
                         
                         <!-- KLICK-MODUS -->
-                        <div class="bg-white rounded-xl p-4 shadow-card border-2 border-slate-200">
-                            <h2 class="text-sm font-black text-slate-800 uppercase tracking-wider mb-3"><i class="fa-solid fa-hand-pointer text-slate-400 mr-1"></i> Modus</h2>
+                        <div class="bg-slate-800 rounded-xl p-4 shadow-card border border-slate-700">
+                            <h2 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-hand-pointer mr-1"></i> Modus</h2>
                             <div class="segmented-control">
                                 <div class="segmented-highlight" style="left: ${state.isSwapMode ? '50%' : '4px'}; right: ${state.isSwapMode ? '4px' : '50%'}"></div>
                                 <div class="segmented-btn ${!state.isSwapMode ? 'active' : ''}" onclick="setSwapMode(false)">
@@ -164,25 +165,25 @@
                                     <i class="fa-solid fa-people-arrows mr-1"></i> Tauschen
                                 </div>
                             </div>
-                            <p class="text-xs font-bold text-slate-500 mt-3 text-center bg-slate-50 p-2 rounded border border-slate-100">
-                                ${!state.isSwapMode ? 'Klicke auf Tische, um Gänge zu erstellen.' : state.swapStartSeatId ? '<span class="text-amber-600 font-black">Ziel-Platz auswählen...</span>' : 'Schüler zum Umsetzen anklicken.'}
+                            <p class="text-xs font-bold text-slate-300 mt-3 text-center bg-slate-900/50 p-2 rounded border border-slate-700">
+                                ${!state.isSwapMode ? 'Klicke auf Tische, um Gänge zu erstellen.' : state.swapStartSeatId ? '<span class="text-amber-400 font-black">Ziel-Platz auswählen...</span>' : 'Schüler zum Umsetzen anklicken.'}
                             </p>
                         </div>
 
                         <!-- SCHÜLER LISTE -->
-                        <div class="bg-white rounded-xl shadow-card border-2 border-slate-200 flex flex-col h-[400px]">
-                            <div class="p-4 border-b-2 border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-xl">
-                                <h2 class="text-base font-black text-slate-900"><i class="fa-solid fa-users text-slate-400 mr-1"></i> Schüler (${state.students.length})</h2>
+                        <div class="bg-slate-800 rounded-xl shadow-card border border-slate-700 flex flex-col h-[400px]">
+                            <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800/80 rounded-t-xl">
+                                <h2 class="text-sm font-black text-white"><i class="fa-solid fa-users text-slate-400 mr-1"></i> Schüler (${state.students.length})</h2>
                                 <input type="file" id="csvUpload" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
-                                <button onclick="document.getElementById('csvUpload').click()" class="text-xs text-primary-600 hover:text-primary-700 font-bold bg-white px-2 py-1 rounded border border-slate-200" title="CSV Liste importieren">
+                                <button onclick="document.getElementById('csvUpload').click()" class="text-xs text-primary-400 hover:text-primary-300 font-bold bg-slate-700 px-2.5 py-1 rounded border border-slate-600" title="CSV Liste importieren">
                                     <i class="fa-solid fa-file-arrow-up mr-1"></i> Import
                                 </button>
                             </div>
                             
-                            <div class="p-3 border-b-2 border-slate-100 bg-white">
+                            <div class="p-3 border-b border-slate-700 bg-slate-800/40">
                                 <div class="flex gap-2">
-                                    <input type="text" id="newStudentName" placeholder="Neuer Name..." class="w-full bg-slate-50 border-2 border-slate-200 text-sm font-bold rounded-lg px-3 py-2 outline-none focus:border-primary-500 transition" onkeypress="if(event.key === 'Enter') addStudent()">
-                                    <button onclick="addStudent()" class="bg-slate-800 text-white rounded-lg px-4 font-bold hover:bg-slate-700">
+                                    <input type="text" id="newStudentName" placeholder="Neuer Name..." class="w-full bg-slate-900 border border-slate-600 text-sm font-bold text-white rounded-lg px-3 py-2 outline-none focus:border-primary-500 transition" onkeypress="if(event.key === 'Enter') addStudent()">
+                                    <button onclick="addStudent()" class="bg-primary-600 text-white rounded-lg px-4 font-bold hover:bg-primary-500">
                                         <i class="fa-solid fa-plus"></i>
                                     </button>
                                 </div>
@@ -191,29 +192,29 @@
                             <div class="flex-1 overflow-y-auto p-2" id="studentList"></div>
                             
                             ${state.students.length > 0 ? `
-                            <div class="p-3 border-t-2 border-slate-100 bg-slate-50 rounded-b-xl">
-                                <button onclick="resetVotes()" class="w-full text-xs font-bold text-slate-600 hover:text-red-600 transition flex justify-center items-center gap-1">
+                            <div class="p-3 border-t border-slate-700 bg-slate-800/80 rounded-b-xl">
+                                <button onclick="resetVotes()" class="w-full text-xs font-bold text-slate-400 hover:text-red-400 transition flex justify-center items-center gap-1">
                                     <i class="fa-solid fa-rotate-left"></i> Wünsche zurücksetzen
                                 </button>
                             </div>` : ''}
                         </div>
 
                         <!-- REGELN -->
-                        <div class="bg-white rounded-xl shadow-card border-2 border-slate-200">
-                            <div class="p-4 border-b-2 border-slate-100 bg-slate-50 rounded-t-xl">
-                                <h2 class="text-base font-black text-slate-900"><i class="fa-solid fa-shield-halved text-slate-400 mr-1"></i> Zwingende Regeln</h2>
+                        <div class="bg-slate-800 rounded-xl shadow-card border border-slate-700">
+                            <div class="p-4 border-b border-slate-700 bg-slate-800/80 rounded-t-xl">
+                                <h2 class="text-sm font-black text-white"><i class="fa-solid fa-shield-halved text-slate-400 mr-1"></i> Zwingende Regeln</h2>
                             </div>
                             <div class="p-4 space-y-3">
-                                <select id="ruleType" class="w-full bg-slate-50 border-2 border-slate-200 text-sm font-bold rounded-lg p-2 outline-none focus:border-primary-500" onchange="renderRuleInputs()">
+                                <select id="ruleType" class="w-full bg-slate-900 border border-slate-600 text-sm font-bold text-white rounded-lg p-2 outline-none focus:border-primary-500" onchange="renderRuleInputs()">
                                     <option value="not_next_to">Darf NICHT sitzen neben</option>
                                     <option value="force_next_to">MUSS sitzen neben</option>
                                     <option value="sit_alone">Muss alleine sitzen</option>
                                     <option value="force_first_row">Muss in die 1. Reihe (Vorne)</option>
                                 </select>
                                 <div id="ruleInputs" class="space-y-3"></div>
-                                <button onclick="addRule()" class="w-full bg-slate-800 text-white text-sm font-bold rounded-lg py-2 hover:bg-slate-700 transition">+ Regel hinzufügen</button>
+                                <button onclick="addRule()" class="w-full bg-slate-700 text-white text-sm font-bold rounded-lg py-2 hover:bg-slate-600 transition border border-slate-600">+ Regel hinzufügen</button>
                             </div>
-                            <div class="border-t-2 border-slate-100 p-2 max-h-40 overflow-y-auto bg-slate-50 rounded-b-xl" id="ruleList"></div>
+                            <div class="border-t border-slate-700 p-2 max-h-40 overflow-y-auto bg-slate-900/40 rounded-b-xl" id="ruleList"></div>
                         </div>
 
                     </aside>
@@ -224,32 +225,31 @@
                         <!-- KI SCORE BADGE -->
                         ${state.lastScore !== null ? `
                             <div class="mb-6 flex justify-center no-print">
-                                <div class="bg-green-100 border-2 border-green-400 text-green-900 px-5 py-2 rounded-xl text-sm font-bold shadow-sm flex items-center gap-2">
-                                    <i class="fa-solid fa-check-circle text-green-600"></i>
-                                    <span>Optimierung abgeschlossen: <span class="font-black text-lg">${state.lastScore} Punkte</span></span>
+                                <div class="bg-emerald-950/80 border border-emerald-600 text-emerald-300 px-5 py-2 rounded-xl text-sm font-bold shadow-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-check-circle text-emerald-400"></i>
+                                    <span>Optimierung abgeschlossen: <span class="font-black text-lg text-emerald-200">${state.lastScore} Punkte</span></span>
                                 </div>
                             </div>
                         ` : ''}
                         
                         <!-- SEITE 1: NORMALANSICHT -->
-                        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-card border-2 border-slate-200 flex-1 relative print:shadow-none print:border-none print:p-0">
+                        <div class="bg-slate-800 p-6 md:p-8 rounded-2xl shadow-card border border-slate-700 flex-1 relative print:bg-white print:shadow-none print:border-none print:p-0">
                             <h2 class="print-only text-2xl font-black mb-6 text-center border-b-2 border-black pb-2">Sitzplan: ${state.className} (Normalansicht)</h2>
                             
                             <div class="flex justify-center mb-8">
-                                <div class="bg-slate-800 text-white text-xs font-black uppercase tracking-[0.2em] py-2 px-10 rounded-lg shadow-sm print:bg-white print:text-black print:border-2 print:border-black">
+                                <div class="bg-slate-900 text-slate-200 border border-slate-700 text-xs font-black uppercase tracking-[0.2em] py-2 px-10 rounded-lg shadow-sm print:bg-white print:text-black print:border-2 print:border-black">
                                     Tafel / Vorne
                                 </div>
                             </div>
 
-                            <!-- WICHTIG: Explicit Grid für fehlerfreies Layouting -->
-                            <div id="seatingGrid" class="mx-auto" style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 0.5rem; max-width: 950px;"></div>
+                            <div id="seatingGrid" class="mx-auto" style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 0.6rem; max-width: 950px;"></div>
                         </div>
 
                         <!-- SEITE 2: LEHRERANSICHT (NUR IM DRUCK SICHTBAR) -->
                         <div class="print-only" style="page-break-before: always; padding-top: 2rem;">
                             <h2 class="text-2xl font-black mb-6 text-center border-b-2 border-black pb-2">Sitzplan: ${state.className} (Lehrersicht)</h2>
                             
-                            <div id="seatingGridTeacher" class="mx-auto" style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 0.5rem; max-width: 950px;"></div>
+                            <div id="seatingGridTeacher" class="mx-auto" style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 0.6rem; max-width: 950px;"></div>
                             
                             <div class="flex justify-center mt-8">
                                 <div class="bg-white text-black text-xs font-black uppercase tracking-[0.2em] py-2 px-10 rounded-lg border-2 border-black">
@@ -261,18 +261,18 @@
                 </main>
 
                 <!-- MODAL: QR CODE -->
-                <div id="qrModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 no-print">
-                    <div class="bg-white p-8 rounded-2xl text-center shadow-2xl max-w-sm w-full border-4 border-slate-200">
-                        <div class="w-12 h-12 bg-slate-100 text-slate-800 rounded-xl flex items-center justify-center text-xl mx-auto mb-4">
+                <div id="qrModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 no-print">
+                    <div class="bg-slate-800 p-8 rounded-2xl text-center shadow-2xl max-w-sm w-full border border-slate-700 text-white">
+                        <div class="w-12 h-12 bg-slate-700 text-slate-200 rounded-xl flex items-center justify-center text-xl mx-auto mb-4 border border-slate-600">
                             <i class="fa-solid fa-mobile-screen"></i>
                         </div>
-                        <h2 class="text-xl font-black text-slate-900 mb-2">Schüler-Wahl</h2>
-                        <p class="text-sm font-bold text-slate-500 mb-6">QR Code scannen für Wünsche.</p>
+                        <h2 class="text-xl font-black mb-2">Schüler-Wahl</h2>
+                        <p class="text-sm font-bold text-slate-400 mb-6">QR Code scannen für Wünsche.</p>
                         
-                        <div id="qrcode" class="flex justify-center mb-6 p-4 bg-white border-2 border-slate-200 rounded-xl"></div>
+                        <div id="qrcode" class="flex justify-center mb-6 p-4 bg-white rounded-xl"></div>
                         
-                        <input type="text" id="qrLink" readonly class="w-full p-2.5 bg-slate-50 border-2 border-slate-200 rounded-lg text-center font-mono text-xs font-bold text-primary-600 mb-4 outline-none select-all">
-                        <button onclick="closeQRModal()" class="w-full bg-slate-900 text-white py-2.5 rounded-lg font-bold hover:bg-slate-800 transition">Schließen</button>
+                        <input type="text" id="qrLink" readonly class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-center font-mono text-xs font-bold text-primary-400 mb-4 outline-none select-all">
+                        <button onclick="closeQRModal()" class="w-full bg-slate-700 text-white py-2.5 rounded-lg font-bold hover:bg-slate-600 transition border border-slate-600">Schließen</button>
                     </div>
                 </div>
             `;
@@ -284,16 +284,16 @@
         function populateSidebar() {
             const stList = document.getElementById('studentList');
             stList.innerHTML = state.students.length === 0 
-                ? `<div class="p-4 text-center text-sm text-slate-400 font-bold">Noch keine Schüler angelegt.</div>` 
+                ? `<div class="p-4 text-center text-sm text-slate-500 font-bold">Noch keine Schüler angelegt.</div>` 
                 : state.students.map(s => `
-                <div class="group flex justify-between items-center px-3 py-2 border-b border-slate-100 hover:bg-slate-50 transition">
+                <div class="group flex justify-between items-center px-3 py-2 border-b border-slate-700/50 hover:bg-slate-700/30 transition">
                     <div class="flex items-center gap-2 overflow-hidden">
                         <div class="flex flex-col truncate">
-                            <span class="text-sm font-black text-slate-800 truncate">${s.name}</span>
-                            <span class="text-[10px] font-bold uppercase ${s.hasVoted ? 'text-green-600' : 'text-amber-500'}">${s.hasVoted ? 'Wunsch da' : 'Fehlt'}</span>
+                            <span class="text-sm font-black text-slate-200 truncate">${s.name}</span>
+                            <span class="text-[10px] font-bold uppercase ${s.hasVoted ? 'text-emerald-400' : 'text-amber-400'}">${s.hasVoted ? 'Wunsch da' : 'Fehlt'}</span>
                         </div>
                     </div>
-                    <button onclick="deleteStudent('${s.id}')" class="text-slate-300 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition">
+                    <button onclick="deleteStudent('${s.id}')" class="text-slate-500 hover:text-red-400 p-2 opacity-0 group-hover:opacity-100 transition">
                         <i class="fa-solid fa-trash-can text-sm"></i>
                     </button>
                 </div>
@@ -303,23 +303,23 @@
 
             const rList = document.getElementById('ruleList');
             rList.innerHTML = state.rules.length === 0 
-                ? `<div class="p-3 text-center text-xs text-slate-400 font-bold">Keine aktiven Regeln.</div>` 
+                ? `<div class="p-3 text-center text-xs text-slate-500 font-bold">Keine aktiven Regeln.</div>` 
                 : state.rules.map(r => {
                     const s1 = getStudentName(r.studentId);
                     const s2 = r.targetId ? getStudentName(r.targetId) : '';
                     let icon = '', txt = '';
-                    if(r.type === 'not_next_to') { icon = '<i class="fa-solid fa-ban text-red-500"></i>'; txt = `${s1} <span class="text-slate-500 font-medium">nicht neben</span> ${s2}`; }
-                    if(r.type === 'force_next_to') { icon = '<i class="fa-solid fa-link text-primary-500"></i>'; txt = `${s1} <span class="text-slate-500 font-medium">neben</span> ${s2}`; }
-                    if(r.type === 'sit_alone') { icon = '<i class="fa-solid fa-user-shield text-amber-500"></i>'; txt = `${s1} <span class="text-slate-500 font-medium">sitzt alleine</span>`; }
-                    if(r.type === 'force_first_row') { icon = '<i class="fa-solid fa-arrow-up text-indigo-500"></i>'; txt = `${s1} <span class="text-slate-500 font-medium">in 1. Reihe</span>`; }
+                    if(r.type === 'not_next_to') { icon = '<i class="fa-solid fa-ban text-red-400"></i>'; txt = `${s1} <span class="text-slate-400 font-medium">nicht neben</span> ${s2}`; }
+                    if(r.type === 'force_next_to') { icon = '<i class="fa-solid fa-link text-primary-400"></i>'; txt = `${s1} <span class="text-slate-400 font-medium">neben</span> ${s2}`; }
+                    if(r.type === 'sit_alone') { icon = '<i class="fa-solid fa-user-shield text-amber-400"></i>'; txt = `${s1} <span class="text-slate-400 font-medium">sitzt alleine</span>`; }
+                    if(r.type === 'force_first_row') { icon = '<i class="fa-solid fa-arrow-up text-indigo-400"></i>'; txt = `${s1} <span class="text-slate-400 font-medium">in 1. Reihe</span>`; }
                     
                     return `
-                    <div class="flex justify-between items-center px-3 py-2 bg-white border border-slate-200 rounded-lg mb-2 shadow-sm">
-                        <div class="flex items-center gap-2 text-xs font-bold text-slate-800 truncate mr-2">
+                    <div class="flex justify-between items-center px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg mb-2 shadow-sm text-slate-200">
+                        <div class="flex items-center gap-2 text-xs font-bold truncate mr-2">
                             <span class="w-4 text-center">${icon}</span> 
                             <span class="truncate">${txt}</span>
                         </div>
-                        <button onclick="deleteRule('${r.id}')" class="text-slate-400 hover:text-red-500 flex-shrink-0"><i class="fa-solid fa-xmark"></i></button>
+                        <button onclick="deleteRule('${r.id}')" class="text-slate-400 hover:text-red-400 flex-shrink-0"><i class="fa-solid fa-xmark"></i></button>
                     </div>`;
                 }).join('');
         }
@@ -329,12 +329,12 @@
             const container = document.getElementById('ruleInputs');
             if(!container) return;
 
-            let html = `<select id="ruleS1" class="w-full bg-white border-2 border-slate-200 text-sm font-bold rounded-lg p-2 outline-none focus:border-primary-500"><option value="">1. Schüler wählen...</option>`;
+            let html = `<select id="ruleS1" class="w-full bg-slate-900 border border-slate-600 text-sm font-bold text-white rounded-lg p-2 outline-none focus:border-primary-500"><option value="">1. Schüler wählen...</option>`;
             state.students.forEach(s => html += `<option value="${s.id}">${s.name}</option>`);
             html += `</select>`;
 
             if (type === 'not_next_to' || type === 'force_next_to') {
-                html += `<select id="ruleS2" class="w-full bg-white border-2 border-slate-200 text-sm font-bold rounded-lg p-2 outline-none focus:border-primary-500 mt-2"><option value="">2. Schüler wählen...</option>`;
+                html += `<select id="ruleS2" class="w-full bg-slate-900 border border-slate-600 text-sm font-bold text-white rounded-lg p-2 outline-none focus:border-primary-500 mt-2"><option value="">2. Schüler wählen...</option>`;
                 state.students.forEach(s => html += `<option value="${s.id}">${s.name}</option>`);
                 html += `</select>`;
             }
@@ -352,27 +352,22 @@
                     const isOccupied = !!seat.studentId;
                     const sName = getStudentName(seat.studentId);
                     
-                    // KORREKTUR: Mathematisch exakte Spiegelung für das CSS Grid
                     const gridRow = isTeacherView ? (5 - seat.y) : (seat.y + 1);
                     const gridCol = isTeacherView ? (9 - seat.x) : (seat.x + 1);
                     const gridPosition = `grid-row: ${gridRow}; grid-column: ${gridCol};`;
 
-                    // KORREKTUR: Hoher Kontrast für die Tische
-                    let classes = "seat h-16 md:h-20 flex flex-col items-center justify-center rounded-lg transition-all select-none relative ";
+                    // Dark-Mode Kontrast Tische
+                    let classes = "seat h-16 md:h-20 flex flex-col items-center justify-center rounded-xl transition-all select-none relative ";
                     if (!isTeacherView) classes += "cursor-pointer ";
                     
                     if (seat.disabled) {
-                        // Deaktiviert (Gang)
-                        classes += "bg-transparent border-2 border-dashed border-slate-300 opacity-40 " + (!isTeacherView ? "hover:border-slate-400" : "");
+                        classes += "bg-transparent border border-dashed border-slate-700 opacity-25 " + (!isTeacherView ? "hover:border-slate-500" : "");
                     } else if (isSelected && !isTeacherView) {
-                        // Ausgewählt zum Tauschen
-                        classes += "bg-amber-100 border-2 border-amber-500 shadow-md ring-4 ring-amber-200 animate-pulse z-10 ";
+                        classes += "seat-selected ";
                     } else if (isOccupied) {
-                        // Besetzt (Schüler sitzt) -> Sehr deutlicher Kontrast!
-                        classes += "bg-blue-50 border-2 border-blue-500 shadow-sm text-blue-900 " + (!isTeacherView ? "hover:shadow-md hover:bg-blue-100" : "");
+                        classes += "bg-slate-700 border-2 border-primary-500 text-white shadow-md " + (!isTeacherView ? "hover:bg-slate-600 hover:border-primary-400" : "");
                     } else {
-                        // Frei (Aktiv) -> Klarer weißer Kasten mit deutlichem Rand
-                        classes += "bg-white border-2 border-slate-300 text-slate-800 " + (!isTeacherView ? "hover:border-blue-400 hover:shadow-sm" : "");
+                        classes += "bg-slate-900 border border-slate-600 text-slate-300 shadow-sm " + (!isTeacherView ? "hover:bg-slate-700 hover:border-slate-400" : "");
                     }
 
                     const onClickAttr = !isTeacherView ? `onclick="handleSeatClick('${seat.id}')"` : "";
@@ -633,56 +628,56 @@
             const app = document.getElementById('app');
             app.innerHTML = `
                 <div class="w-full max-w-md mx-auto my-auto p-4 md:p-0 flex flex-col justify-center min-h-screen">
-                    <div class="bg-white p-8 rounded-3xl shadow-card border-2 border-slate-200 relative overflow-hidden">
+                    <div class="bg-slate-800 p-8 rounded-3xl shadow-card border border-slate-700 relative overflow-hidden text-white">
                         
                         <div class="absolute top-0 left-0 w-full h-2 bg-primary-500"></div>
 
                         <div class="text-center mb-8">
-                            <div class="w-16 h-16 bg-slate-800 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">
+                            <div class="w-16 h-16 bg-slate-700 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 border border-slate-600">
                                 <i class="fa-solid fa-hand-peace"></i>
                             </div>
-                            <h1 class="text-2xl font-black text-slate-900">Sitzplatz-Wünsche</h1>
-                            <p class="text-sm font-bold text-slate-500 mt-1">Wähle deinen Namen und Vorlieben.</p>
+                            <h1 class="text-2xl font-black text-white">Sitzplatz-Wünsche</h1>
+                            <p class="text-sm font-bold text-slate-400 mt-1">Wähle deinen Namen und Vorlieben.</p>
                         </div>
                         
                         <div id="studentForm" class="space-y-6">
                             <div>
-                                <label class="block text-sm font-black text-slate-800 mb-2">Wer bist du?</label>
-                                <select id="studentSelect" onchange="checkStudentStatus()" class="w-full p-3.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-sm font-bold outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition">
+                                <label class="block text-sm font-black text-slate-200 mb-2">Wer bist du?</label>
+                                <select id="studentSelect" onchange="checkStudentStatus()" class="w-full p-3.5 bg-slate-900 border border-slate-600 rounded-xl text-sm font-bold text-white outline-none focus:border-primary-500 transition">
                                     <option value="">Bitte Namen wählen...</option>
                                     ${state.students.map(s => `<option value="${s.id}" ${s.hasVoted ? 'disabled' : ''}>${s.name} ${s.hasVoted ? '(Schon abgestimmt)' : ''}</option>`).join('')}
                                 </select>
                             </div>
 
                             <div id="wishContainer" class="hidden space-y-6">
-                                <hr class="border-2 border-slate-100">
+                                <hr class="border-slate-700">
                                 
                                 <div>
-                                    <label class="block text-sm font-black text-slate-800 mb-2">Lieblings-Nachbar <span class="text-slate-400 font-medium">(optional)</span></label>
-                                    <select id="neighborSelect" class="w-full p-3.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-sm font-bold outline-none focus:border-primary-500 transition"></select>
+                                    <label class="block text-sm font-black text-slate-200 mb-2">Lieblings-Nachbar <span class="text-slate-400 font-normal">(optional)</span></label>
+                                    <select id="neighborSelect" class="w-full p-3.5 bg-slate-900 border border-slate-600 rounded-xl text-sm font-bold text-white outline-none focus:border-primary-500 transition"></select>
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-black text-slate-800 mb-2">Sitzbereich</label>
+                                    <label class="block text-sm font-black text-slate-200 mb-2">Sitzbereich</label>
                                     <div class="grid grid-cols-2 gap-2" id="areaBtns">
                                         ${['vorne', 'mitte', 'hinten', 'egal'].map(a => `
-                                            <button type="button" onclick="selectArea('${a}')" id="btn-${a}" class="py-3 rounded-xl border-2 text-sm font-black capitalize transition ${a === 'egal' ? 'bg-primary-600 border-primary-600 text-white shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}">${a}</button>
+                                            <button type="button" onclick="selectArea('${a}')" id="btn-${a}" class="py-3 rounded-xl border border-slate-600 text-sm font-black capitalize transition ${a === 'egal' ? 'bg-primary-600 border-primary-600 text-white shadow-md' : 'bg-slate-900 text-slate-300 hover:bg-slate-700'}">${a}</button>
                                         `).join('')}
                                     </div>
                                 </div>
                                 
-                                <button onclick="submitStudentVote()" class="w-full py-4 bg-slate-800 hover:bg-slate-700 text-white font-black text-lg rounded-xl shadow-card transition flex items-center justify-center gap-2 mt-4">
+                                <button onclick="submitStudentVote()" class="w-full py-4 bg-primary-600 hover:bg-primary-500 text-white font-black text-lg rounded-xl shadow-card transition flex items-center justify-center gap-2 mt-4">
                                     Absenden <i class="fa-solid fa-arrow-right"></i>
                                 </button>
                             </div>
                         </div>
                         
                         <div id="successMsg" class="hidden text-center py-10">
-                            <div class="w-20 h-20 bg-green-100 border-2 border-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <i class="fa-solid fa-check text-4xl text-green-600"></i>
+                            <div class="w-20 h-20 bg-emerald-950 border border-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i class="fa-solid fa-check text-4xl text-emerald-400"></i>
                             </div>
-                            <h2 class="text-2xl font-black text-slate-900 mb-2">Erfolgreich!</h2>
-                            <p class="font-bold text-slate-500 leading-relaxed">
+                            <h2 class="text-2xl font-black text-white mb-2">Erfolgreich!</h2>
+                            <p class="font-bold text-slate-400 leading-relaxed">
                                 Dein Wunsch wurde gespeichert.<br>Du kannst diese Seite jetzt schließen.
                             </p>
                         </div>
@@ -699,9 +694,9 @@
                 const btn = document.getElementById(`btn-${a}`);
                 if (!btn) return;
                 if (a === area) {
-                    btn.className = `py-3 rounded-xl border-2 text-sm font-black capitalize transition bg-primary-600 border-primary-600 text-white shadow-md`;
+                    btn.className = `py-3 rounded-xl border border-primary-600 text-sm font-black capitalize transition bg-primary-600 text-white shadow-md`;
                 } else {
-                    btn.className = `py-3 rounded-xl border-2 text-sm font-black capitalize transition bg-white border-slate-200 text-slate-600 hover:bg-slate-50`;
+                    btn.className = `py-3 rounded-xl border border-slate-600 text-sm font-black capitalize transition bg-slate-900 text-slate-300 hover:bg-slate-700`;
                 }
             });
         }
