@@ -4,20 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mathe-Basisfach: Fit für die Differentialrechnung</title>
+    
+    <!-- KaTeX für sauberen Formelsatz -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="initMath()"></script>
+
     <style>
         :root {
             --primary: #4f46e5;
-            --secondary: #7c3aed;
+            --primary-hover: #4338ca;
             --bg: #f8fafc;
             --card: #ffffff;
             --text: #1e293b;
+            --muted: #64748b;
             --accent: #0ea5e9;
             --success: #10b981;
+            --success-bg: #ecfdf5;
             --error: #ef4444;
+            --error-bg: #fef2f2;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             line-height: 1.6;
@@ -27,15 +41,27 @@
         }
 
         header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
             color: white;
-            padding: 2.5rem 1rem;
+            padding: 2.5rem 1rem 2rem;
             text-align: center;
         }
 
+        header h1 {
+            margin: 0 0 0.5rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.05rem;
+        }
+
         .container {
-            max-width: 720px;
-            margin: 2rem auto;
+            max-width: 700px;
+            margin: -1.5rem auto 3rem;
             padding: 0 1rem;
         }
 
@@ -43,22 +69,64 @@
             background: var(--card);
             padding: 2rem;
             border-radius: 1.25rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 2rem;
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 1px solid var(--border);
         }
 
-        h2 { 
-            color: var(--primary); 
-            margin-top: 0;
-            font-size: 1.4rem;
+        /* Fortschrittsanzeige */
+        .progress-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .progress-bar-bg {
+            background-color: #e2e8f0;
+            height: 8px;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .topic-badge {
+            display: inline-block;
+            background-color: #e0e7ff;
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            margin-bottom: 0.75rem;
         }
 
         .question-text {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 1.5rem;
             color: #0f172a;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        /* Quiz-Optionen */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
         .quiz-option {
@@ -66,55 +134,57 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            padding: 1rem 1.25rem;
-            margin: 0.75rem 0;
-            border: 2px solid #e2e8f0;
-            border-radius: 0.75rem;
+            padding: 1.1rem 1.25rem;
+            border: 2px solid var(--border);
+            border-radius: 0.85rem;
             cursor: pointer;
             font-size: 1.05rem;
             font-weight: 500;
             background: white;
             color: var(--text);
             transition: all 0.2s ease;
-            min-height: 52px; /* Touch-optimiert für iPad */
+            text-align: left;
+            min-height: 54px; /* iPad Touch Target */
         }
 
-        .quiz-option:hover:not(:disabled) { 
-            border-color: var(--primary); 
-            background: #f5f3ff; 
+        .quiz-option:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #f5f3ff;
+            transform: translateY(-1px);
         }
 
-        /* Statusfarben für Feedback */
         .quiz-option.correct {
-            border-color: var(--success);
-            background-color: #ecfdf5;
-            color: #065f46;
+            border-color: var(--success) !important;
+            background-color: var(--success-bg) !important;
+            color: #065f46 !important;
+            font-weight: 600;
         }
 
         .quiz-option.wrong {
-            border-color: var(--error);
-            background-color: #fef2f2;
-            color: #991b1b;
-            animation: shake 0.3s ease-in-out;
+            border-color: var(--error) !important;
+            background-color: var(--error-bg) !important;
+            color: #991b1b !important;
+            animation: shake 0.35s ease;
         }
 
         .quiz-option:disabled {
-            cursor: not-allowed;
-            opacity: 0.85;
+            cursor: default;
         }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-6px); }
-            75% { transform: translateX(6px); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
         }
 
+        /* Feedback-Bereich */
         .feedback-box {
             margin-top: 1.5rem;
-            padding: 1rem 1.25rem;
-            border-radius: 0.75rem;
+            padding: 1.1rem 1.25rem;
+            border-radius: 0.85rem;
             display: none;
             font-size: 0.95rem;
+            line-height: 1.5;
         }
 
         .feedback-box.info {
@@ -126,7 +196,7 @@
 
         .feedback-box.success {
             display: block;
-            background-color: #ecfdf5;
+            background-color: var(--success-bg);
             border: 1px solid #6ee7b7;
             color: #065f46;
         }
@@ -138,34 +208,64 @@
             color: #334155;
         }
 
+        .formula-display {
+            background: #ffffff;
+            padding: 0.6rem 0.9rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+
         .btn-action {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            display: none;
+            width: 100%;
             background: var(--primary);
             color: white;
-            padding: 0.85rem 1.75rem;
+            padding: 1rem;
             border: none;
-            border-radius: 0.75rem;
+            border-radius: 0.85rem;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 1rem;
             margin-top: 1.5rem;
-            transition: background 0.2s;
-            width: 100%;
+            transition: background 0.2s ease, transform 0.1s ease;
         }
 
         .btn-action:hover {
-            background: #4338ca;
+            background: var(--primary-hover);
         }
 
-        .formula-box {
-            background: #f1f5f9;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.5rem;
-            font-family: monospace;
-            display: inline-block;
-            margin-top: 0.5rem;
+        .btn-action:active {
+            transform: scale(0.99);
+        }
+
+        /* Zusammenfassungs-Screen */
+        .summary-box {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .summary-icon {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-box h3 {
+            font-size: 1.6rem;
+            color: var(--text);
+            margin: 0.5rem 0;
+        }
+
+        .heft-reminder {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-top: 1.5rem;
+            text-align: left;
+            font-size: 0.95rem;
         }
     </style>
 </head>
@@ -177,58 +277,168 @@
 </header>
 
 <div class="container">
-    <section class="card" id="quiz">
-        <h2>Kurz-Check: Steigung</h2>
-        <div class="question-text">
-            Berechne die Steigung einer Geraden durch die Punkte \(P(1|2)\) und \(Q(3|6)\).
+    <section class="card" id="quizCard">
+        <div class="progress-container">
+            <div class="progress-header">
+                <span id="progressText">Aufgabe 1 von 3</span>
+                <span id="percentText">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
         </div>
 
-        <div id="options">
-            <button class="quiz-option" onclick="handleChoice(this, false, 'm = 1')">
-                <span>m = 1</span>
-                <span class="icon"></span>
-            </button>
-            <button class="quiz-option" onclick="handleChoice(this, true, 'm = 2')">
-                <span>m = 2</span>
-                <span class="icon"></span>
-            </button>
-            <button class="quiz-option" onclick="handleChoice(this, false, 'm = 4')">
-                <span>m = 4</span>
-                <span class="icon"></span>
-            </button>
+        <div id="quizContent">
+            <span class="topic-badge" id="topicBadge">Steigung & Sekanten</span>
+            <div class="question-text" id="questionText"></div>
+            <div class="options-grid" id="optionsGrid"></div>
+            <div id="feedbackBox" class="feedback-box"></div>
+            <button id="nextBtn" class="btn-action" onclick="goToNextQuestion()">Weiter zur nächsten Aufgabe →</button>
         </div>
 
-        <div id="feedbackBox" class="feedback-box"></div>
-        <button id="nextBtn" class="btn-action" style="display: none;" onclick="nextStep()">Weiter zur nächsten Aufgabe →</button>
+        <!-- Abschluss-Screen -->
+        <div id="completionContent" style="display: none;" class="summary-box">
+            <div class="summary-icon">🎉</div>
+            <h3>Grundlagen-Check gemeistert!</h3>
+            <p style="color: var(--muted); font-size: 1.05rem;">Du hast alle Wiederholungsaufgaben erfolgreich bearbeitet.</p>
+            
+            <div class="heft-reminder">
+                <strong>📝 Arbeitsauftrag fürs Mathe-Heft:</strong>
+                <p style="margin: 0.5rem 0 0;">Vergewissere dich, dass du die Lösungswege zu den bearbeiteten Aufgaben sauber mit Datum und Überschrift in deinem Heft notiert hast. Wir knüpfen in Woche 2 direkt daran an!</p>
+            </div>
+
+            <button class="btn-action" style="display: block; margin-top: 2rem;" onclick="restartQuiz()">Check noch einmal wiederholen ↺</button>
+        </div>
     </section>
 </div>
 
 <script>
+    // Aufgabenkatalog für den Klasse-10-Check
+    const questions = [
+        {
+            topic: "Steigung von Geraden",
+            question: "Berechne die Steigung einer Geraden durch die Punkte \\(P(1 \\mid 2)\\) und \\(Q(3 \\mid 6)\\).",
+            options: [
+                { text: "\\(m = 1\\)", correct: false },
+                { text: "\\(m = 2\\)", correct: true },
+                { text: "\\(m = 4\\)", correct: false }
+            ],
+            formula: "m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{6 - 2}{3 - 1} = \\frac{4}{2} = 2"
+        },
+        {
+            topic: "Satz vom Nullprodukt",
+            question: "Bestimme alle Nullstellen der Funktion \\(f(x) = x^2 - 4x\\).",
+            options: [
+                { text: "\\(x_1 = 0, \\; x_2 = 4\\)", correct: true },
+                { text: "\\(x_1 = 2, \\; x_2 = -2\\)", correct: false },
+                { text: "\\(x = 4\\)", correct: false }
+            ],
+            formula: "x^2 - 4x = 0 \\iff x(x - 4) = 0 \\implies x_1 = 0 \\text{ oder } x_2 = 4"
+        },
+        {
+            topic: "Mittlere Änderungsrate (Differenzenquotient)",
+            question: "Bestimme die mittlere Änderungsrate der Funktion \\(f(x) = x^2\\) im Intervall \\([1; 3]\\).",
+            options: [
+                { text: "\\(m_s = 2\\)", correct: false },
+                { text: "\\(m_s = 4\\)", correct: true },
+                { text: "\\(m_s = 8\\)", correct: false }
+            ],
+            formula: "m_s = \\frac{f(3) - f(1)}{3 - 1} = \\frac{3^2 - 1^2}{2} = \\frac{9 - 1}{2} = \\frac{8}{2} = 4"
+        },
+        {
+            topic: "Ableitungsregeln (Polynom)",
+            question: "Wie lautet die erste Ableitung der Funktion \\(f(x) = 3x^4 - 5x\\)?",
+            options: [
+                { text: "\\(f'(x) = 12x^3 - 5\\)", correct: true },
+                { text: "\\(f'(x) = 7x^3 - 5\\)", correct: false },
+                { text: "\\(f'(x) = 12x^4 - 5x\\)", correct: false }
+            ],
+            formula: "f'(x) = 3 \\cdot 4x^{4-1} - 5 \\cdot 1 = 12x^3 - 5"
+        }
+    ];
+
+    let currentQuestionIndex = 0;
     let attempts = 0;
     const maxAttempts = 3;
-    let isSolved = false;
+    let isCurrentQuestionSolved = false;
 
-    function handleChoice(buttonElement, isCorrect, valueText) {
-        if (isSolved) return;
+    function initMath() {
+        if (window.renderMathInElement) {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    { left: '$$', right: '$$', display: true },
+                    { left: '\\[', right: '\\]', display: true },
+                    { left: '\\(', right: '\\)', display: false }
+                ],
+                throwOnError: false
+            });
+        }
+    }
+
+    function renderCurrentQuestion() {
+        const q = questions[currentQuestionIndex];
+        attempts = 0;
+        isCurrentQuestionSolved = false;
+
+        // UI-Elemente zurücksetzen
+        document.getElementById('topicBadge').textContent = q.topic;
+        document.getElementById('questionText').innerHTML = q.question;
+        
+        const feedbackBox = document.getElementById('feedbackBox');
+        feedbackBox.className = "feedback-box";
+        feedbackBox.style.display = "none";
+        feedbackBox.innerHTML = "";
+
+        const nextBtn = document.getElementById('nextBtn');
+        nextBtn.style.display = "none";
+        nextBtn.textContent = (currentQuestionIndex === questions.length - 1) 
+            ? "Ergebnis ansehen →" 
+            : "Weiter zur nächsten Aufgabe →";
+
+        // Fortschritt aktualisieren
+        const progressPercent = Math.round((currentQuestionIndex / questions.length) * 100);
+        document.getElementById('progressBar').style.width = `${progressPercent}%`;
+        document.getElementById('progressText').textContent = `Aufgabe ${currentQuestionIndex + 1} von ${questions.length}`;
+        document.getElementById('percentText').textContent = `${progressPercent}%`;
+
+        // Optionen aufbauen
+        const grid = document.getElementById('optionsGrid');
+        grid.innerHTML = "";
+
+        q.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = "quiz-option";
+            btn.innerHTML = `<span>${opt.text}</span><span class="icon"></span>`;
+            btn.onclick = () => handleChoice(btn, opt.correct, q.formula);
+            grid.appendChild(btn);
+        });
+
+        initMath();
+    }
+
+    function handleChoice(buttonElement, isCorrect, formulaSolution) {
+        if (isCurrentQuestionSolved) return;
 
         const feedbackBox = document.getElementById('feedbackBox');
         const nextBtn = document.getElementById('nextBtn');
         const allButtons = document.querySelectorAll('.quiz-option');
 
         if (isCorrect) {
-            isSolved = true;
+            isCurrentQuestionSolved = true;
             buttonElement.classList.add('correct');
             buttonElement.querySelector('.icon').textContent = '✓';
             
-            // Alle anderen Buttons sperren
             allButtons.forEach(btn => btn.disabled = true);
 
             feedbackBox.className = "feedback-box success";
             feedbackBox.innerHTML = `
-                <strong>Hervorragend! Das Ergebnis ist richtig.</strong><br>
-                Rechnung: <div class="formula-box">m = (y₂ - y₁) / (x₂ - x₁) = (6 - 2) / (3 - 1) = 4 / 2 = 2</div>
+                <strong>Richtig gelöst!</strong><br>
+                Rechnung fürs Heft:
+                <div class="formula-display">\\[ ${formulaSolution} \\]</div>
             `;
+            feedbackBox.style.display = "block";
             nextBtn.style.display = "block";
+            initMath();
 
         } else {
             attempts++;
@@ -238,22 +448,22 @@
             if (attempts < maxAttempts) {
                 feedbackBox.className = "feedback-box info";
                 feedbackBox.innerHTML = `
-                    <strong>Noch nicht ganz richtig.</strong><br>
-                    Überprüfe Zähler und Nenner in der Steigungsformel. Versuche es noch einmal! 
-                    <em>(Fehlversuch ${attempts} von ${maxAttempts})</em>
+                    <strong>Noch nicht ganz richtig.</strong> Überprüfe deinen Ansatz im Heft und versuche es noch einmal! 
+                    <em>(Versuch ${attempts} von ${maxAttempts})</em>
                 `;
-                // Nach kurzer Zeit Fehlerfarbe entfernen, damit der Button erneut gedrückt werden kann
+                feedbackBox.style.display = "block";
+
                 setTimeout(() => {
                     buttonElement.classList.remove('wrong');
                     buttonElement.querySelector('.icon').textContent = '';
                 }, 1200);
 
             } else {
-                // Nach dem 3. Fehlversuch: Lösung aufdecken
-                isSolved = true;
-                allButtons.forEach(btn => {
+                // Nach 3 Fehlversuchen Lösung aufdecken
+                isCurrentQuestionSolved = true;
+                allButtons.forEach((btn, index) => {
                     btn.disabled = true;
-                    if (btn.innerText.includes('m = 2')) {
+                    if (questions[currentQuestionIndex].options[index].correct) {
                         btn.classList.add('correct');
                         btn.querySelector('.icon').textContent = '✓';
                     }
@@ -262,19 +472,41 @@
                 feedbackBox.className = "feedback-box solution";
                 feedbackBox.innerHTML = `
                     <strong>Hier ist der vollständige Lösungsweg:</strong><br>
-                    Setze die Punkte P(1|2) und Q(3|6) in den Differenzenquotienten ein:<br>
-                    <div class="formula-box">m = (y₂ - y₁) / (x₂ - x₁) = (6 - 2) / (3 - 1) = 4 / 2 = 2</div><br>
-                    Notiere dir den Rechenweg sauber im Heft.
+                    <div class="formula-display">\\[ ${formulaSolution} \\]</div><br>
+                    Notiere diesen Lösungsschritt bitte vollständig in deinem Mathe-Heft.
                 `;
+                feedbackBox.style.display = "block";
                 nextBtn.style.display = "block";
+                initMath();
             }
         }
     }
 
-    function nextStep() {
-        alert("Klasse! Hier schließt sich die nächste Aufgabe an.");
-        // Hier kann zur nächsten Aufgabe gewechselt oder das nächste Level freigeschaltet werden
+    function goToNextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            renderCurrentQuestion();
+        } else {
+            // Fertig
+            document.getElementById('progressBar').style.width = "100%";
+            document.getElementById('percentText').textContent = "100%";
+            document.getElementById('progressText').textContent = "Abgeschlossen";
+            document.getElementById('quizContent').style.display = "none";
+            document.getElementById('completionContent').style.display = "block";
+        }
     }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        document.getElementById('quizContent').style.display = "block";
+        document.getElementById('completionContent').style.display = "none";
+        renderCurrentQuestion();
+    }
+
+    // Beim Laden der Seite initialisieren
+    window.addEventListener('DOMContentLoaded', () => {
+        renderCurrentQuestion();
+    });
 </script>
 
 </body>
