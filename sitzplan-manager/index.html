@@ -28,13 +28,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         
-        /* Papier-Muster für den Hintergrund */
         .paper-bg {
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 20px 20px;
         }
 
-        /* Druck-Optimierung */
         @media print {
             body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
@@ -44,10 +42,8 @@
         }
         .print-only { display: none; }
         
-        /* Touch-Optimierung für Mobilgeräte */
         button, select, input { min-height: 44px; }
         
-        /* Animationen */
         @keyframes pulse-amber {
             0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
@@ -58,10 +54,8 @@
 </head>
 <body class="paper-bg text-slate-800 antialiased min-h-screen">
 
-    <!-- APP CONTAINER -->
     <div id="app" class="max-w-[1400px] mx-auto p-4 md:p-8"></div>
 
-    <!-- VANILLA JS LOGIK -->
     <script>
         // --- 1. STATE & DATENSTRUKTUR ---
         const STORAGE_KEY = 'sitzplan_data_v1';
@@ -107,7 +101,11 @@
                 rules: state.rules,
                 seats: state.seats
             }));
-            renderTeacherView(); 
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.has('student')) {
+                renderTeacherView(); 
+            }
         }
 
         window.addEventListener('storage', (e) => {
@@ -127,7 +125,6 @@
             const app = document.getElementById('app');
             
             app.innerHTML = `
-                <!-- HEADER -->
                 <header class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white/90 backdrop-blur p-4 md:p-6 rounded-2xl shadow-sm border-b-4 border-indigo-500 no-print">
                     <div class="flex flex-col gap-2 mb-4 md:mb-0">
                         <h1 class="text-3xl font-black text-indigo-900 flex items-center gap-3">
@@ -151,10 +148,8 @@
                 </header>
 
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    <!-- SIDEBAR -->
                     <div class="col-span-1 space-y-6 no-print">
                         
-                        <!-- SCHÜLER BOX -->
                         <div class="bg-white p-5 rounded-2xl shadow-sm border-t-4 border-amber-400">
                             <h2 class="text-xl font-extrabold mb-4 flex items-center gap-2"><i class="fa-solid fa-users text-amber-500"></i> Schüler (${state.students.length})</h2>
                             <div class="flex flex-col gap-2 mb-4">
@@ -162,19 +157,15 @@
                                     <input type="text" id="newStudentName" placeholder="Name eingeben..." class="flex-1 bg-slate-50 border-2 border-slate-200 p-2 rounded-lg font-bold focus:border-amber-400 outline-none" onkeypress="if(event.key === 'Enter') addStudent()">
                                     <button onclick="addStudent()" class="bg-amber-400 text-amber-950 w-12 rounded-lg font-black text-xl hover:bg-amber-500 transition">+</button>
                                 </div>
-                                
-                                <!-- NEUER CSV UPLOAD BUTTON -->
                                 <input type="file" id="csvUpload" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
                                 <button onclick="document.getElementById('csvUpload').click()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-bold p-2 rounded-lg transition flex justify-center items-center gap-2">
                                     <i class="fa-solid fa-file-csv"></i> Liste importieren (.csv)
                                 </button>
                             </div>
-                            
                             <ul class="max-h-48 overflow-y-auto space-y-2 pr-1" id="studentList"></ul>
                             ${state.students.length > 0 ? `<button onclick="resetVotes()" class="mt-4 w-full text-sm font-bold text-slate-500 hover:text-red-600 p-2 bg-slate-50 rounded-lg"><i class="fa-solid fa-rotate-left"></i> Wünsche zurücksetzen</button>` : ''}
                         </div>
 
-                        <!-- REGELN BOX -->
                         <div class="bg-white p-5 rounded-2xl shadow-sm border-t-4 border-teal-500">
                             <h2 class="text-xl font-extrabold mb-4 flex items-center gap-2"><i class="fa-solid fa-shield-halved text-teal-500"></i> Regeln</h2>
                             <div class="space-y-2 mb-4">
@@ -189,7 +180,6 @@
                             <ul class="space-y-2 max-h-40 overflow-y-auto" id="ruleList"></ul>
                         </div>
 
-                        <!-- MODUS BOX -->
                         <div class="bg-white p-5 rounded-2xl shadow-sm border-t-4 border-indigo-500">
                             <h2 class="text-xl font-extrabold mb-4 flex items-center gap-2"><i class="fa-solid fa-hand-pointer text-indigo-500"></i> Klick-Modus</h2>
                             <div class="flex flex-col gap-2">
@@ -206,7 +196,6 @@
                         </div>
                     </div>
 
-                    <!-- GRID AREA -->
                     <div class="col-span-1 lg:col-span-3">
                         <div class="bg-white p-6 md:p-10 rounded-3xl shadow-md print:shadow-none border border-slate-100">
                             <h2 class="print-only text-2xl font-black mb-6 text-center border-b-2 border-black pb-2">Sitzplan: ${state.className}</h2>
@@ -216,7 +205,6 @@
                     </div>
                 </div>
 
-                <!-- MODAL: QR CODE -->
                 <div id="qrModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 no-print">
                     <div class="bg-white p-8 rounded-3xl text-center shadow-2xl border-4 border-amber-200 max-w-sm w-full">
                         <h2 class="text-2xl font-black mb-4">Schüler-Login</h2>
@@ -332,7 +320,6 @@
             }
         }
 
-        // NEU: CSV Upload Logik
         function handleCSVUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -340,7 +327,6 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const text = e.target.result;
-                // Unterstützt Windows (\r\n) und Mac/Linux (\n) Zeilenumbrüche
                 const lines = text.split(/\r?\n/);
                 let importedCount = 0;
 
@@ -348,19 +334,13 @@
                     let cleanLine = line.trim();
                     if (!cleanLine) return;
                     
-                    // Wir nehmen einfach immer den Eintrag vor dem ersten Komma oder Semikolon
                     const columns = cleanLine.split(/[,;]/);
-                    let rawName = columns[0].trim();
-                    
-                    // Anführungszeichen entfernen, falls vorhanden (z.B. "Max Mustermann")
-                    rawName = rawName.replace(/^"|"$/g, '').trim();
+                    let rawName = columns[0].trim().replace(/^"|"$/g, '').trim();
 
-                    // Ignoriere typische Kopfzeilen (Header)
                     if (index === 0 && (rawName.toLowerCase() === 'name' || rawName.toLowerCase() === 'schüler' || rawName.toLowerCase() === 'schueler' || rawName.toLowerCase() === 'vorname')) return;
 
                     if (rawName && state.students.length < 45) {
                         state.students.push({ 
-                            // Wir hängen den index an, damit die IDs auch beim extrem schnellen Durchlaufen einzigartig bleiben
                             id: 'st-' + Date.now() + '-' + index, 
                             name: rawName, 
                             hasVoted: false, 
@@ -374,11 +354,7 @@
                 if (importedCount > 0) {
                     saveState();
                     alert(`${importedCount} Schüler erfolgreich importiert!`);
-                } else {
-                    alert("Keine Namen in der CSV-Datei gefunden. (Die Datei muss die Namen in der ersten Spalte haben).");
                 }
-                
-                // Setze das Input-Feld zurück, damit die gleiche Datei nochmal hochgeladen werden kann
                 event.target.value = '';
             };
             reader.readAsText(file);
@@ -448,15 +424,17 @@
             saveState();
         }
 
-        // --- 5. ALGORITHMUS (Vanilla JS Port) ---
+        // --- 5. ALGORITHMUS (KOMPLETT NEU & INTELLIGENT) ---
         function generatePlan() {
             const activeSeats = state.seats.filter(s => !s.disabled);
             if (state.students.length > activeSeats.length) {
-                return alert('Fehler: Mehr Schüler als aktive Sitzplätze!');
+                return alert('Fehler: Mehr Schüler als aktive Sitzplätze (Gänge zählen nicht)!');
             }
 
+            // 1. Alle Plätze leeren
             state.seats.forEach(s => s.studentId = null);
             
+            // 2. Schüler-Pool mischen für Fairness
             let unassigned = [...state.students];
             for (let i = unassigned.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -466,57 +444,127 @@
             const getSeat = (x, y) => state.seats.find(s => s.x === x && s.y === y && !s.disabled);
             const getNeighbors = (s) => [getSeat(s.x-1, s.y), getSeat(s.x+1, s.y)].filter(Boolean);
 
+            // Hilfsfunktionen für die harten Regeln
+            const isSitAlone = (studentId) => state.rules.some(r => r.type === 'sit_alone' && r.studentId === studentId);
+            const getEnemies = (studentId) => state.rules
+                .filter(r => r.type === 'not_next_to' && (r.studentId === studentId || r.targetId === studentId))
+                .map(r => r.studentId === studentId ? r.targetId : r.studentId);
+
+            // DIE SICHERHEITS-BLASE: Prüft absolut alles, bevor ein Schüler gesetzt wird
+            const isSeatValidForStudent = (seat, studentId) => {
+                if (seat.studentId) return false; // Platz besetzt
+                const neighbors = getNeighbors(seat);
+
+                // Wenn der Schüler alleine sitzen MUSS, darf kein Nachbar da sein
+                if (isSitAlone(studentId) && neighbors.some(n => n.studentId)) return false;
+                
+                // Wenn ein Nachbar schon sitzt und ALLEINE sitzen MUSS, dürfen wir uns nicht dazusetzen!
+                if (neighbors.some(n => n.studentId && isSitAlone(n.studentId))) return false;
+
+                // Feinde dürfen nicht in der Nachbarschaft sein
+                const enemies = getEnemies(studentId);
+                if (neighbors.some(n => enemies.includes(n.studentId))) return false;
+
+                return true;
+            };
+
+            const placeStudent = (studentId, seat) => {
+                seat.studentId = studentId;
+                unassigned = unassigned.filter(s => s.id !== studentId);
+            };
+
+            // 3. REGEL: 1. Reihe (Höchste Prio)
             const firstRowRules = state.rules.filter(r => r.type === 'force_first_row');
             firstRowRules.forEach(rule => {
-                const stIndex = unassigned.findIndex(s => s.id === rule.studentId);
-                if (stIndex === -1) return;
-                const frontSeats = activeSeats.filter(s => s.y === 0 && !s.studentId);
-                if (frontSeats.length > 0) {
-                    frontSeats[0].studentId = rule.studentId;
-                    unassigned.splice(stIndex, 1);
-                }
+                if (!unassigned.find(s => s.id === rule.studentId)) return;
+                const frontSeats = activeSeats.filter(s => s.y === 0 && isSeatValidForStudent(s, rule.studentId));
+                if (frontSeats.length > 0) placeStudent(rule.studentId, frontSeats[0]);
             });
 
+            // 4. REGEL: Alleine sitzen
             const aloneRules = state.rules.filter(r => r.type === 'sit_alone');
             aloneRules.forEach(rule => {
-                const stIndex = unassigned.findIndex(s => s.id === rule.studentId);
-                if (stIndex === -1) return;
-                
-                const emptyIsolatedSeat = activeSeats.find(seat => {
-                    if (seat.studentId) return false;
-                    const neighbors = getNeighbors(seat);
-                    return neighbors.every(n => !n.studentId);
-                });
+                if (!unassigned.find(s => s.id === rule.studentId)) return;
+                const validSeats = activeSeats.filter(s => isSeatValidForStudent(s, rule.studentId));
+                if (validSeats.length > 0) placeStudent(rule.studentId, validSeats[0]);
+            });
 
-                if (emptyIsolatedSeat) {
-                    emptyIsolatedSeat.studentId = rule.studentId;
-                    unassigned.splice(stIndex, 1);
+            // 5. REGEL: Wunsch-Nachbarn (Die Pärchen-Bildung!)
+            const wishingStudents = unassigned.filter(s => s.wishNeighborId);
+            wishingStudents.forEach(student => {
+                // Prüfen, ob Schüler überhaupt noch im Pool ist
+                if (!unassigned.find(s => s.id === student.id)) return;
+                const friendId = student.wishNeighborId;
+
+                // Fall A: Der Freund wurde schon gesetzt (z.B. in die 1. Reihe). Versuche, sich daneben zu setzen!
+                const friendSeat = activeSeats.find(s => s.studentId === friendId);
+                if (friendSeat) {
+                    const emptyNeighbors = getNeighbors(friendSeat).filter(s => isSeatValidForStudent(s, student.id));
+                    if (emptyNeighbors.length > 0) placeStudent(student.id, emptyNeighbors[0]);
+                    return;
+                }
+
+                // Fall B: Beide noch frei. Prüfen, ob der Freund überhaupt existiert und noch frei ist
+                if (!unassigned.find(s => s.id === friendId)) return;
+                
+                // Absolute Sperre: Wenn einer der beiden zwingend alleine sitzen muss oder sie Feinde sind, Wunsch ignorieren!
+                if (isSitAlone(student.id) || isSitAlone(friendId)) return;
+                const enemies = getEnemies(student.id);
+                if (enemies.includes(friendId)) return; 
+
+                // Suche 2 freie Plätze nebeneinander
+                let bestPair = null;
+                
+                // Priorisiere den Wunsch-Bereich von Schüler A
+                let checkSeats = activeSeats.filter(s => !s.studentId);
+                if (student.wishArea && student.wishArea !== 'egal') {
+                    const areaSeats = checkSeats.filter(s => s.area === student.wishArea);
+                    if (areaSeats.length > 0) checkSeats = [...areaSeats, ...checkSeats]; // Erst Bereich, dann Rest
+                }
+
+                for (let seat1 of checkSeats) {
+                    if (!isSeatValidForStudent(seat1, student.id)) continue;
+                    
+                    const neighbors = getNeighbors(seat1);
+                    for (let seat2 of neighbors) {
+                        if (isSeatValidForStudent(seat2, friendId)) {
+                            bestPair = [seat1, seat2];
+                            break;
+                        }
+                    }
+                    if (bestPair) break;
+                }
+
+                // Wenn 2 Plätze gefunden, setze BEIDE gleichzeitig
+                if (bestPair) {
+                    placeStudent(student.id, bestPair[0]);
+                    placeStudent(friendId, bestPair[1]);
                 }
             });
 
+            // 6. REGEL: Restliche Schüler anhand von Wunsch-Bereich verteilen
             unassigned.forEach(student => {
-                const enemies = state.rules.filter(r => r.type === 'not_next_to' && (r.studentId === student.id || r.targetId === student.id))
-                                           .map(r => r.studentId === student.id ? r.targetId : r.studentId);
+                let available = activeSeats.filter(s => isSeatValidForStudent(s, student.id));
+                
+                // Fallback, falls der Schüler von Feinden blockiert wird und keinen "perfekten" Platz findet
+                if (available.length === 0) available = activeSeats.filter(s => !s.studentId);
                 
                 let bestSeat = null;
-                let available = activeSeats.filter(s => !s.studentId);
+                
+                // Versuche Wunsch-Bereich zu erfüllen
                 if (student.wishArea && student.wishArea !== 'egal') {
                     const areaMatch = available.filter(s => s.area === student.wishArea);
-                    if (areaMatch.length > 0) available = areaMatch;
+                    if (areaMatch.length > 0) bestSeat = areaMatch[0];
                 }
 
-                for (let seat of available) {
-                    const neighbors = getNeighbors(seat);
-                    const hasEnemy = neighbors.some(n => enemies.includes(n.studentId));
-                    if (!hasEnemy) {
-                        bestSeat = seat;
-                        break;
-                    }
-                }
+                if (!bestSeat && available.length > 0) bestSeat = available[0];
+                if (bestSeat) placeStudent(student.id, bestSeat);
+            });
 
-                if (!bestSeat) bestSeat = activeSeats.find(s => !s.studentId);
-                
-                if (bestSeat) bestSeat.studentId = student.id;
+            // 7. Not-Sicherung: Übrig gebliebene auf irgendwelche leeren Plätze setzen
+            unassigned.forEach(student => {
+                const empty = activeSeats.find(s => !s.studentId);
+                if (empty) placeStudent(student.id, empty);
             });
 
             saveState();
@@ -577,9 +625,10 @@
                     </div>
                     
                     <div id="successMsg" class="hidden text-center py-8">
-                        <div class="text-5xl mb-4">🎉</div>
-                        <h2 class="text-2xl font-black text-green-600 mb-2">Gespeichert!</h2>
-                        <p class="font-bold text-slate-600">Du kannst dieses Fenster jetzt schließen.</p>
+                        <div class="text-5xl mb-6"><i class="fa-solid fa-check-circle text-green-500"></i></div>
+                        <p class="font-black text-slate-800 text-xl leading-relaxed">
+                            Dein Wunsch wurde vernommen, du kannst die Seite jetzt schließen.
+                        </p>
                     </div>
                 </div>
             `;
