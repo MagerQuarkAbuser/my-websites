@@ -12,26 +12,29 @@
             --card: #ffffff;
             --text: #1e293b;
             --accent: #0ea5e9;
+            --success: #10b981;
+            --error: #ef4444;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             line-height: 1.6;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            padding: 3rem 1rem;
+            padding: 2.5rem 1rem;
             text-align: center;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 720px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
@@ -39,38 +42,131 @@
         .card {
             background: var(--card);
             padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border-radius: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
         }
 
-        h2 { color: var(--primary); border-bottom: 2px solid var(--accent); display: inline-block; }
+        h2 { 
+            color: var(--primary); 
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #0f172a;
+        }
 
         .quiz-option {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             width: 100%;
-            padding: 1rem;
-            margin: 0.5rem 0;
+            padding: 1rem 1.25rem;
+            margin: 0.75rem 0;
             border: 2px solid #e2e8f0;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             cursor: pointer;
-            transition: all 0.2s;
+            font-size: 1.05rem;
+            font-weight: 500;
             background: white;
+            color: var(--text);
+            transition: all 0.2s ease;
+            min-height: 52px; /* Touch-optimiert für iPad */
         }
 
-        .quiz-option:hover { border-color: var(--primary); background: #f5f3ff; }
+        .quiz-option:hover:not(:disabled) { 
+            border-color: var(--primary); 
+            background: #f5f3ff; 
+        }
 
-        .btn {
+        /* Statusfarben für Feedback */
+        .quiz-option.correct {
+            border-color: var(--success);
+            background-color: #ecfdf5;
+            color: #065f46;
+        }
+
+        .quiz-option.wrong {
+            border-color: var(--error);
+            background-color: #fef2f2;
+            color: #991b1b;
+            animation: shake 0.3s ease-in-out;
+        }
+
+        .quiz-option:disabled {
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .feedback-box {
+            margin-top: 1.5rem;
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .feedback-box.info {
+            display: block;
+            background-color: #fff7ed;
+            border: 1px solid #fdba74;
+            color: #9a3412;
+        }
+
+        .feedback-box.success {
+            display: block;
+            background-color: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            color: #065f46;
+        }
+
+        .feedback-box.solution {
+            display: block;
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #334155;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             background: var(--primary);
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 0.85rem 1.75rem;
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            transition: background 0.2s;
+            width: 100%;
         }
 
-        #feedback { margin-top: 1rem; font-weight: bold; }
+        .btn-action:hover {
+            background: #4338ca;
+        }
+
+        .formula-box {
+            background: #f1f5f9;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -81,38 +177,103 @@
 </header>
 
 <div class="container">
-    <section class="card">
-        <h2>Themenübersicht</h2>
-        <ul>
-            <li>Lineare Funktionen & Steigung (m = Δy/Δx)</li>
-            <li>Nullstellenbestimmung</li>
-            <li>Schnittpunkte von Graphen</li>
-            <li>Grundlagen der Potenzfunktionen</li>
-        </ul>
-    </section>
-
     <section class="card" id="quiz">
         <h2>Kurz-Check: Steigung</h2>
-        <p id="question">Wie berechnet man die Steigung einer Geraden durch die Punkte P(1|2) und Q(3|6)?</p>
-        <div id="options">
-            <button class="quiz-option" onclick="checkAnswer(false)">m = 1</button>
-            <button class="quiz-option" onclick="checkAnswer(true)">m = 2</button>
-            <button class="quiz-option" onclick="checkAnswer(false)">m = 4</button>
+        <div class="question-text">
+            Berechne die Steigung einer Geraden durch die Punkte \(P(1|2)\) und \(Q(3|6)\).
         </div>
-        <p id="feedback"></p>
+
+        <div id="options">
+            <button class="quiz-option" onclick="handleChoice(this, false, 'm = 1')">
+                <span>m = 1</span>
+                <span class="icon"></span>
+            </button>
+            <button class="quiz-option" onclick="handleChoice(this, true, 'm = 2')">
+                <span>m = 2</span>
+                <span class="icon"></span>
+            </button>
+            <button class="quiz-option" onclick="handleChoice(this, false, 'm = 4')">
+                <span>m = 4</span>
+                <span class="icon"></span>
+            </button>
+        </div>
+
+        <div id="feedbackBox" class="feedback-box"></div>
+        <button id="nextBtn" class="btn-action" style="display: none;" onclick="nextStep()">Weiter zur nächsten Aufgabe →</button>
     </section>
 </div>
 
 <script>
-    function checkAnswer(isCorrect) {
-        const feedback = document.getElementById('feedback');
+    let attempts = 0;
+    const maxAttempts = 3;
+    let isSolved = false;
+
+    function handleChoice(buttonElement, isCorrect, valueText) {
+        if (isSolved) return;
+
+        const feedbackBox = document.getElementById('feedbackBox');
+        const nextBtn = document.getElementById('nextBtn');
+        const allButtons = document.querySelectorAll('.quiz-option');
+
         if (isCorrect) {
-            feedback.textContent = "Richtig! m = (6-2) / (3-1) = 4/2 = 2.";
-            feedback.style.color = "green";
+            isSolved = true;
+            buttonElement.classList.add('correct');
+            buttonElement.querySelector('.icon').textContent = '✓';
+            
+            // Alle anderen Buttons sperren
+            allButtons.forEach(btn => btn.disabled = true);
+
+            feedbackBox.className = "feedback-box success";
+            feedbackBox.innerHTML = `
+                <strong>Hervorragend! Das Ergebnis ist richtig.</strong><br>
+                Rechnung: <div class="formula-box">m = (y₂ - y₁) / (x₂ - x₁) = (6 - 2) / (3 - 1) = 4 / 2 = 2</div>
+            `;
+            nextBtn.style.display = "block";
+
         } else {
-            feedback.textContent = "Leider falsch. Überprüfe die Formel m = (y2-y1) / (x2-x1).";
-            feedback.style.color = "red";
+            attempts++;
+            buttonElement.classList.add('wrong');
+            buttonElement.querySelector('.icon').textContent = '✕';
+
+            if (attempts < maxAttempts) {
+                feedbackBox.className = "feedback-box info";
+                feedbackBox.innerHTML = `
+                    <strong>Noch nicht ganz richtig.</strong><br>
+                    Überprüfe Zähler und Nenner in der Steigungsformel. Versuche es noch einmal! 
+                    <em>(Fehlversuch ${attempts} von ${maxAttempts})</em>
+                `;
+                // Nach kurzer Zeit Fehlerfarbe entfernen, damit der Button erneut gedrückt werden kann
+                setTimeout(() => {
+                    buttonElement.classList.remove('wrong');
+                    buttonElement.querySelector('.icon').textContent = '';
+                }, 1200);
+
+            } else {
+                // Nach dem 3. Fehlversuch: Lösung aufdecken
+                isSolved = true;
+                allButtons.forEach(btn => {
+                    btn.disabled = true;
+                    if (btn.innerText.includes('m = 2')) {
+                        btn.classList.add('correct');
+                        btn.querySelector('.icon').textContent = '✓';
+                    }
+                });
+
+                feedbackBox.className = "feedback-box solution";
+                feedbackBox.innerHTML = `
+                    <strong>Hier ist der vollständige Lösungsweg:</strong><br>
+                    Setze die Punkte P(1|2) und Q(3|6) in den Differenzenquotienten ein:<br>
+                    <div class="formula-box">m = (y₂ - y₁) / (x₂ - x₁) = (6 - 2) / (3 - 1) = 4 / 2 = 2</div><br>
+                    Notiere dir den Rechenweg sauber im Heft.
+                `;
+                nextBtn.style.display = "block";
+            }
         }
+    }
+
+    function nextStep() {
+        alert("Klasse! Hier schließt sich die nächste Aufgabe an.");
+        // Hier kann zur nächsten Aufgabe gewechselt oder das nächste Level freigeschaltet werden
     }
 </script>
 
