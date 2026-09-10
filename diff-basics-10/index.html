@@ -27,16 +27,14 @@
             background-color: var(--bg);
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            touch-action: pan-y; /* Verhindert horizontales Scrollen auf iPads */
+            touch-action: pan-y;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Touch-Optimierung */
         button, input, select, .touch-target {
             min-height: 44px;
         }
 
-        /* Level Map */
         .map-node {
             width: 48px;
             height: 48px;
@@ -75,7 +73,6 @@
         }
         .map-line.completed { background: #10b981; }
 
-        /* Tabs */
         .tab-btn {
             flex: 1;
             text-align: center;
@@ -90,7 +87,6 @@
             border-bottom-color: var(--primary);
         }
 
-        /* Print Layout für Laufzettel */
         @media print {
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
@@ -104,7 +100,6 @@
 </head>
 <body class="pb-20">
 
-    <!-- Header -->
     <header class="bg-gradient-to-r from-indigo-600 to-violet-700 text-white p-6 shadow-md no-print">
         <div class="max-w-3xl mx-auto flex justify-between items-center">
             <div>
@@ -117,17 +112,12 @@
         </div>
     </header>
 
-    <!-- Main Container -->
     <main class="max-w-3xl mx-auto mt-6 px-4 no-print" id="app">
-        <!-- Startbildschirm (Map) -->
         <div id="viewMap" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 text-center">
             <h2 class="text-xl font-bold text-slate-800 mb-6">Lernpfad</h2>
-            <div id="mapContainer" class="flex flex-col items-center">
-                <!-- Map wird per JS generiert -->
-            </div>
+            <div id="mapContainer" class="flex flex-col items-center"></div>
         </div>
 
-        <!-- Level Ansicht -->
         <div id="viewLevel" class="hidden">
             <button onclick="showMap()" class="text-indigo-600 font-semibold mb-4 flex items-center hover:text-indigo-800">
                 ← Zurück zur Übersicht
@@ -139,16 +129,12 @@
                     <h2 class="text-2xl font-bold text-slate-800 mt-1" id="lvlTitle">Algebraische Werkzeuge</h2>
                 </div>
 
-                <!-- Theorie / Widget -->
                 <div class="p-6 border-b border-slate-200">
                     <h3 class="font-bold text-slate-700 mb-2">Grundlagen & Theorie</h3>
                     <div id="lvlTheory" class="text-slate-600 mb-4 bg-slate-50 p-4 rounded-lg border border-slate-100"></div>
-                    <div id="lvlWidget" class="bg-white border border-slate-200 rounded-lg p-4 flex justify-center min-h-[150px] items-center">
-                        <!-- Interaktives Widget -->
-                    </div>
+                    <div id="lvlWidget" class="bg-white border border-slate-200 rounded-lg p-4 flex justify-center min-h-[150px] items-center"></div>
                 </div>
 
-                <!-- Training & Check Navigation -->
                 <div class="flex border-b border-slate-200 bg-slate-50" id="tabsContainer">
                     <div class="tab-btn active" onclick="switchTab('leicht')">Leicht</div>
                     <div class="tab-btn" onclick="switchTab('mittel')">Mittel</div>
@@ -156,30 +142,27 @@
                     <div class="tab-btn text-emerald-600" onclick="switchTab('check')">Abschluss-Check</div>
                 </div>
 
-                <!-- Aufgaben-Bereich -->
                 <div class="p-6" id="taskArea">
                     <div id="taskQuestion" class="text-lg font-medium text-slate-800 mb-4"></div>
                     
-                    <div class="flex flex-col gap-3">
-                        <input type="text" id="taskInput" placeholder="Ergebnis hier eingeben..." class="border-2 border-slate-200 rounded-xl px-4 py-3 text-lg focus:border-indigo-500 focus:outline-none transition" autocomplete="off">
-                        <div class="text-sm text-slate-500" id="taskHint"></div>
-                        
+                    <div class="flex flex-col gap-4" id="taskInputsContainer">
+                        <!-- Inputs werden dynamisch generiert -->
+                    </div>
+                    
+                    <div class="flex flex-col gap-3 mt-6">
                         <div class="flex items-center gap-2 mt-2">
                             <input type="checkbox" id="taskDoc" class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
-                            <label for="taskDoc" class="text-slate-700 select-none">Lösungsweg dokumentiert</label>
+                            <label for="taskDoc" class="text-slate-700 font-medium select-none">Lösungsdokumentation vollständig</label>
                         </div>
-
-                        <button id="taskBtn" onclick="checkAnswer()" class="bg-indigo-600 text-white rounded-xl py-3 font-bold mt-2 hover:bg-indigo-700 transition">Ergebnis prüfen</button>
+                        <button id="taskBtn" onclick="checkAnswer()" class="bg-indigo-600 text-white rounded-xl py-3 font-bold hover:bg-indigo-700 transition">Ergebnis prüfen</button>
                     </div>
 
-                    <!-- Feedback Box -->
                     <div id="feedbackBox" class="hidden mt-4 p-4 rounded-xl border"></div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modal: Laufzettel -->
     <div id="modalLaufzettel" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" id="printArea">
             <div class="p-8">
@@ -209,9 +192,7 @@
                             <th class="py-3 px-4 font-bold text-slate-700 text-center">Status</th>
                         </tr>
                     </thead>
-                    <tbody id="laufzettelTable">
-                        <!-- JS generiert -->
-                    </tbody>
+                    <tbody id="laufzettelTable"></tbody>
                 </table>
 
                 <div class="mt-8 pt-6 border-t border-slate-200 no-print flex justify-end">
@@ -223,19 +204,47 @@
         </div>
     </div>
 
-    <!-- Anwendungs-Logik -->
     <script>
-        // Datenstruktur der 6 Level
         const levelsData = [
             {
                 id: 0, title: "Algebraische Werkzeuge",
                 theory: "Sicheres Lösen von Gleichungen ist die Basis. Wichtige Werkzeuge: Ausklammern (Satz vom Nullprodukt), Mitternachtsformel und Substitution ($z = x^2$).",
                 widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Diskriminante $D = b^2 - 4ac$</div><input type="range" min="-10" max="10" value="5" class="w-full max-w-xs" oninput="document.getElementById('dVal').innerText = this.value; document.getElementById('dRes').innerText = this.value > 0 ? '2 Lösungen' : (this.value == 0 ? '1 Lösung' : 'Keine Lösung');"><div class="mt-2 text-lg">D = <span id="dVal">5</span> $\\rightarrow$ <span id="dRes" class="font-bold text-indigo-600">2 Lösungen</span></div></div>`,
                 tasks: {
-                    leicht: { q: "Löse: $x^2 - 5x = 0$", hint: "(Gib die Lösungen durch Komma getrennt ein, z.B. '0, 5')", a: ["0,5", "5,0"], sol: "$x(x-5)=0 \\Rightarrow x_1=0, x_2=5$" },
-                    mittel: { q: "Bestimme die Nullstellen: $x^2 - 4x + 3 = 0$", hint: "(Tipp: Mitternachtsformel)", a: ["1,3", "3,1"], sol: "$x_{1,2} = \\frac{4 \\pm \\sqrt{16-12}}{2} \\Rightarrow x_1=1, x_2=3$" },
-                    schwer: { q: "Löse: $x^4 - 5x^2 + 4 = 0$", hint: "(Tipp: Substitution $z=x^2$)", a: ["1,-1,2,-2", "-2,-1,1,2", "1,2,-1,-2", "2,1,-2,-1"], sol: "$z^2-5z+4=0 \\Rightarrow z_1=1, z_2=4$. Rücksubstitution: $x_{1,2}=\\pm 1, x_{3,4}=\\pm 2$" },
-                    check:  { q: "Abschluss-Check: Löse $x^3 - 6x^2 + 9x = 0$", hint: "(Ausklammern und Mitternachtsformel)", a: ["0,3", "3,0"], sol: "$x(x^2-6x+9)=0 \\Rightarrow x_1=0, x_2=3$ (doppelte Nullstelle)" }
+                    leicht: { 
+                        q: "Löse die Basis-Gleichungen (Wurzel, Ausklammern, abc-Formel):", 
+                        sub: [
+                            { label: "a) $x^2 - 16 = 0$", hint: "(Lösungen kommagetrennt: x1, x2)", a: ["4,-4", "-4,4"] },
+                            { label: "b) $x^2 - 5x = 0$", hint: "(x1, x2)", a: ["0,5", "5,0"] },
+                            { label: "c) $x^2 + 2x - 3 = 0$", hint: "(x1, x2)", a: ["1,-3", "-3,1"] }
+                        ],
+                        sol: "a) $x_{1,2}=\\pm 4$ <br> b) Ausklammern: $x(x-5)=0 \\Rightarrow x_1=0, x_2=5$ <br> c) abc-Formel: $x_{1,2} = \\frac{-2 \\pm \\sqrt{4+12}}{2} \\Rightarrow x_1=1, x_2=-3$" 
+                    },
+                    mittel: { 
+                        q: "Löse die erweiterten Gleichungen (Faktoren beachten):", 
+                        sub: [
+                            { label: "a) $2x^2 - 18 = 0$", hint: "(x1, x2)", a: ["3,-3", "-3,3"] },
+                            { label: "b) $3x^3 - 12x = 0$", hint: "(x1, x2, x3)", a: ["0,2,-2", "0,-2,2", "-2,0,2", "2,0,-2", "2,-2,0", "-2,2,0"] },
+                            { label: "c) $2x^2 - 4x - 6 = 0$", hint: "(x1, x2)", a: ["3,-1", "-1,3"] }
+                        ],
+                        sol: "a) Durch 2 teilen: $x^2=9 \\Rightarrow x_{1,2}=\\pm 3$ <br> b) Ausklammern: $3x(x^2-4)=0 \\Rightarrow x_1=0, x_{2,3}=\\pm 2$ <br> c) Durch 2 teilen, dann abc-Formel: $x_1=3, x_2=-1$" 
+                    },
+                    schwer: { 
+                        q: "Löse die komplexen Gleichungen:", 
+                        sub: [
+                            { label: "a) $\\frac{1}{2}x^3 - 2x = 0$", hint: "(x1, x2, x3)", a: ["0,2,-2", "0,-2,2", "-2,0,2", "2,0,-2", "2,-2,0", "-2,2,0"] },
+                            { label: "b) $x^4 - 5x^2 + 4 = 0$", hint: "(Tipp: Substitution. x1, x2, x3, x4)", a: ["1,-1,2,-2"] }
+                        ],
+                        sol: "a) Ausklammern: $\\frac{1}{2}x(x^2-4)=0 \\Rightarrow x_1=0, x_{2,3}=\\pm 2$ <br> b) Substitution $z=x^2$: $z^2-5z+4=0 \\Rightarrow z_1=1, z_2=4$. Rücksubstitution: $x^2=1 \\Rightarrow \\pm 1$ und $x^2=4 \\Rightarrow \\pm 2$" 
+                    },
+                    check:  { 
+                        q: "Abschluss-Check (Pflicht)", 
+                        sub: [
+                            { label: "1. Wie viele Lösungen hat eine quadratische Gleichung, wenn die Diskriminante $D < 0$, $D = 0$ und $D > 0$ ist?", hint: "(Reihenfolge einhalten, kommagetrennt z.B. 0,1,2)", a: ["0,1,2", "0, 1, 2", "0;1;2"] },
+                            { label: "2. Bestimme alle Nullstellen von $x^3 - 6x^2 + 9x = 0$", hint: "(x1, x2)", a: ["0,3", "3,0"] }
+                        ],
+                        sol: "1. $D<0 \\Rightarrow 0$ Lösungen, $D=0 \\Rightarrow 1$ Lösung, $D>0 \\Rightarrow 2$ Lösungen. <br> 2. Ausklammern liefert $x(x^2-6x+9)=0 \\Rightarrow x_1=0$. abc-Formel für die Klammer liefert $x_2=3$ (doppelte Nullstelle)." 
+                    }
                 }
             },
             {
@@ -243,78 +252,207 @@
                 theory: "Differenzenquotient (Sekantensteigung): $m_s = \\frac{f(b)-f(a)}{b-a}$. Differentialquotient (Tangentensteigung): Grenzwert für $h \\to 0$.",
                 widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Grenzwertprozess $h \\to 0$</div><input type="range" min="0" max="100" value="100" class="w-full max-w-xs" oninput="let h = (this.value/100).toFixed(2); document.getElementById('hVal').innerText = h; document.getElementById('sVal').innerText = h == 0 ? 'Tangente (Lokale Änderung)' : 'Sekante (Mittlere Änderung)';"><div class="mt-2 text-lg">Abstand $h$ = <span id="hVal">1.00</span></div><div id="sVal" class="font-bold text-emerald-600 mt-1">Sekante (Mittlere Änderung)</div></div>`,
                 tasks: {
-                    leicht: { q: "Berechne die mittlere Steigung von $f(x)=x^2$ im Intervall $[1; 3]$.", hint: "(Ergebnis als Zahl)", a: ["4"], sol: "$\\frac{f(3)-f(1)}{3-1} = \\frac{9-1}{2} = 4$" },
-                    mittel: { q: "Ein Auto fährt nach dem Gesetz $s(t) = t^2 - 2t$. Berechne die Durchschnittsgeschwindigkeit in $[2; 4]$.", hint: "", a: ["4"], sol: "$\\frac{s(4)-s(2)}{4-2} = \\frac{8-0}{2} = 4$" },
-                    schwer: { q: "Vereinfache den Differenzenquotienten für $f(x)=x^2$ an der Stelle $x_0$: $\\frac{(x_0+h)^2 - x_0^2}{h}$", hint: "(Löse die Klammer auf und kürze h. Schreibe z.B. 2x+h)", a: ["2x_0+h", "2x+h", "h+2x"], sol: "$\\frac{x_0^2+2x_0h+h^2-x_0^2}{h} = \\frac{h(2x_0+h)}{h} = 2x_0+h$" },
-                    check:  { q: "Berechne die Momentangeschwindigkeit von $s(t) = 3t^2$ zum Zeitpunkt $t=2$.", hint: "(Tipp: Bilde zuerst die Ableitung)", a: ["12"], sol: "$s'(t) = 6t \\Rightarrow s'(2) = 12$" }
+                    leicht: { 
+                        q: "Berechne die Basis-Änderungsraten:", 
+                        sub: [
+                            { label: "a) Mittlere Änderungsrate von $f(x)=x^2$ im Intervall $[0; 3]$.", hint: "", a: ["3"] },
+                            { label: "b) Momentane Änderungsrate von $f(x)=4x$ an der Stelle $x=5$.", hint: "", a: ["4"] }
+                        ],
+                        sol: "a) $\\frac{f(3)-f(0)}{3-0} = \\frac{9-0}{3} = 3$ <br> b) Ableitung ist $f'(x)=4$, also konstant 4." 
+                    },
+                    mittel: { 
+                        q: "Erweiterte Änderungsraten:", 
+                        sub: [
+                            { label: "a) Mittlere Änderungsrate von $f(x)=x^3-x$ im Intervall $[-1; 2]$.", hint: "", a: ["2"] },
+                            { label: "b) Momentangeschwindigkeit von $s(t)=2t^2-t$ bei $t=2$.", hint: "", a: ["7"] }
+                        ],
+                        sol: "a) $f(2)=6$, $f(-1)=0$. $\\frac{6-0}{2-(-1)} = \\frac{6}{3} = 2$ <br> b) $s'(t)=4t-1 \\Rightarrow s'(2)=7$" 
+                    },
+                    schwer: { 
+                        q: "Komplexe Änderungsraten & Grenzwerte:", 
+                        sub: [
+                            { label: "a) Momentane Änderungsrate von $f(x)=-0.5x^2+4x$ bei $x=2$.", hint: "", a: ["2"] },
+                            { label: "b) Vereinfache den Differenzenquotienten $\\frac{(x_0+h)^2 - x_0^2}{h}$ für $h \\to 0$.", hint: "(Term vereinfachen, z.B. 2x_0+h)", a: ["2x_0+h", "2x+h"] }
+                        ],
+                        sol: "a) $f'(x)=-x+4 \\Rightarrow f'(2)=2$ <br> b) Binomische Formel: $\\frac{x_0^2+2x_0h+h^2-x_0^2}{h} = \\frac{h(2x_0+h)}{h} = 2x_0+h$" 
+                    },
+                    check:  { 
+                        q: "Abschluss-Check", 
+                        sub: [
+                            { label: "Berechne die Momentangeschwindigkeit von $s(t) = 3t^2 - t$ bei $t=2$.", hint: "", a: ["11"] }
+                        ],
+                        sol: "$s'(t) = 6t - 1 \\Rightarrow s'(2) = 11$" 
+                    }
                 }
             },
             {
                 id: 2, title: "Rechnerisches Ableiten",
                 theory: "Wichtige Regeln: Potenzregel $(x^n)' = n \\cdot x^{n-1}$, Faktorregel $(c \\cdot f)' = c \\cdot f'$ und Summenregel.",
-                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Potenzregel anwenden</div><div class="text-2xl mb-4">$f(x) = x^n \\implies f'(x) = n \\cdot x^{n-1}$</div></div>`,
+                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Potenzregel anwenden</div><div class="text-2xl mt-4">$f(x) = x^n \\implies f'(x) = n \\cdot x^{n-1}$</div></div>`,
                 tasks: {
-                    leicht: { q: "Bilde die Ableitung von $f(x) = 3x^2$.", hint: "(Schreibe z.B. 6x)", a: ["6x"], sol: "$f'(x) = 2 \\cdot 3x^{2-1} = 6x$" },
-                    mittel: { q: "Leite ab: $f(x) = 2x^3 - 5x^2 + 4x - 7$", hint: "", a: ["6x^2-10x+4", "6x^2 - 10x + 4"], sol: "$f'(x) = 6x^2 - 10x + 4$" },
-                    schwer: { q: "Leite ab: $f(x) = \\frac{1}{4}x^4 - \\frac{2}{3}x^3 + \\pi$", hint: "(Hinweis: $\\pi$ ist eine Konstante)", a: ["x^3-2x^2", "x^3 - 2x^2"], sol: "$f'(x) = 4 \\cdot \\frac{1}{4}x^3 - 3 \\cdot \\frac{2}{3}x^2 + 0 = x^3 - 2x^2$" },
-                    check:  { q: "Gegeben ist $f(x) = -\\frac{1}{6}x^3 + 2x^2 - 5x + 1$. Berechne $f'(2)$.", hint: "(Zuerst ableiten, dann 2 einsetzen)", a: ["1"], sol: "$f'(x) = -0.5x^2 + 4x - 5 \\Rightarrow f'(2) = -2 + 8 - 5 = 1$" }
+                    leicht: { 
+                        q: "Bestimme die erste Ableitung $f'(x)$:", 
+                        sub: [
+                            { label: "a) $f(x) = 4x^3 + 5x$", hint: "", a: ["12x^2+5", "12x^2 + 5"] },
+                            { label: "b) $f(x) = 0.5x^4 - 2$", hint: "", a: ["2x^3"] }
+                        ],
+                        sol: "a) $12x^2 + 5$ <br> b) $4 \\cdot 0.5x^3 - 0 = 2x^3$" 
+                    },
+                    mittel: { 
+                        q: "Bestimme die erste Ableitung $f'(x)$ (Terme vereinfachen):", 
+                        sub: [
+                            { label: "a) $f(x) = \\frac{1}{3}x^3 - 2x^2 + \\pi$", hint: "(Hinweis: $\\pi$ ist eine Konstante)", a: ["x^2-4x", "x^2 - 4x"] },
+                            { label: "b) $f(x) = (x-2)^2$", hint: "(Tipp: Zuerst ausmultiplizieren)", a: ["2x-4", "2x - 4", "2(x-2)"] }
+                        ],
+                        sol: "a) $3 \\cdot \\frac{1}{3}x^2 - 4x + 0 = x^2 - 4x$ <br> b) $f(x)=x^2-4x+4 \\Rightarrow f'(x)=2x-4$" 
+                    },
+                    schwer: { 
+                        q: "Bestimme die erste Ableitung (mit Parametern und Brüchen):", 
+                        sub: [
+                            { label: "a) $f(x) = \\frac{2x^4 - x^2}{x}$", hint: "(Tipp: Zuerst durch x kürzen)", a: ["6x^2-1", "6x^2 - 1"] },
+                            { label: "b) $f_t(x) = t \\cdot x^3 - 2t^2 \\cdot x$", hint: "(Nach x ableiten)", a: ["3tx^2-2t^2", "3tx^2 - 2t^2"] }
+                        ],
+                        sol: "a) $f(x) = 2x^3 - x \\Rightarrow f'(x) = 6x^2 - 1$ <br> b) $t$ und $t^2$ werden als Vorfaktoren behandelt: $f_t'(x) = 3tx^2 - 2t^2$" 
+                    },
+                    check:  { 
+                        q: "Abschluss-Check", 
+                        sub: [
+                            { label: "Gegeben ist $f(x) = -\\frac{1}{6}x^3 + 2x^2 - 5x + 1$. Berechne $f'(2)$.", hint: "(Erst ableiten, dann $x=2$ einsetzen)", a: ["1"] }
+                        ],
+                        sol: "$f'(x) = -0.5x^2 + 4x - 5 \\Rightarrow f'(2) = -2 + 8 - 5 = 1$" 
+                    }
                 }
             },
             {
                 id: 3, title: "Graphisches Ableiten",
-                theory: "$f'(x) > 0 \\implies f$ steigt. $f'(x) < 0 \\implies f$ fällt. $f'(x) = 0 \\implies$ waagrechte Tangente (Mögliches Extremum).",
+                theory: "$f'(x) > 0 \\implies f$ steigt. $f'(x) < 0 \\implies f$ fällt. $f'(x) = 0 \\implies$ waagrechte Tangente (mögliches Extremum).",
                 widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Zusammenhang $f$ und $f'$</div><div class="grid grid-cols-3 gap-2 text-sm mt-4"><div class="bg-red-50 p-2 rounded border border-red-200">Graph $f$ fällt<br>$\\implies f' < 0$</div><div class="bg-slate-100 p-2 rounded border border-slate-300">Extremum $f$<br>$\\implies f' = 0$</div><div class="bg-green-50 p-2 rounded border border-green-200">Graph $f$ steigt<br>$\\implies f' > 0$</div></div></div>`,
                 tasks: {
-                    leicht: { q: "Ein Graph $f$ ist streng monoton steigend. Welches Vorzeichen hat $f'$?", hint: "(Antworte mit +, - oder 0)", a: ["+", "positiv"], sol: "Steigend bedeutet positive Steigung, also $f'(x) > 0$." },
-                    mittel: { q: "Die Ableitungsfunktion $f'$ hat bei $x=2$ eine Nullstelle mit Vorzeichenwechsel von + nach -. Welcher Punkt liegt bei $f$ vor?", hint: "(Hochpunkt oder Tiefpunkt?)", a: ["hochpunkt", "hp"], sol: "VZW von + (steigend) nach - (fallend) bedeutet Hochpunkt." },
-                    schwer: { q: "Die Ableitung $f'$ ist eine nach oben geöffnete Parabel, die komplett oberhalb der x-Achse verläuft. Was bedeutet das für $f$?", hint: "(Antworte z.B. mit 'immer steigend')", a: ["immer steigend", "streng monoton steigend", "steigt immer"], sol: "$f'(x) > 0$ überall, also ist $f$ streng monoton steigend." },
-                    check:  { q: "Wenn $f(x)$ eine Funktion 3. Grades ist, welchen Grad hat dann $f'(x)$?", hint: "(Zahl eingeben)", a: ["2"], sol: "Durch die Potenzregel verringert sich der Grad um 1. Aus $x^3$ wird $x^2$." }
+                    leicht: { 
+                        q: "Eigenschaften ablesen:", 
+                        sub: [
+                            { label: "a) Graph $f$ ist streng monoton fallend. Welches Vorzeichen hat $f'$?", hint: "(- oder +)", a: ["-", "negativ", "<0"] },
+                            { label: "b) Graph $f$ hat einen Tiefpunkt bei $x=2$. Welches Merkmal hat $f'$ bei $x=2$?", hint: "(z.B. Nullstelle)", a: ["nullstelle", "0"] }
+                        ],
+                        sol: "a) Fallend bedeutet negative Steigung. <br> b) An einem Extrempunkt hat $f$ eine waagrechte Tangente, also ist die Steigung $f'=0$." 
+                    },
+                    mittel: { 
+                        q: "Zusammenhänge deuten:", 
+                        sub: [
+                            { label: "a) $f'$ hat eine Nullstelle mit Vorzeichenwechsel von + nach -. Welcher Extrempunkt liegt bei $f$ vor?", hint: "(Hochpunkt / Tiefpunkt)", a: ["hochpunkt", "hp"] },
+                            { label: "b) Der Graph von $f'$ verläuft komplett oberhalb der x-Achse. Wie verhält sich der Graph von $f$?", hint: "(z.B. monoton fallend)", a: ["streng monoton steigend", "monoton steigend", "steigend", "immer steigend"] }
+                        ],
+                        sol: "a) VZW von + (steigend) nach - (fallend) bedeutet Hochpunkt. <br> b) $f'(x)>0$ überall, also ist $f$ stets streng monoton steigend." 
+                    },
+                    schwer: { 
+                        q: "Graphen-Charakteristika verknüpfen:", 
+                        sub: [
+                            { label: "a) $f$ ist eine nach unten geöffnete Parabel. Was für ein Graph ist $f'$?", hint: "(z.B. steigende Gerade)", a: ["fallende gerade", "gerade mit negativer steigung"] },
+                            { label: "b) $f'$ ist eine nach oben geöffnete Parabel, welche die x-Achse zweimal schneidet. Wie viele Extremstellen hat $f$?", hint: "(Zahl)", a: ["2", "zwei"] }
+                        ],
+                        sol: "a) $f(x)=-x^2 \\Rightarrow f'(x)=-2x$ (fallende Gerade). <br> b) Zwei Nullstellen bei $f'$ mit VZW bedeuten zwei Extremstellen bei $f$." 
+                    },
+                    check:  { 
+                        q: "Abschluss-Check", 
+                        sub: [
+                            { label: "Wenn $f$ eine ganzrationale Funktion 4. Grades ist, welchen Grad hat dann die Ableitungsfunktion $f'$?", hint: "", a: ["3", "drei"] }
+                        ],
+                        sol: "Durch die Potenzregel ($x^n \\to n \\cdot x^{n-1}$) verringert sich der Grad bei ganzrationalen Funktionen um genau 1." 
+                    }
                 }
             },
             {
                 id: 4, title: "Tangentengleichungen",
-                theory: "Gleichung einer Tangente $t: y = mx + c$. Ansatz: $m = f'(x_0)$ berechnen, dann Punkt $P(x_0 | f(x_0))$ in die Geradengleichung einsetzen, um $c$ zu bestimmen.",
-                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Die Punkt-Steigungs-Form</div><div class="text-xl mt-2 bg-slate-100 p-3 rounded-lg inline-block">$t(x) = f'(x_0) \\cdot (x - x_0) + f(x_0)$</div></div>`,
+                theory: "Gleichung einer Tangente $t(x) = mx + c$. <br>Vorgehen: 1) $m = f'(x_0)$ berechnen. 2) y-Koordinate $y_0 = f(x_0)$ ermitteln. 3) Punkt in $y = mx + c$ einsetzen, um $c$ zu bestimmen.",
+                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Die Punkt-Steigungs-Form</div><div class="text-xl mt-4 bg-slate-100 p-3 rounded-lg inline-block">$t(x) = f'(x_0) \\cdot (x - x_0) + f(x_0)$</div></div>`,
                 tasks: {
-                    leicht: { q: "Stelle die Geradengleichung auf: $m=3$ durch den Punkt $P(1|2)$.", hint: "(Schreibe z.B. y=3x-1)", a: ["y=3x-1", "3x-1"], sol: "$2 = 3 \\cdot 1 + c \\Rightarrow c = -1 \\implies y = 3x - 1$" },
-                    mittel: { q: "Bestimme die Steigung der Tangente an $f(x)=x^2 - 2x$ an der Stelle $x_0=3$.", hint: "(Nur m berechnen)", a: ["4"], sol: "$f'(x) = 2x - 2 \\Rightarrow f'(3) = 6 - 2 = 4$" },
-                    schwer: { q: "Bestimme die Tangente an $f(x)=-x^3+3x$ bei $x_0=-1$.", hint: "(Form y=mx+c)", a: ["y=-2", "-2"], sol: "$f(-1)=-2$. $f'(x)=-3x^2+3 \\Rightarrow f'(-1)=0$. $y = 0 \\cdot x - 2 = -2$" },
-                    check:  { q: "Berechne den Schnittpunkt der Tangente an $f(x)=x^2$ bei $x_0=2$ mit der x-Achse (Nullstelle der Tangente).", hint: "(Gib den x-Wert an)", a: ["1"], sol: "Tangente: $f'(2)=4, f(2)=4 \\implies y=4x-4$. Nullstelle: $4x-4=0 \\implies x=1$." }
+                    leicht: { 
+                        q: "Basis-Bestimmungen:", 
+                        sub: [
+                            { label: "a) Eine Tangente hat die Steigung $m=3$ und verläuft durch $P(1|2)$. Bestimme den y-Achsenabschnitt $c$.", hint: "", a: ["-1"] },
+                            { label: "b) $f(x)=x^2$. Bestimme die Tangentensteigung an der Stelle $x_0=2$.", hint: "", a: ["4"] }
+                        ],
+                        sol: "a) $2 = 3 \\cdot 1 + c \\Rightarrow c = -1$ <br> b) $f'(x)=2x \\Rightarrow f'(2)=4$" 
+                    },
+                    mittel: { 
+                        q: "Vollständige Tangentengleichungen:", 
+                        sub: [
+                            { label: "Stelle die Tangentengleichung für $f(x)=x^2-2x$ an der Stelle $x_0=3$ auf.", hint: "(Format: y=mx+c)", a: ["y=4x-9", "4x-9"] }
+                        ],
+                        sol: "$f(3)=3$. $f'(x)=2x-2 \\Rightarrow m=f'(3)=4$. Einsetzen: $3 = 4 \\cdot 3 + c \\Rightarrow c = -9 \\implies y = 4x - 9$" 
+                    },
+                    schwer: { 
+                        q: "Komplexe Tangenten & Umkehraufgaben:", 
+                        sub: [
+                            { label: "a) Stelle die Tangentengleichung für $f(x)=-x^3+3x$ an der Stelle $x_0=-1$ auf.", hint: "(Format: y=mx+c)", a: ["y=-2", "-2"] },
+                            { label: "b) An welcher Stelle $x$ hat der Graph von $f(x)=x^2$ die Tangentensteigung $m=4$?", hint: "", a: ["2"] }
+                        ],
+                        sol: "a) $f(-1)=-2$. $f'(x)=-3x^2+3 \\Rightarrow f'(-1)=0$. $y = 0 \\cdot x - 2 = -2$ <br> b) $f'(x)=2x$. Bedingung: $2x=4 \\Rightarrow x=2$" 
+                    },
+                    check:  { 
+                        q: "Abschluss-Check", 
+                        sub: [
+                            { label: "Berechne die x-Koordinate der Nullstelle der Tangente an $f(x)=x^2$ bei $x_0=2$.", hint: "", a: ["1"] }
+                        ],
+                        sol: "Tangente: $f'(2)=4, f(2)=4 \\implies y=4x-4$. Nullstelle: $4x-4=0 \\implies 4x=4 \\implies x=1$." 
+                    }
                 }
             },
             {
                 id: 5, title: "Extremstellen",
                 theory: "Notwendige Bedingung: $f'(x_0) = 0$. Hinreichende Bedingung: Vorzeichenwechsel (VZW) der Ableitung an der Stelle $x_0$.",
-                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Vorzeichenwechsel (VZW)</div><table class="w-full max-w-sm mx-auto text-sm border border-slate-200 mt-2"><tr class="bg-slate-100"><td class="border p-2">$f'$ VZW</td><td class="border p-2">+ nach -</td><td class="border p-2">- nach +</td></tr><tr><td class="border p-2 font-bold">Folgerung</td><td class="border p-2 text-red-600">Hochpunkt</td><td class="border p-2 text-emerald-600">Tiefpunkt</td></tr></table></div>`,
+                widgetHtml: `<div class="text-center w-full"><div class="font-bold mb-2">Vorzeichenwechsel (VZW)</div><table class="w-full max-w-sm mx-auto text-sm border border-slate-200 mt-4"><tr class="bg-slate-100"><td class="border p-2">$f'$ VZW</td><td class="border p-2">+ nach -</td><td class="border p-2">- nach +</td></tr><tr><td class="border p-2 font-bold">Folgerung</td><td class="border p-2 text-red-600">Hochpunkt</td><td class="border p-2 text-emerald-600">Tiefpunkt</td></tr></table></div>`,
                 tasks: {
-                    leicht: { q: "$f'(x)=0$ bei $x=2$. Davor ist $f'$ negativ, danach positiv. Was liegt bei $x=2$ vor?", hint: "(Hochpunkt oder Tiefpunkt?)", a: ["tiefpunkt", "tp"], sol: "VZW von - nach + bedeutet, der Graph fällt erst und steigt dann $\\implies$ Tiefpunkt." },
-                    mittel: { q: "Bestimme die x-Koordinate des Extrempunkts von $f(x)=x^2-6x+4$.", hint: "", a: ["3"], sol: "$f'(x)=2x-6 = 0 \\implies 2x=6 \\implies x=3$" },
-                    schwer: { q: "Welche x-Werte sind mögliche Extremstellen von $f(x)=x^3-3x$?", hint: "(Gib die Werte durch Komma getrennt an)", a: ["1,-1", "-1,1"], sol: "$f'(x)=3x^2-3 = 0 \\implies 3x^2=3 \\implies x^2=1 \\implies x = \\pm 1$" },
-                    check:  { q: "Die Funktion $f(x)=2x^3-6x^2$ hat zwei Extremstellen. Eine liegt bei $x=0$. Wo liegt die andere?", hint: "(Gib den x-Wert an)", a: ["2"], sol: "$f'(x)=6x^2-12x = 0 \\implies 6x(x-2)=0 \\implies x_1=0, x_2=2$" }
+                    leicht: { 
+                        q: "Eigenschaften erkennen:", 
+                        sub: [
+                            { label: "a) $f'(x)=2x-4$. An welcher Stelle liegt ein mögliches Extremum?", hint: "", a: ["2"] },
+                            { label: "b) Die Ableitung wechselt das Vorzeichen von - nach +. Welcher Punkt liegt vor?", hint: "(Hochpunkt / Tiefpunkt)", a: ["tiefpunkt", "tp"] }
+                        ],
+                        sol: "a) $2x-4=0 \\Rightarrow x=2$ <br> b) VZW von fallend (-) zu steigend (+) bedeutet Tiefpunkt." 
+                    },
+                    mittel: { 
+                        q: "Vollständige Berechnung von Extrempunkten:", 
+                        sub: [
+                            { label: "a) Bestimme die x-Koordinate des Hochpunkts von $f(x)=-x^2+6x$.", hint: "", a: ["3"] },
+                            { label: "b) Bestimme die zugehörige y-Koordinate dieses Hochpunkts.", hint: "", a: ["9"] }
+                        ],
+                        sol: "a) $f'(x)=-2x+6 = 0 \\implies x=3$ <br> b) Einsetzen in $f$: $f(3) = -(3)^2 + 6 \\cdot 3 = -9 + 18 = 9$" 
+                    },
+                    schwer: { 
+                        q: "Umfangreiche Analysen:", 
+                        sub: [
+                            { label: "a) Bestimme alle x-Werte der Extremstellen von $f(x)=x^4-2x^2$.", hint: "(Kommagetrennt)", a: ["0,1,-1"] },
+                            { label: "b) Hat $f(x)=x^3$ Extremstellen? (Antworte Ja oder Nein)", hint: "", a: ["nein"] }
+                        ],
+                        sol: "a) $f'(x)=4x^3-4x = 0 \\implies 4x(x^2-1)=0 \\implies x_1=0, x_{2,3}=\\pm 1$ <br> b) $f'(x)=3x^2=0 \\implies x=0$. Da $x^2$ aber keinen VZW hat (immer positiv), ist es ein Sattelpunkt, kein Extrempunkt $\\implies$ Nein." 
+                    },
+                    check:  { 
+                        q: "Abschluss-Check", 
+                        sub: [
+                            { label: "Bestimme alle x-Werte der Extremstellen von $f(x)=2x^3-6x^2$.", hint: "(Kommagetrennt)", a: ["0,2", "2,0"] }
+                        ],
+                        sol: "$f'(x)=6x^2-12x = 0 \\implies 6x(x-2)=0 \\implies x_1=0, x_2=2$" 
+                    }
                 }
             }
         ];
 
-        // State Management
         let unlockedLevel = 0;
         let progress = {}; 
-        // structure: { 0: { leicht: true, mittel: true, schwer: false, check: true }, ... }
-
         let currentLevelObj = null;
         let currentTab = 'leicht';
         let currentAttempts = 0;
         let teacherClicks = 0;
 
-        // Init
         window.addEventListener('DOMContentLoaded', () => {
             loadProgress();
             renderMap();
             initHeaderBypass();
         });
 
-        // 1. Storage
         function loadProgress() {
-            const saved = localStorage.getItem('diffBasicsProgress');
+            const saved = localStorage.getItem('diffBasicsProgress_v2');
             if (saved) {
                 const parsed = JSON.parse(saved);
                 progress = parsed.progress || {};
@@ -326,15 +464,15 @@
                 levelsData.forEach(l => progress[l.id] = { leicht: false, mittel: false, schwer: false, check: false });
             }
         }
+
         function saveProgress() {
             const name = document.getElementById('studentName') ? document.getElementById('studentName').value : "";
-            localStorage.setItem('diffBasicsProgress', JSON.stringify({ progress, unlockedLevel, studentName: name }));
+            localStorage.setItem('diffBasicsProgress_v2', JSON.stringify({ progress, unlockedLevel, studentName: name }));
             renderMap();
             updateLaufzettel();
         }
         function saveName(val) { saveProgress(); }
 
-        // 2. Lehrer-Bypass
         function initHeaderBypass() {
             const title = document.getElementById('headerTitle');
             title.addEventListener('click', () => {
@@ -353,7 +491,6 @@
             });
         }
 
-        // 3. Map Rendern
         function renderMap() {
             const container = document.getElementById('mapContainer');
             container.innerHTML = '';
@@ -362,7 +499,6 @@
                 const isUnlocked = i <= unlockedLevel;
                 const isCompleted = progress[lvl.id] && progress[lvl.id].check;
                 
-                // Node
                 const node = document.createElement('div');
                 node.className = `map-node ${isCompleted ? 'completed' : (isUnlocked ? 'active' : '')}`;
                 node.innerHTML = isCompleted ? '✓' : (isUnlocked ? i : '🔒');
@@ -371,7 +507,6 @@
                     node.onclick = () => openLevel(i);
                 }
 
-                // Label
                 const label = document.createElement('div');
                 label.className = `text-sm font-semibold mt-2 mb-4 ${isUnlocked ? 'text-slate-800' : 'text-slate-400'}`;
                 label.innerText = lvl.title;
@@ -379,7 +514,6 @@
                 container.appendChild(node);
                 container.appendChild(label);
 
-                // Line
                 if (i < levelsData.length - 1) {
                     const line = document.createElement('div');
                     line.className = `map-line ${isCompleted ? 'completed' : ''}`;
@@ -388,7 +522,6 @@
             });
         }
 
-        // 4. View Switching
         function showMap() {
             document.getElementById('viewLevel').classList.add('hidden');
             document.getElementById('viewMap').classList.remove('hidden');
@@ -405,7 +538,6 @@
             document.getElementById('lvlTheory').innerHTML = currentLevelObj.theory;
             document.getElementById('lvlWidget').innerHTML = currentLevelObj.widgetHtml;
             
-            // Standardmäßig 'leicht' öffnen
             switchTab('leicht');
         }
 
@@ -413,19 +545,27 @@
             currentTab = tabId;
             currentAttempts = 0;
 
-            // UI Tabs updaten
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if(btn.innerText.toLowerCase().includes(tabId)) btn.classList.add('active');
                 if(tabId === 'check' && btn.innerText.includes('Check')) btn.classList.add('active');
             });
 
-            // Content updaten
             const task = currentLevelObj.tasks[tabId];
             document.getElementById('taskQuestion').innerHTML = task.q;
-            document.getElementById('taskHint').innerHTML = task.hint;
-            document.getElementById('taskInput').value = '';
-            document.getElementById('taskInput').disabled = false;
+            
+            const inputsContainer = document.getElementById('taskInputsContainer');
+            inputsContainer.innerHTML = '';
+            
+            task.sub.forEach((sub, idx) => {
+                inputsContainer.innerHTML += `
+                    <div>
+                        <label class="block text-slate-700 font-medium mb-1">${sub.label} <span class="text-sm font-normal text-slate-500">${sub.hint || ''}</span></label>
+                        <input type="text" id="taskInput_${idx}" class="w-full border-2 border-slate-200 rounded-xl px-4 py-2 text-lg focus:border-indigo-500 focus:outline-none transition" autocomplete="off">
+                    </div>
+                `;
+            });
+
             document.getElementById('taskDoc').checked = false;
             document.getElementById('taskBtn').style.display = 'block';
             
@@ -433,80 +573,110 @@
             fb.classList.add('hidden');
             fb.className = 'mt-4 p-4 rounded-xl border';
 
-            // KaTeX rendern
             renderMathInElement(document.getElementById('viewLevel'), {
                 delimiters: [ {left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false} ]
             });
         }
 
-        // 5. Checking Logic
-        function normalizeString(str) {
-            return str.toLowerCase().replace(/\s/g, '').replace(/,/g, '.');
+        // Intelligenterer Vergleich, der Reihenfolge (z.B. bei "1, -3") ignoriert
+        function checkEquivalence(userInput, validAnswers) {
+            const clean = s => s.toLowerCase().replace(/\s/g, '').replace(/;/g, ',');
+            const uClean = clean(userInput);
+            
+            const isSet = uClean.includes(',');
+            let uSet = '';
+            if(isSet) {
+                uSet = uClean.split(',').sort().join(',');
+            }
+
+            return validAnswers.some(a => {
+                const aClean = clean(a);
+                if (aClean === uClean) return true;
+                if (isSet && aClean.includes(',')) {
+                    if (aClean.split(',').sort().join(',') === uSet) return true;
+                }
+                return false;
+            });
         }
 
         function checkAnswer() {
-            const inputVal = document.getElementById('taskInput').value;
             const docChecked = document.getElementById('taskDoc').checked;
             const fb = document.getElementById('feedbackBox');
             const task = currentLevelObj.tasks[currentTab];
 
-            if (!inputVal) {
-                alert("Bitte gib ein Ergebnis ein."); return;
-            }
             if (!docChecked) {
-                alert("Bitte bestätige, dass du den Lösungsweg dokumentiert hast."); return;
+                alert("Bitte bestätige die vollständige Lösungsdokumentation."); 
+                return;
             }
 
-            const normalizedInput = normalizeString(inputVal);
-            const isCorrect = task.a.some(ans => normalizeString(ans) === normalizedInput);
+            let allCorrect = true;
+            let allFilled = true;
+
+            task.sub.forEach((sub, idx) => {
+                const inputEl = document.getElementById(`taskInput_${idx}`);
+                if (!inputEl.value) allFilled = false;
+            });
+
+            if(!allFilled) {
+                alert("Bitte fülle alle Ergebnisfelder aus.");
+                return;
+            }
+
+            task.sub.forEach((sub, idx) => {
+                const inputEl = document.getElementById(`taskInput_${idx}`);
+                const isCorrect = checkEquivalence(inputEl.value, sub.a);
+                
+                if (!isCorrect) {
+                    allCorrect = false;
+                    inputEl.classList.add('shake', 'border-red-500');
+                    setTimeout(() => inputEl.classList.remove('shake', 'border-red-500'), 400);
+                } else {
+                    inputEl.classList.remove('border-red-500');
+                    inputEl.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-900');
+                }
+            });
 
             fb.classList.remove('hidden');
 
-            if (isCorrect) {
-                // Erfolg
+            if (allCorrect) {
                 fb.className = 'mt-4 p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800';
-                fb.innerHTML = `<div class="font-bold mb-2">Korrekt! Hervorragend gelöst.</div><div>Lösungsweg zur Kontrolle: ${task.sol}</div>`;
-                document.getElementById('taskInput').disabled = true;
+                fb.innerHTML = `<div class="font-bold mb-2">Korrekt.</div><div>Lösungswege zur Kontrolle: <br> ${task.sol}</div>`;
+                
+                task.sub.forEach((sub, idx) => document.getElementById(`taskInput_${idx}`).disabled = true);
                 document.getElementById('taskBtn').style.display = 'none';
 
-                // Fortschritt speichern
                 if (!progress[currentLevelObj.id]) progress[currentLevelObj.id] = {};
                 progress[currentLevelObj.id][currentTab] = true;
 
-                // Level Freischaltung prüfen
                 if (currentTab === 'check') {
                     if (currentLevelObj.id >= unlockedLevel && currentLevelObj.id < levelsData.length - 1) {
                         unlockedLevel = currentLevelObj.id + 1;
-                        fb.innerHTML += `<div class="mt-4 font-bold text-indigo-600">Neues Level auf der Landkarte freigeschaltet!</div>`;
+                        fb.innerHTML += `<div class="mt-4 font-bold text-indigo-600">Neues Level freigeschaltet.</div>`;
                     }
                 }
                 saveProgress();
                 renderMathInElement(fb, { delimiters: [ {left: "$", right: "$", display: false} ] });
 
             } else {
-                // Fehler
                 currentAttempts++;
-                const inputEl = document.getElementById('taskInput');
-                inputEl.classList.add('shake', 'border-red-500');
-                setTimeout(() => inputEl.classList.remove('shake', 'border-red-500'), 400);
-
+                
                 if (currentAttempts < 3) {
                     fb.className = 'mt-4 p-4 rounded-xl border border-amber-200 bg-amber-50 text-amber-800';
-                    fb.innerHTML = `<div class="font-bold">Noch nicht ganz richtig.</div><div>Überprüfe deine Lösungsdokumentation und versuche es noch einmal! (Versuch ${currentAttempts} von 3)</div>`;
+                    fb.innerHTML = `<div class="font-bold">Ergebnis noch nicht vollständig korrekt.</div><div>Überprüfe deine Lösungsdokumentation und korrigiere den Fehler. (Versuch ${currentAttempts} von 3)</div>`;
                 } else {
                     fb.className = 'mt-4 p-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-800';
-                    fb.innerHTML = `<div class="font-bold mb-2">Hier ist der vollständige Lösungsweg:</div>
+                    fb.innerHTML = `<div class="font-bold mb-2">Vollständige Lösungswege:</div>
                                     <div class="mb-4">${task.sol}</div>
-                                    <div class="text-sm text-slate-500 mb-4">Bitte notiere diesen Schritt sorgfältig.</div>
-                                    <button onclick="switchTab('${currentTab}')" class="bg-white border border-slate-300 px-4 py-2 rounded shadow-sm hover:bg-slate-50 font-semibold">Wiederholung neu starten ↺</button>`;
-                    document.getElementById('taskInput').disabled = true;
+                                    <div class="text-sm text-slate-500 mb-4">Bitte ergänze bzw. korrigiere deine Dokumentation.</div>
+                                    <button onclick="switchTab('${currentTab}')" class="bg-white border border-slate-300 px-4 py-2 rounded shadow-sm hover:bg-slate-50 font-semibold">Eingabe neu starten ↺</button>`;
+                    
+                    task.sub.forEach((sub, idx) => document.getElementById(`taskInput_${idx}`).disabled = true);
                     document.getElementById('taskBtn').style.display = 'none';
                     renderMathInElement(fb, { delimiters: [ {left: "$", right: "$", display: false} ] });
                 }
             }
         }
 
-        // 6. Laufzettel
         function openLaufzettel() {
             document.getElementById('modalLaufzettel').classList.remove('hidden');
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString('de-DE');
@@ -531,11 +701,11 @@
                 tr.innerHTML = `
                     <td class="py-3 px-4">
                         <div class="font-bold text-slate-800">${lvl.title}</div>
-                        <div class="text-xs text-slate-500">
+                        <div class="text-xs text-slate-500 mt-1">
                             Training: 
-                            <span class="${p.leicht ? 'text-emerald-600' : ''}">Leicht</span> | 
-                            <span class="${p.mittel ? 'text-emerald-600' : ''}">Mittel</span> | 
-                            <span class="${p.schwer ? 'text-emerald-600' : ''}">Schwer</span>
+                            <span class="${p.leicht ? 'text-emerald-600 font-semibold' : ''}">Leicht</span> | 
+                            <span class="${p.mittel ? 'text-emerald-600 font-semibold' : ''}">Mittel</span> | 
+                            <span class="${p.schwer ? 'text-emerald-600 font-semibold' : ''}">Schwer</span>
                         </div>
                     </td>
                     <td class="py-3 px-4 text-center">${checkDone}</td>
