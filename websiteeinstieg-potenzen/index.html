@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Das Papier-Schätzspiel</title>
+    <style>
+        :root {
+            --slate-gray: #2f3e46;
+            --ice-blue: #9eb3c2;
+            --polar-white: #f8f9fa;
+            --frost-blue: #d8e2dc;
+            --accent-blue: #4a6d88;
+            --success: #6b9080;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--polar-white);
+            color: var(--slate-gray);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(47, 62, 70, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--frost-blue);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--slate-gray);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .question-box {
+            background-color: var(--frost-blue);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--ice-blue);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input {
+            padding: 12px;
+            border: 2px solid var(--frost-blue);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--ice-blue);
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        .btn-submit {
+            background-color: var(--ice-blue);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--accent-blue);
+        }
+
+        .btn-teacher {
+            background-color: var(--slate-gray);
+            color: white;
+            margin-top: 20px;
+        }
+
+        .btn-teacher:hover {
+            opacity: 0.9;
+        }
+
+        .list-container {
+            margin-top: 30px;
+        }
+
+        .guess-list {
+            list-style: none;
+        }
+
+        .guess-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid var(--frost-blue);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #solution-area {
+            display: none;
+            margin-top: 40px;
+            text-align: center;
+            padding: 30px;
+            background: var(--polar-white);
+            border-radius: 15px;
+            border: 2px dashed var(--ice-blue);
+        }
+
+        .graphic-container {
+            margin: 30px 0;
+            position: relative;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .svg-illustration {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .winner-badge {
+            background-color: var(--success);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .teacher-controls {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--frost-blue);
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Das Papier-Schätzspiel</h1>
+            <p>Mathematik zum Staunen</p>
+        </header>
+
+        <div class="question-box">
+            <h3>Die Schätzfrage:</h3>
+            <p>Ein handelsübliches Blatt Papier ist etwa 0,1 mm dick. Angenommen, du könntest dieses Blatt immer wieder in der Mitte falten (und das Papier würde dabei nicht reißen oder zu klein werden):</p>
+            <p><strong>Wie oft müsstest du das Papier falten, damit der Stapel bis zum Mond reicht?</strong></p>
+            <small>(Entfernung Erde-Mond: ca. 384.400 km)</small>
+        </div>
+
+        <div id="input-section">
+            <div class="input-group">
+                <input type="text" id="studentName" placeholder="Dein Name">
+                <input type="number" id="studentGuess" placeholder="Deine Schätzung (Anzahl)">
+                <button class="btn-submit" onclick="addGuess()">Tipp abgeben</button>
+            </div>
+        </div>
+
+        <div class="list-container">
+            <h3>Teilnehmer (<span id="count">0</span>):</h3>
+            <ul id="guessList" class="guess-list">
+                <!-- Einträge erscheinen hier -->
+            </ul>
+        </div>
+
+        <div id="solution-area">
+            <h2>Die Auflösung</h2>
+            <div class="graphic-container">
+                <svg class="svg-illustration" viewBox="0 0 400 150">
+                    <!-- Erde -->
+                    <circle cx="50" cy="75" r="30" fill="#4a6d88" />
+                    <text x="35" y="120" font-size="12" fill="#2f3e46">Erde</text>
+                    
+                    <!-- Mond -->
+                    <circle cx="350" cy="75" r="15" fill="#9eb3c2" />
+                    <text x="335" y="110" font-size="12" fill="#2f3e46">Mond</text>
+                    
+                    <!-- Falt-Linie -->
+                    <path d="M 80 75 Q 215 20 335 75" fill="none" stroke="#2f3e46" stroke-width="2" stroke-dasharray="5,5" />
+                    
+                    <!-- Papier Stapel Animation -->
+                    <rect x="75" y="70" width="10" height="10" fill="white" stroke="#2f3e46">
+                        <animate attributeName="width" from="2" to="260" dur="3s" fill="freeze" />
+                        <animate attributeName="x" from="80" to="80" dur="3s" fill="freeze" />
+                    </rect>
+                </svg>
+            </div>
+            <p>Man muss das Papier nur <strong>42 Mal</strong> falten!</p>
+            <p><small>Rechnung: 0,1mm * 2^42 ≈ 439.804 km</small></p>
+            
+            <div id="winnerDisplay"></div>
+        </div>
+
+        <div class="teacher-controls">
+            <button class="btn-teacher" id="revealBtn" onclick="revealSolution()">Lösung anzeigen (Nur Lehrer)</button>
+            <button class="btn-teacher hidden" id="resetBtn" onclick="resetGame()">Neues Spiel</button>
+        </div>
+    </div>
+
+    <script>
+        let guesses = [];
+        const CORRECT_ANSWER = 42;
+
+        function addGuess() {
+            const nameInput = document.getElementById('studentName');
+            const guessInput = document.getElementById('studentGuess');
+            
+            const name = nameInput.value.trim();
+            const guess = parseInt(guessInput.value);
+
+            if (name === "" || isNaN(guess)) {
+                alert("Bitte gib einen Namen und eine Zahl ein.");
+                return;
+            }
+
+            guesses.push({ name, guess });
+
+            // Liste aktualisieren
+            const list = document.getElementById('guessList');
+            const li = document.createElement('li');
+            li.className = 'guess-item';
+            li.innerHTML = `<span>${name}</span> <span>Abgegeben ✓</span>`;
+            list.appendChild(li);
+
+            // Counter
+            document.getElementById('count').innerText = guesses.length;
+
+            // Felder leeren
+            nameInput.value = "";
+            guessInput.value = "";
+            nameInput.focus();
+        }
+
+        function revealSolution() {
+            if (guesses.length === 0) {
+                alert("Es gibt noch keine Schätzungen!");
+                return;
+            }
+
+            // Lösung einblenden
+            document.getElementById('solution-area').style.display = 'block';
+            document.getElementById('input-section').classList.add('hidden');
+            document.getElementById('revealBtn').classList.add('hidden');
+            document.getElementById('resetBtn').classList.remove('hidden');
+
+            // Gewinner ermitteln
+            let winner = guesses[0];
+            let minDiff = Math.abs(guesses[0].guess - CORRECT_ANSWER);
+
+            guesses.forEach(entry => {
+                const diff = Math.abs(entry.guess - CORRECT_ANSWER);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    winner = entry;
+                }
+            });
+
+            // Alle Ergebnisse in der Liste zeigen
+            const list = document.getElementById('guessList');
+            list.innerHTML = "";
+            guesses.sort((a, b) => Math.abs(a.guess - CORRECT_ANSWER) - Math.abs(b.guess - CORRECT_ANSWER));
+            
+            guesses.forEach((entry, index) => {
+                const li = document.createElement('li');
+                li.className = 'guess-item';
+                if(index === 0) li.style.fontWeight = 'bold';
+                li.innerHTML = `<span>${entry.name}</span> <span>${entry.guess} (Diff: ${Math.abs(entry.guess - CORRECT_ANSWER)})</span>`;
+                list.appendChild(li);
+            });
+
+            const winnerDisplay = document.getElementById('winnerDisplay');
+            winnerDisplay.innerHTML = `
+                <div class="winner-badge">
+                    🏆 Gewinner: ${winner.name} mit einer Schätzung von ${winner.guess}!
+                </div>
+            `;
+
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function resetGame() {
+            if(confirm("Wirklich alle Daten löschen und neu starten?")) {
+                guesses = [];
+                document.getElementById('guessList').innerHTML = "";
+                document.getElementById('count').innerText = "0";
+                document.getElementById('solution-area').style.display = 'none';
+                document.getElementById('input-section').classList.remove('hidden');
+                document.getElementById('revealBtn').classList.remove('hidden');
+                document.getElementById('resetBtn').classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
