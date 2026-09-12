@@ -64,7 +64,8 @@
 
     <script>
         // --- 1. STATE & DATENSTRUKTUR ---
-        const STORAGE_KEY = 'sitzplan_data_v8'; // V8 für glasklare Rahmen & absolute Stabilität
+        const STORAGE_KEY = 'sitzplan_data_v9'; // V9 mit fester GitHub-Pages QR-URL
+        const FIXED_STUDENT_URL = 'https://magerquarkabuser.github.io/my-websites/sitzplan-manager/?student=1';
         
         let state = {
             className: 'Klasse 10A',
@@ -613,11 +614,10 @@
         // --- 6. QR CODE & SCHÜLER ANSICHT ---
         function openQRModal() {
             document.getElementById('qrModal').classList.remove('hidden');
-            const link = window.location.href.split('?')[0] + '?student=1';
-            document.getElementById('qrLink').value = link;
             const qrContainer = document.getElementById('qrcode');
             qrContainer.innerHTML = '';
-            new QRCode(qrContainer, { text: link, width: 160, height: 160, colorDark: "#0f172a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+            new QRCode(qrContainer, { text: FIXED_STUDENT_URL, width: 160, height: 160, colorDark: "#0f172a", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+            document.getElementById('qrLink').value = FIXED_STUDENT_URL;
         }
 
         function closeQRModal() { document.getElementById('qrModal').classList.add('hidden'); }
