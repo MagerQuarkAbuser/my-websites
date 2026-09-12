@@ -3,341 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Das Papier-Schätzspiel</title>
+    <title>Papier falten bis zum Mond</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        indigo: {
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                        },
+                        violet: {
+                            500: '#8b5cf6',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --slate-gray: #2f3e46;
-            --ice-blue: #9eb3c2;
-            --polar-white: #f8f9fa;
-            --frost-blue: #d8e2dc;
-            --accent-blue: #4a6d88;
-            --success: #6b9080;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--polar-white);
-            color: var(--slate-gray);
-            line-height: 1.6;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 800px;
-            width: 100%;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(47, 62, 70, 0.1);
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            border-bottom: 2px solid var(--frost-blue);
-            padding-bottom: 20px;
-        }
-
-        h1 {
-            color: var(--slate-gray);
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .question-box {
-            background-color: var(--frost-blue);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            border-left: 5px solid var(--ice-blue);
-        }
-
-        .input-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        input {
-            padding: 12px;
-            border: 2px solid var(--frost-blue);
-            border-radius: 8px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        input:focus {
-            border-color: var(--ice-blue);
-        }
-
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.2s, background-color 0.3s;
-        }
-
-        .btn-submit {
-            background-color: var(--ice-blue);
-            color: white;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--accent-blue);
-        }
-
-        .btn-teacher {
-            background-color: var(--slate-gray);
-            color: white;
-            margin-top: 20px;
-        }
-
-        .btn-teacher:hover {
-            opacity: 0.9;
-        }
-
-        .list-container {
-            margin-top: 30px;
-        }
-
-        .guess-list {
-            list-style: none;
-        }
-
-        .guess-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 1px solid var(--frost-blue);
-            animation: fadeIn 0.5s ease;
-        }
-
+        /* Verhindert Flackern beim Laden und optimiert Scrollbar */
+        body { -webkit-font-smoothing: antialiased; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        #solution-area {
-            display: none;
-            margin-top: 40px;
-            text-align: center;
-            padding: 30px;
-            background: var(--polar-white);
-            border-radius: 15px;
-            border: 2px dashed var(--ice-blue);
-        }
-
-        .graphic-container {
-            margin: 30px 0;
-            position: relative;
-            height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .svg-illustration {
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .winner-badge {
-            background-color: var(--success);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            margin-top: 20px;
-            display: inline-block;
-        }
-
-        .teacher-controls {
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid var(--frost-blue);
-            text-align: center;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @media (max-width: 600px) {
-            .input-group {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white pb-12">
 
-    <div class="container">
-        <header>
-            <h1>Das Papier-Schätzspiel</h1>
-            <p>Mathematik zum Staunen</p>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <!-- Header -->
+        <header class="text-center mb-12 fade-in">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-500 mb-4 tracking-tight">
+                Mission: Papier bis zum Mond 🚀
+            </h1>
+            <p class="text-lg text-slate-400 max-w-2xl mx-auto">
+                Ein normales DIN-A4-Blatt ist ca. 0,1 mm dick. Die Entfernung zum Mond beträgt im Durchschnitt 384.400 km.<br>
+                <strong class="text-white">Wie oft musst du das Blatt in der Mitte falten, bis der Stapel den Mond erreicht?</strong>
+            </p>
         </header>
 
-        <div class="question-box">
-            <h3>Die Schätzfrage:</h3>
-            <p>Ein handelsübliches Blatt Papier ist etwa 0,1 mm dick. Angenommen, du könntest dieses Blatt immer wieder in der Mitte falten (und das Papier würde dabei nicht reißen oder zu klein werden):</p>
-            <p><strong>Wie oft müsstest du das Papier falten, damit der Stapel bis zum Mond reicht?</strong></p>
-            <small>(Entfernung Erde-Mond: ca. 384.400 km)</small>
-        </div>
-
-        <div id="input-section">
-            <div class="input-group">
-                <input type="text" id="studentName" placeholder="Dein Name">
-                <input type="number" id="studentGuess" placeholder="Deine Schätzung (Anzahl)">
-                <button class="btn-submit" onclick="addGuess()">Tipp abgeben</button>
-            </div>
-        </div>
-
-        <div class="list-container">
-            <h3>Teilnehmer (<span id="count">0</span>):</h3>
-            <ul id="guessList" class="guess-list">
-                <!-- Einträge erscheinen hier -->
-            </ul>
-        </div>
-
-        <div id="solution-area">
-            <h2>Die Auflösung</h2>
-            <div class="graphic-container">
-                <svg class="svg-illustration" viewBox="0 0 400 150">
-                    <!-- Erde -->
-                    <circle cx="50" cy="75" r="30" fill="#4a6d88" />
-                    <text x="35" y="120" font-size="12" fill="#2f3e46">Erde</text>
-                    
-                    <!-- Mond -->
-                    <circle cx="350" cy="75" r="15" fill="#9eb3c2" />
-                    <text x="335" y="110" font-size="12" fill="#2f3e46">Mond</text>
-                    
-                    <!-- Falt-Linie -->
-                    <path d="M 80 75 Q 215 20 335 75" fill="none" stroke="#2f3e46" stroke-width="2" stroke-dasharray="5,5" />
-                    
-                    <!-- Papier Stapel Animation -->
-                    <rect x="75" y="70" width="10" height="10" fill="white" stroke="#2f3e46">
-                        <animate attributeName="width" from="2" to="260" dur="3s" fill="freeze" />
-                        <animate attributeName="x" from="80" to="80" dur="3s" fill="freeze" />
-                    </rect>
-                </svg>
-            </div>
-            <p>Man muss das Papier nur <strong>42 Mal</strong> falten!</p>
-            <p><small>Rechnung: 0,1mm * 2^42 ≈ 439.804 km</small></p>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <div id="winnerDisplay"></div>
-        </div>
+            <!-- Linke Spalte: Formular & Liste -->
+            <div class="lg:col-span-4 flex flex-col gap-6">
+                <!-- Eingabe Formular -->
+                <div class="bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-700 fade-in">
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        ✍️ Tipp abgeben
+                    </h2>
+                    <form id="guessForm" class="flex flex-col gap-4">
+                        <div>
+                            <label for="studentName" class="block text-sm font-medium text-slate-300 mb-1">Name</label>
+                            <input type="text" id="studentName" required autocomplete="off" placeholder="z. B. Max Mustermann"
+                                class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label for="studentGuess" class="block text-sm font-medium text-slate-300 mb-1">Geschätzte Faltungen</label>
+                            <input type="number" id="studentGuess" required min="1" step="1" placeholder="Deine Zahl..."
+                                class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                        </div>
+                        <button type="submit" 
+                            class="mt-2 w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-indigo-500/30 transition-all min-h-[44px]">
+                            Tipp speichern
+                        </button>
+                    </form>
+                </div>
 
-        <div class="teacher-controls">
-            <button class="btn-teacher" id="revealBtn" onclick="revealSolution()">Lösung anzeigen (Nur Lehrer)</button>
-            <button class="btn-teacher hidden" id="resetBtn" onclick="resetGame()">Neues Spiel</button>
+                <!-- Teilnehmer Liste -->
+                <div class="bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-700 flex-grow fade-in flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">📊 Abgegebene Tipps</h2>
+                        <span id="entryCount" class="bg-indigo-500/20 text-indigo-300 text-xs font-bold px-3 py-1 rounded-full">0 Tipps</span>
+                    </div>
+                    <div class="flex-grow overflow-y-auto max-h-[300px] lg:max-h-full pr-2">
+                        <ul id="guessList" class="space-y-2">
+                            <!-- JS injects items here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rechte Spalte: Lehrer-Bereich & Lösung -->
+            <div class="lg:col-span-8 flex flex-col gap-6">
+                
+                <!-- Lehrer Control Panel -->
+                <div class="bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-700 flex justify-between items-center fade-in">
+                    <span class="text-slate-400 text-sm">Lehrer-Steuerung</span>
+                    <div class="flex gap-3">
+                        <button onclick="clearData()" 
+                            class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-2 px-4 rounded-lg transition-all min-h-[44px]">
+                            Zurücksetzen
+                        </button>
+                        <button id="revealBtn" onclick="requestReveal()" 
+                            class="bg-violet-600 hover:bg-violet-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg shadow-violet-500/30 transition-all min-h-[44px] flex items-center gap-2">
+                            <span>🔒 Auflösung zeigen</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Platzhalter vor Auflösung -->
+                <div id="waitingState" class="bg-slate-800/50 border border-slate-700 border-dashed rounded-2xl p-12 flex flex-col items-center justify-center text-center h-full min-h-[400px] fade-in">
+                    <div class="text-6xl mb-4 animate-pulse">🤔</div>
+                    <h3 class="text-2xl font-bold text-slate-300 mb-2">Warten auf die Auflösung...</h3>
+                    <p class="text-slate-500">Sobald alle getippt haben, wird die Lösung hier enthüllt.</p>
+                </div>
+
+                <!-- Lösungs-Ansicht (Initial versteckt) -->
+                <div id="solutionState" class="hidden flex-col gap-6 fade-in h-full">
+                    
+                    <!-- Gewinner Karte -->
+                    <div class="bg-gradient-to-br from-indigo-900 to-violet-900 rounded-2xl p-8 shadow-2xl border border-indigo-500/30 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-20 text-8xl transform translate-x-4 -translate-y-4">🏆</div>
+                        <h2 class="text-2xl font-bold text-indigo-200 mb-2">Die Lösung lautet: <span class="text-white text-4xl ml-2">42 Faltungen</span></h2>
+                        <p class="text-slate-300 mb-6">42 Faltungen entsprechen einer Dicke von ca. <strong class="text-white">439.804 km</strong>.</p>
+                        
+                        <div class="bg-slate-900/50 rounded-xl p-6 backdrop-blur-sm border border-white/10">
+                            <p class="text-sm text-indigo-300 uppercase font-semibold tracking-wider mb-1">Am nächsten dran:</p>
+                            <div id="winnerDisplay" class="text-3xl font-extrabold text-white flex items-center gap-3">
+                                <!-- JS injects winner -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Diagramm Karte -->
+                    <div class="bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-700 flex-grow">
+                        <h3 class="text-xl font-bold mb-4">Das exponentielle Wachstum visualisiert</h3>
+                        <div class="relative w-full h-[400px]">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                        <p class="text-sm text-slate-400 mt-4 text-center">
+                            Beachte: Lange Zeit scheint das Papier kaum dicker zu werden. Doch in den letzten Faltungen explodiert der Wert buchstäblich. Das ist das Wesen von <strong class="text-slate-200">f(x) = 0,1 · 2ˣ</strong>.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 
     <script>
-        let guesses = [];
-        const CORRECT_ANSWER = 42;
+        // State Management
+        const TARGET_FOLDS = 42;
+        const MOON_DISTANCE_KM = 384400;
+        const TEACHER_PIN = "1234";
+        
+        let guesses = JSON.parse(localStorage.getItem('paperFoldsGameData')) || [];
+        let chartInstance = null;
+        let isRevealed = localStorage.getItem('paperFoldsRevealed') === 'true';
 
-        function addGuess() {
-            const nameInput = document.getElementById('studentName');
-            const guessInput = document.getElementById('studentGuess');
-            
-            const name = nameInput.value.trim();
-            const guess = parseInt(guessInput.value);
+        // DOM Elements
+        const form = document.getElementById('guessForm');
+        const list = document.getElementById('guessList');
+        const countBadge = document.getElementById('entryCount');
+        const waitingState = document.getElementById('waitingState');
+        const solutionState = document.getElementById('solutionState');
+        const winnerDisplay = document.getElementById('winnerDisplay');
+        const revealBtn = document.getElementById('revealBtn');
 
-            if (name === "" || isNaN(guess)) {
-                alert("Bitte gib einen Namen und eine Zahl ein.");
-                return;
+        // Initialization
+        function init() {
+            renderList();
+            if (isRevealed) {
+                showSolution(false);
             }
-
-            guesses.push({ name, guess });
-
-            // Liste aktualisieren
-            const list = document.getElementById('guessList');
-            const li = document.createElement('li');
-            li.className = 'guess-item';
-            li.innerHTML = `<span>${name}</span> <span>Abgegeben ✓</span>`;
-            list.appendChild(li);
-
-            // Counter
-            document.getElementById('count').innerText = guesses.length;
-
-            // Felder leeren
-            nameInput.value = "";
-            guessInput.value = "";
-            nameInput.focus();
         }
 
-        function revealSolution() {
-            if (guesses.length === 0) {
-                alert("Es gibt noch keine Schätzungen!");
+        // Form Submit Handler
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('studentName').value.trim();
+            const guess = parseInt(document.getElementById('studentGuess').value, 10);
+
+            if (name && !isNaN(guess)) {
+                guesses.push({ id: Date.now(), name, guess });
+                saveData();
+                renderList();
+                form.reset();
+                document.getElementById('studentName').focus();
+            }
+        });
+
+        // Render Student List
+        function renderList() {
+            list.innerHTML = '';
+            countBadge.textContent = `${guesses.length} Tipp${guesses.length !== 1 ? 's' : ''}`;
+            
+            // Sort entries newest first
+            const sortedGuesses = [...guesses].sort((a, b) => b.id - a.id);
+
+            if (sortedGuesses.length === 0) {
+                list.innerHTML = '<li class="text-slate-500 text-sm italic text-center py-4">Noch keine Tipps abgegeben.</li>';
                 return;
             }
 
-            // Lösung einblenden
-            document.getElementById('solution-area').style.display = 'block';
-            document.getElementById('input-section').classList.add('hidden');
-            document.getElementById('revealBtn').classList.add('hidden');
-            document.getElementById('resetBtn').classList.remove('hidden');
-
-            // Gewinner ermitteln
-            let winner = guesses[0];
-            let minDiff = Math.abs(guesses[0].guess - CORRECT_ANSWER);
-
-            guesses.forEach(entry => {
-                const diff = Math.abs(entry.guess - CORRECT_ANSWER);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    winner = entry;
-                }
-            });
-
-            // Alle Ergebnisse in der Liste zeigen
-            const list = document.getElementById('guessList');
-            list.innerHTML = "";
-            guesses.sort((a, b) => Math.abs(a.guess - CORRECT_ANSWER) - Math.abs(b.guess - CORRECT_ANSWER));
-            
-            guesses.forEach((entry, index) => {
+            sortedGuesses.forEach(entry => {
                 const li = document.createElement('li');
-                li.className = 'guess-item';
-                if(index === 0) li.style.fontWeight = 'bold';
-                li.innerHTML = `<span>${entry.name}</span> <span>${entry.guess} (Diff: ${Math.abs(entry.guess - CORRECT_ANSWER)})</span>`;
+                li.className = 'bg-slate-900 border border-slate-700 rounded-lg p-3 flex justify-between items-center fade-in';
+                
+                // Format numbers nicely
+                const formattedGuess = new Intl.NumberFormat('de-DE').format(entry.guess);
+
+                li.innerHTML = `
+                    <span class="font-medium text-slate-200">${entry.name}</span>
+                    <span class="bg-slate-800 text-indigo-300 font-mono text-sm px-2 py-1 rounded border border-slate-700">
+                        ${formattedGuess} Faltungen
+                    </span>
+                `;
                 list.appendChild(li);
             });
-
-            const winnerDisplay = document.getElementById('winnerDisplay');
-            winnerDisplay.innerHTML = `
-                <div class="winner-badge">
-                    🏆 Gewinner: ${winner.name} mit einer Schätzung von ${winner.guess}!
-                </div>
-            `;
-
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
 
-        function resetGame() {
-            if(confirm("Wirklich alle Daten löschen und neu starten?")) {
-                guesses = [];
-                document.getElementById('guessList').innerHTML = "";
-                document.getElementById('count').innerText = "0";
-                document.getElementById('solution-area').style.display = 'none';
-                document.getElementById('input-section').classList.remove('hidden');
-                document.getElementById('revealBtn').classList.remove('hidden');
-                document.getElementById('resetBtn').classList.add('hidden');
+        // Teacher Reveal Logic
+        function requestReveal() {
+            if (isRevealed) return; // Already revealed
+            
+            const pin = prompt("Bitte Lehrer-PIN eingeben, um die Lösung zu zeigen:");
+            if (pin === TEACHER_PIN) {
+                isRevealed = true;
+                localStorage.setItem('paperFoldsRevealed', 'true');
+                showSolution(true);
+            } else if (pin !== null) {
+                alert("Falsche PIN!");
             }
         }
+
+        // Calculate Winner and Display Results
+        function showSolution(animate) {
+            waitingState.classList.add('hidden');
+            solutionState.classList.remove('hidden');
+            solutionState.style.display = 'flex'; // Tailwind override fix
+            revealBtn.innerHTML = '<span>✅ Aufgelöst</span>';
+            revealBtn.classList.replace('bg-violet-600', 'bg-emerald-600');
+            revealBtn.classList.replace('hover:bg-violet-500', 'hover:bg-emerald-500');
+            revealBtn.disabled = true;
+            revealBtn.classList.add('cursor-not-allowed', 'opacity-80');
+
+            // Find Winner
+            if (guesses.length > 0) {
+                let closest = guesses[0];
+                let minDiff = Math.abs(TARGET_FOLDS - guesses[0].guess);
+
+                for (let i = 1; i < guesses.length; i++) {
+                    const diff = Math.abs(TARGET_FOLDS - guesses[i].guess);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closest = guesses[i];
+                    }
+                }
+
+                const offBy = minDiff === 0 ? "Exakt richtig!" : `Daneben um: ${minDiff}`;
+                const formattedWinnerGuess = new Intl.NumberFormat('de-DE').format(closest.guess);
+
+                winnerDisplay.innerHTML = `
+                    <span>🎉 ${closest.name}</span>
+                    <span class="text-xl font-normal text-indigo-200 bg-black/20 px-3 py-1 rounded-lg ml-auto">
+                        Tipp: ${formattedWinnerGuess} <span class="text-sm block text-right opacity-80">${offBy}</span>
+                    </span>
+                `;
+            } else {
+                winnerDisplay.innerHTML = `<span class="text-slate-400 text-lg font-normal">Niemand hat getippt.</span>`;
+            }
+
+            renderChart(animate);
+        }
+
+        // Generate Chart.js Visualization
+        function renderChart(animate) {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            
+            // Generate Data Points (0 to 44 folds to show it passing the moon)
+            const labels = [];
+            const dataKm = [];
+            for (let i = 0; i <= 44; i++) {
+                labels.push(i);
+                // Thickness in mm = 0.1 * 2^i. Convert to km: / 1,000,000,000
+                const km = (0.1 * Math.pow(2, i)) / 1000000; 
+                dataKm.push(km);
+            }
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Papierdicke (km)',
+                            data: dataKm,
+                            borderColor: '#8b5cf6', // Violet 500
+                            backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#6366f1', // Indigo 500
+                            pointBorderColor: '#ffffff',
+                            pointRadius: (ctx) => {
+                                // Highlight target fold
+                                return ctx.dataIndex === 42 ? 8 : 0;
+                            },
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Entfernung zum Mond (384.400 km)',
+                            data: Array(45).fill(MOON_DISTANCE_KM),
+                            borderColor: '#94a3b8', // Slate 400
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: animate ? {
+                        duration: 3000, // Slow reveal of the exponential explosion
+                        easing: 'easeOutQuart'
+                    } : false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#cbd5e1', font: { family: 'system-ui', size: 13 } }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#f8fafc',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            callbacks: {
+                                title: (items) => `${items[0].label}. Faltung`,
+                                label: (item) => {
+                                    if(item.datasetIndex === 1) return 'Mond: 384.400 km';
+                                    let val = item.raw;
+                                    if(val < 1) return `Dicke: ${(val * 1000).toFixed(2)} Meter`;
+                                    return `Dicke: ${new Intl.NumberFormat('de-DE', {maximumFractionDigits: 0}).format(val)} km`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Anzahl der Faltungen (Exponent)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Dicke', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { 
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    if (value === 0) return '0';
+                                    return new Intl.NumberFormat('de-DE').format(value) + ' km';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Data Management
+        function saveData() {
+            localStorage.setItem('paperFoldsGameData', JSON.stringify(guesses));
+        }
+
+        function clearData() {
+            if(confirm("Möchtest du wirklich alle Tipps löschen und neu starten?")) {
+                guesses = [];
+                isRevealed = false;
+                localStorage.removeItem('paperFoldsGameData');
+                localStorage.removeItem('paperFoldsRevealed');
+                
+                // Reset UI
+                waitingState.classList.remove('hidden');
+                solutionState.classList.add('hidden');
+                solutionState.style.display = '';
+                
+                revealBtn.innerHTML = '<span>🔒 Auflösung zeigen</span>';
+                revealBtn.className = 'bg-violet-600 hover:bg-violet-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg shadow-violet-500/30 transition-all min-h-[44px] flex items-center gap-2';
+                revealBtn.disabled = false;
+
+                if (chartInstance) {
+                    chartInstance.destroy();
+                    chartInstance = null;
+                }
+                
+                renderList();
+            }
+        }
+
+        // Run
+        init();
     </script>
 </body>
 </html>
