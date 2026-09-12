@@ -24,7 +24,9 @@
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    
+    <!-- KORREKTUR: Die richtige QR-Code Bibliothek -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
@@ -64,7 +66,8 @@
 
     <script>
         // --- 1. STATE & DATENSTRUKTUR ---
-        const STORAGE_KEY = 'sitzplan_data_v10';
+        const STORAGE_KEY = 'sitzplan_data_v11'; 
+        const FIXED_STUDENT_URL = 'https://magerquarkabuser.github.io/my-websites/sitzplan-manager/?student=1';
         
         let state = {
             className: 'Klasse 10A',
@@ -268,12 +271,10 @@
                         <h2 class="text-xl font-black text-slate-900 mb-2">Schüler-Wahl</h2>
                         <p class="text-sm font-bold text-slate-600 mb-6">QR Code scannen für Wünsche.</p>
                         
-                        <!-- QR Code Container -->
+                        <!-- Hier erscheint jetzt sicher der QR Code -->
                         <div id="qrcode" class="flex justify-center mb-6 p-4 bg-white border-2 border-slate-300 rounded-xl shadow-sm"></div>
                         
-                        <!-- URL Textfeld -->
-                        <input type="text" id="qrLink" readonly class="w-full p-2.5 bg-slate-50 border-2 border-slate-300 rounded-lg text-center font-mono text-xs font-black text-primary-600 mb-4 outline-none select-all cursor-pointer" onclick="this.select()">
-                        
+                        <input type="text" id="qrLink" readonly class="w-full p-2.5 bg-slate-50 border-2 border-slate-300 rounded-lg text-center font-mono text-xs font-black text-primary-600 mb-4 outline-none select-all cursor-pointer" onclick="this.select()" title="Klicken zum Kopieren">
                         <button onclick="closeQRModal()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition shadow-sm">Schließen</button>
                     </div>
                 </div>
@@ -617,13 +618,10 @@
         function openQRModal() {
             document.getElementById('qrModal').classList.remove('hidden');
             
-            // Deine gewünschte GitHub-URL
-            const studentUrl = 'https://magerquarkabuser.github.io/my-websites/sitzplan-manager/?student=1';
-            
-            // 1. Die URL in das Textfeld eintragen
+            const studentUrl = FIXED_STUDENT_URL;
             document.getElementById('qrLink').value = studentUrl;
             
-            // 2. Den QR Code absolut fehlerfrei für diese URL generieren
+            // KORREKTUR: Die richtige QRCode Klasse nutzen
             const qrContainer = document.getElementById('qrcode');
             qrContainer.innerHTML = '';
             new QRCode(qrContainer, { 
