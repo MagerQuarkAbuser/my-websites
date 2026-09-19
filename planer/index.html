@@ -464,12 +464,12 @@
     const playlist = ['song1.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3'];
     let currentSongIndex = 0;
     const bgAudio = new Audio();
-    const dateAudio = new Audio('date-song.mp3');
-    const secretAudio = new Audio('geheimmodus.mp3');
-    const customBokAudio = new Audio('bok.mp3');
+    const dateAudio = new Audio('date-song.mp3?v=2');
+    const secretAudio = new Audio('geheimmodus.mp3?v=2');
+    const customBokAudio = new Audio('bok.mp3?v=2');
     
     // Audio für das Minispiel
-    const gameBgm = new Audio('spielsong.mp3');
+    const gameBgm = new Audio('spielsong.mp3?v=2');
     gameBgm.loop = true;
     
     // Web Audio API für Synth-Sounds
@@ -529,7 +529,7 @@
       updateLoveTicker();
       setupSwipeGestures();
       initMiniGame(); 
-      setupZoomDrag(); // Müllkalender Drag & Drop initialisieren
+      setupZoomDrag();
       
       const lastTab = localStorage.getItem('planer_last_tab') || 'home';
       showTab(lastTab);
@@ -544,19 +544,28 @@
     // Audio Setup
     function setupAudio() {
       bgAudio.src = playlist[currentSongIndex]; bgAudio.addEventListener('ended', nextSong);
+      
       const unlock = () => { 
         if (!isAudioUnlocked) { 
           isAudioUnlocked = true; 
           initGameAudio(); 
+          
+          dateAudio.load();
+          secretAudio.load();
+          customBokAudio.load();
+          gameBgm.load();
+
           if(!isGameRunning && document.querySelector('.tab-content.active').id !== 'tab-game') {
             bgAudio.play().then(() => updatePlayIcon(true)).catch(() => {}); 
           }
         } 
         window.removeEventListener('click', unlock); window.removeEventListener('touchstart', unlock); 
       };
+      
       window.addEventListener('click', unlock); window.addEventListener('touchstart', unlock);
       document.getElementById('btn-toggle-play').onclick = togglePlay; document.getElementById('btn-next-song').onclick = nextSong;
     }
+    
     function togglePlay() { if (bgAudio.paused) { bgAudio.play(); updatePlayIcon(true); } else { bgAudio.pause(); updatePlayIcon(false); } }
     function nextSong() { currentSongIndex = (currentSongIndex + 1) % playlist.length; bgAudio.src = playlist[currentSongIndex]; bgAudio.play(); updatePlayIcon(true); }
     function updatePlayIcon(isPlaying) { document.getElementById('btn-toggle-play').textContent = isPlaying ? '⏸️' : '▶️'; }
@@ -715,7 +724,7 @@
     }
 
     // ==========================================
-    // TABS & NAVIGATION
+    // TABS & NAVIGATION 
     // ==========================================
     function showTab(name) {
       const currentActive = document.querySelector('.tab-content.active');
@@ -737,7 +746,6 @@
       document.querySelectorAll('.nav-tab').forEach(el => {
         if (el.getAttribute('data-tab') === name) {
           el.classList.add('active');
-          // Exaktes Scrollen der Menüleiste, verhindert das nervige "Zucken" der ganzen Website
           const navBar = document.querySelector('nav');
           const scrollPos = el.offsetLeft - (navBar.clientWidth / 2) + (el.clientWidth / 2);
           navBar.scrollTo({ left: scrollPos, behavior: 'smooth' });
@@ -754,9 +762,7 @@
       window.addEventListener('touchstart', e => {
         touchStartX = null; touchStartY = null;
         
-        // Verhindert Tab-Wechsel beim Wischen in der Menüleiste oder im Spiel!
         if (e.target.closest('nav') || e.target.closest('#game-container')) return; 
-        
         if (document.querySelector('.modal-overlay[style*="display: flex"]') || document.getElementById('bok-overlay').classList.contains('active') || document.getElementById('chillgriff-overlay').classList.contains('active') || document.getElementById('muell-zoom-modal').classList.contains('active')) return;
         
         touchStartX = e.changedTouches[0].screenX; 
@@ -783,131 +789,42 @@
     // ==========================================
     // MÜLLKALENDER DRAG & DROP & ZOOM LOGIK
     // ==========================================
-    let currentZoomScale = 1;
-    let currentTranslateX = 0;
-    let currentTranslateY = 0;
-    let isDraggingZoom = false;
-    let startDragX = 0;
-    let startDragY = 0;
-
-    function updateZoomTransform() {
-      const img = document.getElementById('muell-zoom-img');
-      img.style.transform = `translate(${currentTranslateX}px, ${currentTranslateY}px) scale(${currentZoomScale})`;
-    }
-
+    let currentZoomScale = 1; let currentTranslateX = 0; let currentTranslateY = 0; let isDraggingZoom = false; let startDragX = 0; let startDragY = 0;
+    function updateZoomTransform() { const img = document.getElementById('muell-zoom-img'); img.style.transform = `translate(${currentTranslateX}px, ${currentTranslateY}px) scale(${currentZoomScale})`; }
     function setupZoomDrag() {
-      const img = document.getElementById('muell-zoom-img');
-      const modal = document.getElementById('muell-zoom-modal');
-      
-      const startDrag = (x, y) => {
-        if (currentZoomScale <= 1) return;
-        isDraggingZoom = true;
-        startDragX = x - currentTranslateX;
-        startDragY = y - currentTranslateY;
-        img.style.cursor = 'grabbing';
-      };
-      
-      const doDrag = (x, y) => {
-        if (!isDraggingZoom) return;
-        currentTranslateX = x - startDragX;
-        currentTranslateY = y - startDragY;
-        updateZoomTransform();
-      };
-      
-      const endDrag = () => {
-        isDraggingZoom = false;
-        img.style.cursor = 'grab';
-      };
-
-      // Maus Events für PC
-      img.addEventListener('mousedown', e => { e.preventDefault(); startDrag(e.clientX, e.clientY); });
-      window.addEventListener('mousemove', e => doDrag(e.clientX, e.clientY));
-      window.addEventListener('mouseup', endDrag);
-
-      // Touch Events für Handy
-      img.addEventListener('touchstart', e => {
-        if(e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
-      }, { passive: false });
-      
-      modal.addEventListener('touchmove', e => {
-        if(isDraggingZoom && e.touches.length === 1) {
-          e.preventDefault(); // Verhindert globales Scrollen während man das Bild verschiebt
-          doDrag(e.touches[0].clientX, e.touches[0].clientY);
-        }
-      }, { passive: false });
-      
+      const img = document.getElementById('muell-zoom-img'); const modal = document.getElementById('muell-zoom-modal');
+      const startDrag = (x, y) => { if (currentZoomScale <= 1) return; isDraggingZoom = true; startDragX = x - currentTranslateX; startDragY = y - currentTranslateY; img.style.cursor = 'grabbing'; };
+      const doDrag = (x, y) => { if (!isDraggingZoom) return; currentTranslateX = x - startDragX; currentTranslateY = y - startDragY; updateZoomTransform(); };
+      const endDrag = () => { isDraggingZoom = false; img.style.cursor = 'grab'; };
+      img.addEventListener('mousedown', e => { e.preventDefault(); startDrag(e.clientX, e.clientY); }); window.addEventListener('mousemove', e => doDrag(e.clientX, e.clientY)); window.addEventListener('mouseup', endDrag);
+      img.addEventListener('touchstart', e => { if(e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+      modal.addEventListener('touchmove', e => { if(isDraggingZoom && e.touches.length === 1) { e.preventDefault(); doDrag(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
       modal.addEventListener('touchend', endDrag);
     }
-
-    function openMuellZoom() { 
-      const preview = document.getElementById('muell-img-preview');
-      if (!preview.src) return;
-      document.getElementById('muell-zoom-img').src = preview.src; 
-      currentZoomScale = 1; currentTranslateX = 0; currentTranslateY = 0;
-      updateZoomTransform();
-      document.getElementById('muell-zoom-modal').classList.add('active'); 
-    }
-    
-    function closeMuellZoom() { 
-      document.getElementById('muell-zoom-modal').classList.remove('active'); 
-    }
-    
-    function zoomInImg() { 
-      currentZoomScale = Math.min(currentZoomScale + 0.5, 4); 
-      updateZoomTransform(); 
-    }
-    
-    function zoomOutImg() { 
-      currentZoomScale = Math.max(currentZoomScale - 0.5, 1); 
-      if(currentZoomScale === 1) { currentTranslateX = 0; currentTranslateY = 0; }
-      updateZoomTransform(); 
-    }
-    
-    function resetZoomImg() { 
-      currentZoomScale = 1; currentTranslateX = 0; currentTranslateY = 0; 
-      updateZoomTransform(); 
-    }
-
+    function openMuellZoom() { const preview = document.getElementById('muell-img-preview'); if (!preview.src) return; document.getElementById('muell-zoom-img').src = preview.src; currentZoomScale = 1; currentTranslateX = 0; currentTranslateY = 0; updateZoomTransform(); document.getElementById('muell-zoom-modal').classList.add('active'); }
+    function closeMuellZoom() { document.getElementById('muell-zoom-modal').classList.remove('active'); }
+    function zoomInImg() { currentZoomScale = Math.min(currentZoomScale + 0.5, 4); updateZoomTransform(); }
+    function zoomOutImg() { currentZoomScale = Math.max(currentZoomScale - 0.5, 1); if(currentZoomScale === 1) { currentTranslateX = 0; currentTranslateY = 0; } updateZoomTransform(); }
+    function resetZoomImg() { currentZoomScale = 1; currentTranslateX = 0; currentTranslateY = 0; updateZoomTransform(); }
     function enableMuellTitleEdit() { document.getElementById('muell-title-edit-box').style.display = 'block'; document.getElementById('muell-title-input').value = appData.muellTitle || "Müllkalender"; document.getElementById('muell-title-input').focus(); }
     function saveMuellTitle() { appData.muellTitle = document.getElementById('muell-title-input').value.trim() || "Müllkalender"; document.getElementById('muell-title-edit-box').style.display = 'none'; renderMuellView(); syncData(); }
-    function handleMuellUpload(event) {
-      const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
-      reader.onload = function(e) { fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime(), { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "uploadMuell", muellTitle: appData.muellTitle, muellFile: { data: e.target.result, name: file.name, type: file.type } }) }).then(() => { setTimeout(fetchRemoteData, 1500); }); }; reader.readAsDataURL(file);
-    }
+    function handleMuellUpload(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime(), { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "uploadMuell", muellTitle: appData.muellTitle, muellFile: { data: e.target.result, name: file.name, type: file.type } }) }).then(() => { setTimeout(fetchRemoteData, 1500); }); }; reader.readAsDataURL(file); }
     function clearMuellFile() { appData.muellFileUrl = null; renderMuellView(); syncData(); }
-    function renderMuellView() {
-      document.getElementById('muell-file-title').textContent = appData.muellTitle || "Müllkalender";
-      if (!appData.muellFileUrl) { document.getElementById('muell-display-area').style.display = 'none'; document.getElementById('muell-empty-notice').style.display = 'block'; return; }
-      document.getElementById('muell-display-area').style.display = 'block'; document.getElementById('muell-empty-notice').style.display = 'none';
-      const imgPreview = document.getElementById('muell-img-preview'); imgPreview.src = appData.muellFileUrl; imgPreview.style.display = 'block';
-    }
+    function renderMuellView() { document.getElementById('muell-file-title').textContent = appData.muellTitle || "Müllkalender"; if (!appData.muellFileUrl) { document.getElementById('muell-display-area').style.display = 'none'; document.getElementById('muell-empty-notice').style.display = 'block'; return; } document.getElementById('muell-display-area').style.display = 'block'; document.getElementById('muell-empty-notice').style.display = 'none'; const imgPreview = document.getElementById('muell-img-preview'); imgPreview.src = appData.muellFileUrl; imgPreview.style.display = 'block'; }
 
     // ==========================================
     // GALERIE, LISTEN, DATE, EASTER EGGS
     // ==========================================
-    function handleGalleryUpload(event) {
-      const files = event.target.files; if (!files || files.length === 0) return;
-      const statusEl = document.getElementById('upload-status'); statusEl.textContent = `${files.length} Bild(er) werden gespeichert... ⏳`;
-      let processedCount = 0; const base64Images = [];
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i]; const reader = new FileReader();
-        reader.onload = function(e) { base64Images.push({ base64: e.target.result, type: file.type, name: file.name }); processedCount++; if (processedCount === files.length) { sendImagesToCloud(base64Images, statusEl); } }; reader.readAsDataURL(file);
-      }
-    }
-    function sendImagesToCloud(imagesArray, statusEl) {
-      fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime(), { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "uploadImages", images: imagesArray }) }).then(() => { if (statusEl) { statusEl.textContent = "Erfolgreich gespeichert! 🎉"; setTimeout(() => { statusEl.textContent = ""; }, 3500); } setTimeout(fetchRemoteData, 1500); }).catch(() => { if (statusEl) statusEl.textContent = "Upload-Fehler."; });
-    }
+    function handleGalleryUpload(event) { const files = event.target.files; if (!files || files.length === 0) return; const statusEl = document.getElementById('upload-status'); statusEl.textContent = `${files.length} Bild(er) werden gespeichert... ⏳`; let processedCount = 0; const base64Images = []; for (let i = 0; i < files.length; i++) { const file = files[i]; const reader = new FileReader(); reader.onload = function(e) { base64Images.push({ base64: e.target.result, type: file.type, name: file.name }); processedCount++; if (processedCount === files.length) { sendImagesToCloud(base64Images, statusEl); } }; reader.readAsDataURL(file); } }
+    function sendImagesToCloud(imagesArray, statusEl) { fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime(), { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "uploadImages", images: imagesArray }) }).then(() => { if (statusEl) { statusEl.textContent = "Erfolgreich gespeichert! 🎉"; setTimeout(() => { statusEl.textContent = ""; }, 3500); } setTimeout(fetchRemoteData, 1500); }).catch(() => { if (statusEl) statusEl.textContent = "Upload-Fehler."; }); }
+    
     let slideshowInterval = null;
     function startSlideshow() {
       const imgEl = document.getElementById('slideshow-img'); if (!imgEl) return;
       function showRandomImage() {
         const images = appData.galleryImages || []; if (images.length === 0) { imgEl.style.opacity = 0; return; }
         imgEl.style.opacity = 0;
-        setTimeout(() => {
-          imgEl.src = images[Math.floor(Math.random() * images.length)];
-          imgEl.onload = () => { imgEl.style.opacity = 1; };
-          imgEl.onerror = () => { setTimeout(showRandomImage, 1000); };
-        }, 500);
+        setTimeout(() => { imgEl.src = images[Math.floor(Math.random() * images.length)]; imgEl.onload = () => { imgEl.style.opacity = 1; }; imgEl.onerror = () => { setTimeout(showRandomImage, 1000); }; }, 500);
       }
       showRandomImage(); if (slideshowInterval) clearInterval(slideshowInterval); slideshowInterval = setInterval(showRandomImage, 4500);
     }
