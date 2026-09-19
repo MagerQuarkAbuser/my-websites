@@ -464,12 +464,12 @@
     const playlist = ['song1.mp3', 'song2.mp3', 'song3.mp3', 'song4.mp3'];
     let currentSongIndex = 0;
     const bgAudio = new Audio();
-    const dateAudio = new Audio('date-song.mp3?v=2');
-    const secretAudio = new Audio('geheimmodus.mp3?v=2');
-    const customBokAudio = new Audio('bok.mp3?v=2');
+    const dateAudio = new Audio('date-song.mp3?v=3');
+    const secretAudio = new Audio('geheimmodus.mp3?v=3');
+    const customBokAudio = new Audio('bok.mp3?v=3');
     
     // Audio für das Minispiel
-    const gameBgm = new Audio('spielsong.mp3?v=2');
+    const gameBgm = new Audio('spielsong.mp3?v=3');
     gameBgm.loop = true;
     
     // Web Audio API für Synth-Sounds
@@ -541,7 +541,7 @@
       }
     });
 
-    // Audio Setup
+    // Audio Setup mit ultimativem iOS-Unlock-Hack
     function setupAudio() {
       bgAudio.src = playlist[currentSongIndex]; bgAudio.addEventListener('ended', nextSong);
       
@@ -550,10 +550,23 @@
           isAudioUnlocked = true; 
           initGameAudio(); 
           
-          dateAudio.load();
-          secretAudio.load();
-          customBokAudio.load();
-          gameBgm.load();
+          // DER ULTIMATIVE IOS/ANDROID ENTSPERR-HACK:
+          // Jedes Lied wird für eine Millisekunde stumm abgespielt. 
+          // So denkt das Handy, der Nutzer hätte sie selbst gestartet!
+          const allTracks = [dateAudio, secretAudio, customBokAudio, gameBgm];
+          allTracks.forEach(track => {
+            track.muted = true;
+            const playPromise = track.play();
+            if (playPromise !== undefined) {
+              playPromise.then(() => {
+                track.pause();
+                track.currentTime = 0;
+                track.muted = false;
+              }).catch(() => {
+                track.muted = false;
+              });
+            }
+          });
 
           if(!isGameRunning && document.querySelector('.tab-content.active').id !== 'tab-game') {
             bgAudio.play().then(() => updatePlayIcon(true)).catch(() => {}); 
@@ -630,6 +643,7 @@
       bgAudio.pause();
       updatePlayIcon(false);
       gameBgm.currentTime = 0;
+      gameBgm.volume = 1;
       gameBgm.play().catch(() => {});
 
       if (gameLoopId) cancelAnimationFrame(gameLoopId);
@@ -860,6 +874,7 @@
 
       bgAudio.pause();
       secretAudio.currentTime = 0;
+      secretAudio.volume = 1;
       secretAudio.play().catch(e => console.log('Secret Audio Blocked:', e));
 
       function spawnHead() { 
@@ -924,7 +939,28 @@
     function dodgeNoButton(e) { if (e) e.preventDefault(); const btn = document.getElementById('btn-no'); btn.style.transform = `translate(${(Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 80) + 70)}px, ${(Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 60) + 40)}px)`; }
     function acceptDate() { document.getElementById('date-popup-modal').style.display = 'none'; appData.dateEinladung.status = 'accepted'; lastKnownInviteStatus = 'accepted'; appData.termine.push({ date: appData.dateEinladung.date, time: appData.dateEinladung.time, title: `Date: ${appData.dateEinladung.text} ❤️`, category: 'date' }); syncData(); renderAll(); if (currentUser === 'vanessa') { startGentlePartyMode(); } }
 
-    function startGentlePartyMode() { document.getElementById('party-stage').style.display = 'block'; const partyEmojis = ['🍾', '🥂', '🎉', '💖', '✨']; partyParticleInterval = setInterval(() => { const p = document.createElement('div'); p.className = 'party-particle'; p.textContent = partyEmojis[Math.floor(Math.random() * partyEmojis.length)]; p.style.setProperty('--startX', (Math.random() * 95) + 'vw'); p.style.setProperty('--endX', ((Math.random() - 0.5) * 40) + 'vw'); p.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg'); document.body.appendChild(p); setTimeout(() => p.remove(), 4000); }, 280); setTimeout(() => { clearInterval(partyParticleInterval); document.getElementById('party-stage').style.display = 'none'; document.querySelectorAll('.party-particle').forEach(p => p.remove()); }, 30000); }
+    function startGentlePartyMode() { 
+      document.getElementById('party-stage').style.display = 'block'; 
+      
+      bgAudio.pause();
+      dateAudio.currentTime = 0;
+      dateAudio.volume = 1;
+      dateAudio.play().catch(err => console.log('Date Audio Playblock:', err));
+
+      const partyEmojis = ['🍾', '🥂', '🎉', '💖', '✨']; 
+      partyParticleInterval = setInterval(() => { const p = document.createElement('div'); p.className = 'party-particle'; p.textContent = partyEmojis[Math.floor(Math.random() * partyEmojis.length)]; p.style.setProperty('--startX', (Math.random() * 95) + 'vw'); p.style.setProperty('--endX', ((Math.random() - 0.5) * 40) + 'vw'); p.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg'); document.body.appendChild(p); setTimeout(() => p.remove(), 4000); }, 280); 
+      
+      setTimeout(() => { 
+        clearInterval(partyParticleInterval); 
+        document.getElementById('party-stage').style.display = 'none'; 
+        document.querySelectorAll('.party-particle').forEach(p => p.remove()); 
+        
+        dateAudio.pause();
+        dateAudio.currentTime = 0;
+        bgAudio.play().catch(() => {});
+        updatePlayIcon(true);
+      }, 30000); 
+    }
 
     function renderAll() { renderEinkauf(); renderTodos(); renderTermine(); renderDateStatus(); renderMuellView(); document.getElementById('pony-display').textContent = `Pony ${appData.ponyCounter || 0}`; const galEl = document.getElementById('dash-galerie-count'); if (galEl) { galEl.textContent = (appData.galleryImages ? appData.galleryImages.length : 0) + " Bilder"; } }
     function loadLocalData() { const saved = localStorage.getItem('planer_data'); if (saved) { try { appData = JSON.parse(saved); lastKnownInviteStatus = appData.dateEinladung ? appData.dateEinladung.status : null; } catch(e){} } }
