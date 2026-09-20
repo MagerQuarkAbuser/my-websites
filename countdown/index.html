@@ -162,7 +162,7 @@
             box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
         }
 
-        #laugh-message {
+        #laugh-message, #sauerkraut-message {
             margin-top: 30px;
             font-size: 1.2rem;
             color: var(--silver);
@@ -170,6 +170,13 @@
             text-align: center;
             display: none;
             animation: pulse 2s infinite;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
         }
     </style>
 </head>
@@ -198,8 +205,12 @@
     </div>
 
     <div id="curiosity-section">
-        <button id="curiosity-btn" class="curiosity-btn">Ich bin neugierig und will meine Überraschung sehen</button>
+        <div class="button-group">
+            <button id="curiosity-btn" class="curiosity-btn">Ich bin neugierig und will meine Überraschung sehen</button>
+            <button id="more-btn" class="curiosity-btn">Ich will mehr</button>
+        </div>
         <div id="laugh-message">Hahaha! 😂 Netter Versuch, aber du musst dich noch gedulden!</div>
+        <div id="sauerkraut-message">Sauerkraut bestellt</div>
     </div>
 
     <script>
@@ -237,6 +248,15 @@
         document.getElementById('curiosity-btn').addEventListener('click', function() {
             this.style.display = 'none';
             document.getElementById('laugh-message').style.display = 'block';
+        });
+
+        // More Button Logic
+        document.getElementById('more-btn').addEventListener('click', function() {
+            const msg = document.getElementById('sauerkraut-message');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
         });
 
         // Initialer Aufruf
