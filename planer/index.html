@@ -368,7 +368,7 @@
         <div class="section-card" style="text-align: center;">
           <div class="section-title">Unsere Momente 🤍</div>
           
-          <!-- Diashow Box jetzt klickbar für Vollbild -->
+          <!-- Diashow Box klickbar für Vollbild -->
           <div style="width: 100%; height: 280px; border-radius: 16px; overflow: hidden; background: #0f172a; position: relative; margin-bottom: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="openFullscreenSlideshow()">
             <img id="slideshow-img" style="max-width: 100%; max-height: 100%; object-fit: contain; transition: opacity 0.8s ease-in-out; opacity: 0;" alt="Diashow">
             <div style="position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,0.6); color: white; padding: 4px 12px; border-radius: 99px; font-size: 0.8rem; pointer-events: none;">🔍 Vollbild</div>
@@ -558,7 +558,7 @@
       }
     });
 
-    // Audio Setup 
+    // Audio Setup
     function setupAudio() {
       bgAudio.src = playlist[currentSongIndex]; bgAudio.addEventListener('ended', nextSong);
       
@@ -875,7 +875,6 @@
           imgEl.src = nextImg; 
           
           if (fsImgEl) {
-            // Verhindert Flackern im Vollbild: Wartet kurz, bis das src gesetzt ist
             setTimeout(() => { fsImgEl.src = nextImg; }, 100);
           }
 
@@ -985,7 +984,30 @@
     function dodgeNoButton(e) { if (e) e.preventDefault(); const btn = document.getElementById('btn-no'); btn.style.transform = `translate(${(Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 80) + 70)}px, ${(Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 60) + 40)}px)`; }
     function acceptDate() { document.getElementById('date-popup-modal').style.display = 'none'; appData.dateEinladung.status = 'accepted'; lastKnownInviteStatus = 'accepted'; appData.termine.push({ date: appData.dateEinladung.date, time: appData.dateEinladung.time, title: `Date: ${appData.dateEinladung.text} ❤️`, category: 'date' }); syncData(); renderAll(); if (currentUser === 'vanessa') { startGentlePartyMode(); } }
 
-    function startGentlePartyMode() { document.getElementById('party-stage').style.display = 'block'; const partyEmojis = ['🍾', '🥂', '🎉', '💖', '✨']; partyParticleInterval = setInterval(() => { const p = document.createElement('div'); p.className = 'party-particle'; p.textContent = partyEmojis[Math.floor(Math.random() * partyEmojis.length)]; p.style.setProperty('--startX', (Math.random() * 95) + 'vw'); p.style.setProperty('--endX', ((Math.random() - 0.5) * 40) + 'vw'); p.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg'); document.body.appendChild(p); setTimeout(() => p.remove(), 4000); }, 280); setTimeout(() => { clearInterval(partyParticleInterval); document.getElementById('party-stage').style.display = 'none'; document.querySelectorAll('.party-particle').forEach(p => p.remove()); }, 30000); }
+    function startGentlePartyMode() { 
+      document.getElementById('party-stage').style.display = 'block'; 
+      
+      // Partymodus Sound Fix!
+      bgAudio.pause();
+      dateAudio.currentTime = 0;
+      dateAudio.volume = 1;
+      dateAudio.play().catch(err => console.log('Date Audio Playblock:', err));
+
+      const partyEmojis = ['🍾', '🥂', '🎉', '💖', '✨']; 
+      partyParticleInterval = setInterval(() => { const p = document.createElement('div'); p.className = 'party-particle'; p.textContent = partyEmojis[Math.floor(Math.random() * partyEmojis.length)]; p.style.setProperty('--startX', (Math.random() * 95) + 'vw'); p.style.setProperty('--endX', ((Math.random() - 0.5) * 40) + 'vw'); p.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg'); document.body.appendChild(p); setTimeout(() => p.remove(), 4000); }, 280); 
+      
+      setTimeout(() => { 
+        clearInterval(partyParticleInterval); 
+        document.getElementById('party-stage').style.display = 'none'; 
+        document.querySelectorAll('.party-particle').forEach(p => p.remove()); 
+        
+        // Aufräumen des Sounds nach der Party!
+        dateAudio.pause();
+        dateAudio.currentTime = 0;
+        bgAudio.play().catch(() => {});
+        updatePlayIcon(true);
+      }, 30000); 
+    }
 
     function renderAll() { renderEinkauf(); renderTodos(); renderTermine(); renderDateStatus(); renderMuellView(); document.getElementById('pony-display').textContent = `Pony ${appData.ponyCounter || 0}`; const galEl = document.getElementById('dash-galerie-count'); if (galEl) { galEl.textContent = (appData.galleryImages ? appData.galleryImages.length : 0) + " Bilder"; } }
     function loadLocalData() { const saved = localStorage.getItem('planer_data'); if (saved) { try { appData = JSON.parse(saved); lastKnownInviteStatus = appData.dateEinladung ? appData.dateEinladung.status : null; } catch(e){} } }
