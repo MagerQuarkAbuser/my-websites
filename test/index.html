@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaß mit Mathe - Variablen-Abenteuer</title>
+    <style>
+        :root {
+            --coral: #FF7F50;
+            --peach: #FFDAB9;
+            --amber: #FFBF00;
+            --dark-text: #4A2C2A;
+            --light-bg: #FFF9F5;
+            --white: #ffffff;
+            --success: #4CAF50;
+            --error: #F44336;
+            --gradient: linear-gradient(135deg, #FF7F50, #FFBF00);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--gradient);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(255, 127, 80, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        p.subtitle { font-size: 1.1rem; opacity: 0.9; margin-bottom: 1.5rem; }
+
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: var(--peach);
+            border-radius: 10px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .question-box h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+
+        .btn {
+            padding: 1rem;
+            border: 2px solid var(--peach);
+            background: var(--white);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            color: var(--dark-text);
+        }
+
+        .btn:hover {
+            background: var(--peach);
+            transform: translateY(-2px);
+        }
+
+        .btn.correct {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .btn.wrong {
+            background-color: var(--error);
+            color: white;
+            border-color: var(--error);
+        }
+
+        .start-btn, .restart-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3);
+        }
+
+        .hidden { display: none; }
+
+        .feedback {
+            margin-top: 1.5rem;
+            font-weight: bold;
+            min-height: 1.5rem;
+        }
+
+        .score-display {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--coral);
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .math-box {
+            background: #fff5f0;
+            padding: 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 1rem 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--coral);
+            border: 1px dashed var(--coral);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Spaß mit Mathe</h1>
+    <p class="subtitle">Meistere die Welt der Variablen (Klasse 7)</p>
+</header>
+
+<div class="container">
+    <!-- Start Screen -->
+    <div id="start-screen" class="card">
+        <h2>Bist du bereit für das Variablen-Quiz?</h2>
+        <p>Teste dein Wissen über Terme, Gleichungen und Platzhalter. Löse 10 Aufgaben und werde zum Mathe-Profi!</p>
+        <button class="btn start-btn" onclick="startGame()">Spiel starten!</button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="card hidden">
+        <div class="score-display">Frage <span id="current-idx">1</span> von 10</div>
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        
+        <div class="question-box">
+            <h2 id="question-text">Lade Frage...</h2>
+            <div id="math-display" class="math-box"></div>
+            <div id="options" class="options-grid">
+                <!-- Buttons will be injected here -->
+            </div>
+        </div>
+        <div id="feedback" class="feedback"></div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="card hidden">
+        <h2>Ergebnis</h2>
+        <div id="final-score" style="font-size: 3rem; margin: 1rem 0; color: var(--coral);">0 / 10</div>
+        <p id="result-text"></p>
+        <button class="btn restart-btn" onclick="startGame()">Nochmal versuchen</button>
+    </div>
+</div>
+
+<footer>
+    &copy; 2023 Spaß mit Mathe - Gymnasium Edition
+</footer>
+
+<script>
+    const questions = [
+        {
+            q: "Vereinfache den Term so weit wie möglich:",
+            m: "x + x + x",
+            a: ["3x", "x³", "3 + x", "x + 3"],
+            correct: 0
+        },
+        {
+            q: "Welchen Wert hat x in dieser Gleichung?",
+            m: "x + 12 = 20",
+            a: ["32", "8", "10", "6"],
+            correct: 1
+        },
+        {
+            q: "Berechne den Wert des Terms für a = 5:",
+            m: "3a - 4",
+            a: ["15", "1", "11", "19"],
+            correct: 2
+        },
+        {
+            q: "Wie schreibt man als Term: 'Das Dreifache einer Zahl x'?",
+            m: "???",
+            a: ["x + 3", "x³", "3x", "x/3"],
+            correct: 2
+        },
+        {
+            q: "Vereinfache den Term:",
+            m: "4y + 2x - y + 3x",
+            a: ["5x + 3y", "8xy", "6x + 5y", "5x + 5y"],
+            correct: 0
+        },
+        {
+            q: "Löse die Gleichung nach x auf:",
+            m: "5x = 40",
+            a: ["35", "45", "200", "8"],
+            correct: 3
+        },
+        {
+            q: "Was ist das Ergebnis von:",
+            m: "2 \cdot (x + 4)",
+            a: ["2x + 4", "2x + 8", "x + 8", "6x"],
+            correct: 1
+        },
+        {
+            q: "Welche Zahl ist die Lösung?",
+            m: "x / 4 = 3",
+            a: ["7", "1", "12", "0.75"],
+            correct: 2
+        },
+        {
+            q: "Fasse zusammen:",
+            m: "a \cdot a \cdot a",
+            a: ["3a", "a + 3", "a³", "3 + a"],
+            correct: 2
+        },
+        {
+            q: "Löse die Klammer auf und fasse zusammen:",
+            m: "10x - (2x + 3)",
+            a: ["8x + 3", "12x + 3", "8x - 3", "12x - 3"],
+            correct: 2
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let canAnswer = true;
+
+    function startGame() {
+        currentQuestionIndex = 0;
+        score = 0;
+        canAnswer = true;
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        showQuestion();
+    }
+
+    function showQuestion() {
+        canAnswer = true;
+        const q = questions[currentQuestionIndex];
+        document.getElementById('current-idx').innerText = currentQuestionIndex + 1;
+        document.getElementById('question-text').innerText = q.q;
+        document.getElementById('math-display').innerText = q.m;
+        document.getElementById('feedback').innerText = "";
+        
+        const progress = ((currentQuestionIndex) / questions.length) * 100;
+        document.getElementById('progress-bar').style.width = progress + "%";
+
+        const optionsContainer = document.getElementById('options');
+        optionsContainer.innerHTML = "";
+
+        q.a.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.className = 'btn';
+            button.innerText = option;
+            button.onclick = () => checkAnswer(index, button);
+            optionsContainer.appendChild(button);
+        });
+    }
+
+    function checkAnswer(index, button) {
+        if (!canAnswer) return;
+        canAnswer = false;
+
+        const correctIndex = questions[currentQuestionIndex].correct;
+        const buttons = document.querySelectorAll('#options .btn');
+
+        if (index === correctIndex) {
+            score++;
+            button.classList.add('correct');
+            document.getElementById('feedback').innerText = "Richtig! Gut gemacht! 🎉";
+            document.getElementById('feedback').style.color = "var(--success)";
+        } else {
+            button.classList.add('wrong');
+            buttons[correctIndex].classList.add('correct');
+            document.getElementById('feedback').innerText = "Leider falsch. Die richtige Lösung ist markiert.";
+            document.getElementById('feedback').style.color = "var(--error)";
+        }
+
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }, 2000);
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+        
+        let message = "";
+        if (score === 10) message = "Perfekt! Du bist ein absoluter Variablen-Meister! 🏆";
+        else if (score >= 7) message = "Super Leistung! Du hast die Grundlagen sicher verstanden. 🌟";
+        else if (score >= 5) message = "Gut gemacht! Ein bisschen Übung noch, dann klappt es perfekt. 👍";
+        else message = "Nicht aufgeben! Schau dir die Regeln für Variablen nochmal an und versuch es erneut. 💪";
+        
+        document.getElementById('result-text').innerText = message;
+    }
+</script>
+
+</body>
+</html>
