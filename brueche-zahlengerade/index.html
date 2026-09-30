@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brüche und Zahlengerade</title>
+    <style>
+        :root {
+            --nord-0: #2e3440; /* Polar Night */
+            --nord-1: #3b4252;
+            --nord-2: #434c5e;
+            --nord-3: #4c566a;
+            --nord-4: #d8dee9; /* Snow Storm */
+            --nord-5: #e5e9f0;
+            --nord-6: #eceff4;
+            --nord-7: #8fbcbb; /* Frost */
+            --nord-8: #88c0d0;
+            --nord-9: #81a1c1;
+            --nord-10: #5e81ac;
+            
+            --bg-color: var(--nord-6);
+            --card-bg: #ffffff;
+            --text-color: var(--nord-0);
+            --accent-color: var(--nord-10);
+            --line-color: var(--nord-3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--nord-10);
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .instruction {
+            font-size: 0.9rem;
+            color: var(--nord-3);
+        }
+
+        /* Container für die Zahlengerade */
+        .axis-container {
+            width: 100%;
+            max-width: 1000px;
+            height: 200px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            position: relative;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 50px;
+            touch-action: none;
+        }
+
+        .axis-line {
+            width: 100%;
+            height: 3px;
+            background-color: var(--line-color);
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Pfeilspitzen */
+        .axis-line::before, .axis-line::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            border-top: 3px solid var(--line-color);
+            border-right: 3px solid var(--line-color);
+        }
+        .axis-line::before {
+            left: -2px;
+            transform: translateY(-50%) rotate(225deg);
+        }
+        .axis-line::after {
+            right: -2px;
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        .tick {
+            position: relative;
+            height: 20px;
+            width: 2px;
+            background-color: var(--line-color);
+            top: -8px;
+        }
+
+        .tick-label {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--nord-2);
+        }
+
+        /* Karten-Pool */
+        .pool {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 12px;
+            border: 2px dashed var(--nord-4);
+        }
+
+        /* Bruch-Karten */
+        .fraction-card {
+            width: 60px;
+            height: 70px;
+            background: var(--card-bg);
+            border: 1px solid var(--nord-4);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            z-index: 10;
+            touch-action: none;
+        }
+
+        .fraction-card:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .fraction-card.dragging {
+            opacity: 0.8;
+            position: absolute;
+        }
+
+        .fraction-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .numerator {
+            border-bottom: 2px solid var(--nord-2);
+            padding: 0 4px;
+        }
+
+        .denominator {
+            padding: 0 4px;
+        }
+
+        .integer-only {
+            font-size: 1.3rem;
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: var(--nord-9);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--nord-10);
+        }
+
+        /* Responsive Anpassung */
+        @media (max-width: 600px) {
+            .axis-container {
+                height: 150px;
+                padding: 0 30px;
+            }
+            .tick-label {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Brüche und Zahlengerade</h1>
+        <p class="instruction">Ziehe die Brüche an die richtige Stelle auf der Zahlengeraden.</p>
+    </header>
+
+    <div class="axis-container" id="dropzone">
+        <div class="axis-line" id="axisLine">
+            <!-- Ticks werden per JS generiert -->
+        </div>
+    </div>
+
+    <div class="pool" id="cardPool">
+        <!-- Karten werden per JS generiert -->
+    </div>
+
+    <div class="controls">
+        <button onclick="resetCards()">Zurücksetzen</button>
+    </div>
+
+    <script>
+        const fractions = [
+            { n: 1, d: 2 },
+            { n: 0, d: 1 },
+            { n: -1, d: 2 },
+            { n: 1, d: 3 },
+            { n: 1, d: 4 },
+            { n: 2, d: 4 },
+            { n: -3, d: 4 },
+            { n: 3, d: 4 },
+            { n: 4, d: 2 },
+            { n: 3, d: 2 },
+            { n: -3, d: 2 },
+            { n: -6, d: 2 },
+            { n: 4, d: 3 },
+            { n: 12, d: 6 }
+        ];
+
+        const axisLine = document.getElementById('axisLine');
+        const cardPool = document.getElementById('cardPool');
+        const dropzone = document.getElementById('dropzone');
+
+        // Initialisierung der Zahlengerade (-3 bis 3)
+        function initAxis() {
+            for (let i = -3; i <= 3; i++) {
+                const tick = document.createElement('div');
+                tick.className = 'tick';
+                
+                const label = document.createElement('div');
+                label.className = 'tick-label';
+                label.textContent = i;
+                
+                tick.appendChild(label);
+                axisLine.appendChild(tick);
+            }
+        }
+
+        // Erstellung der Bruch-Karten
+        function createCards() {
+            cardPool.innerHTML = '';
+            fractions.forEach((frac, index) => {
+                const card = document.createElement('div');
+                card.className = 'fraction-card';
+                card.id = `card-${index}`;
+                
+                let content = '';
+                if (frac.n === 0) {
+                    content = `<span class="integer-only">0</span>`;
+                } else if (frac.d === 1) {
+                    content = `<span class="integer-only">${frac.n}</span>`;
+                } else {
+                    content = `
+                        <div class="fraction-display">
+                            <span class="numerator">${frac.n}</span>
+                            <span class="denominator">${frac.d}</span>
+                        </div>
+                    `;
+                }
+                
+                card.innerHTML = content;
+                card.addEventListener('pointerdown', onPointerDown);
+                cardPool.appendChild(card);
+            });
+        }
+
+        let activeCard = null;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        function onPointerDown(e) {
+            activeCard = e.currentTarget;
+            const rect = activeCard.getBoundingClientRect();
+            
+            // Berechne Offset relativ zur Karte
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+
+            activeCard.style.position = 'fixed';
+            activeCard.style.left = (e.clientX - offsetX) + 'px';
+            activeCard.style.top = (e.clientY - offsetY) + 'px';
+            activeCard.classList.add('dragging');
+            
+            document.addEventListener('pointermove', onPointerMove);
+            document.addEventListener('pointerup', onPointerUp);
+        }
+
+        function onPointerMove(e) {
+            if (!activeCard) return;
+            activeCard.style.left = (e.clientX - offsetX) + 'px';
+            activeCard.style.top = (e.clientY - offsetY) + 'px';
+        }
+
+        function onPointerUp(e) {
+            if (!activeCard) return;
+
+            const dropzoneRect = dropzone.getBoundingClientRect();
+            const cardRect = activeCard.getBoundingClientRect();
+
+            // Prüfen, ob die Karte in der Dropzone gelandet ist
+            const isInside = (
+                cardRect.left < dropzoneRect.right &&
+                cardRect.right > dropzoneRect.left &&
+                cardRect.top < dropzoneRect.bottom &&
+                cardRect.bottom > dropzoneRect.top
+            );
+
+            if (!isInside) {
+                // Zurück in den Pool, wenn außerhalb
+                activeCard.style.position = 'static';
+                activeCard.classList.remove('dragging');
+                cardPool.appendChild(activeCard);
+            } else {
+                // In der Dropzone lassen (absolute Positionierung beibehalten)
+                // Umrechnung von fixed zu absolute innerhalb der Dropzone
+                const finalX = cardRect.left - dropzoneRect.left;
+                const finalY = cardRect.top - dropzoneRect.top;
+                
+                activeCard.style.position = 'absolute';
+                activeCard.style.left = finalX + 'px';
+                activeCard.style.top = finalY + 'px';
+                dropzone.appendChild(activeCard);
+            }
+
+            document.removeEventListener('pointermove', onPointerMove);
+            document.removeEventListener('pointerup', onPointerUp);
+            activeCard = null;
+        }
+
+        function resetCards() {
+            // Alle Karten zurück in den Pool schieben
+            const allCards = document.querySelectorAll('.fraction-card');
+            allCards.forEach(card => {
+                card.style.position = 'static';
+                card.classList.remove('dragging');
+                cardPool.appendChild(card);
+            });
+        }
+
+        // Initialisierung beim Laden
+        initAxis();
+        createCards();
+
+    </script>
+</body>
+</html>
