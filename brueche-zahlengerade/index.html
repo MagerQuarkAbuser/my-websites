@@ -87,8 +87,8 @@
             justify-content: space-between;
         }
 
-        /* Pfeilspitzen */
-        .axis-line::before, .axis-line::after {
+        /* Pfeilspitze nur rechts */
+        .axis-line::after {
             content: '';
             position: absolute;
             top: 50%;
@@ -96,12 +96,6 @@
             height: 12px;
             border-top: 3px solid var(--line-color);
             border-right: 3px solid var(--line-color);
-        }
-        .axis-line::before {
-            left: -2px;
-            transform: translateY(-50%) rotate(225deg);
-        }
-        .axis-line::after {
             right: -2px;
             transform: translateY(-50%) rotate(45deg);
         }
@@ -130,7 +124,7 @@
             max-width: 1000px;
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
             padding: 20px;
             background: rgba(255,255,255,0.4);
@@ -140,8 +134,8 @@
 
         /* Bruch-Karten */
         .fraction-card {
-            width: 60px;
-            height: 70px;
+            width: 52px;
+            height: 62px;
             background: var(--card-bg);
             border: 1px solid var(--nord-4);
             border-radius: 8px;
@@ -173,7 +167,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
         }
 
@@ -187,7 +181,7 @@
         }
 
         .integer-only {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
 
         /* Controls */
