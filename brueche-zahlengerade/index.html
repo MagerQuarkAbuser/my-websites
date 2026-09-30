@@ -134,7 +134,7 @@
 
         /* Bruch-Karten */
         .fraction-card {
-            width: 52px;
+            width: 58px;
             height: 62px;
             background: var(--card-bg);
             border: 1px solid var(--nord-4);
@@ -163,6 +163,19 @@
             position: absolute;
         }
 
+        .fraction-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .minus-sign {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-right: 1px;
+        }
+
         .fraction-display {
             display: flex;
             flex-direction: column;
@@ -182,6 +195,7 @@
 
         .integer-only {
             font-size: 1.2rem;
+            font-weight: 600;
         }
 
         /* Controls */
@@ -252,7 +266,8 @@
             { n: -3, d: 2 },
             { n: -6, d: 2 },
             { n: 4, d: 3 },
-            { n: 12, d: 6 }
+            { n: 12, d: 6 },
+            { n: -5, d: 2 }
         ];
 
         const axisLine = document.getElementById('axisLine');
@@ -283,15 +298,21 @@
                 card.id = `card-${index}`;
                 
                 let content = '';
+                const isNegative = frac.n < 0;
+                const absN = Math.abs(frac.n);
+
                 if (frac.n === 0) {
                     content = `<span class="integer-only">0</span>`;
                 } else if (frac.d === 1) {
                     content = `<span class="integer-only">${frac.n}</span>`;
                 } else {
                     content = `
-                        <div class="fraction-display">
-                            <span class="numerator">${frac.n}</span>
-                            <span class="denominator">${frac.d}</span>
+                        <div class="fraction-container">
+                            ${isNegative ? '<span class="minus-sign">−</span>' : ''}
+                            <div class="fraction-display">
+                                <span class="numerator">${absN}</span>
+                                <span class="denominator">${frac.d}</span>
+                            </div>
                         </div>
                     `;
                 }
