@@ -8,27 +8,25 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Syntax Highlighting (Highlight.js) mit Light Theme für besseren Druck -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <!-- Syntax Highlighting (Highlight.js) mit Dark Theme -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     
     <!-- Icons (Lucide) -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <script>
-        // Tailwind Konfiguration für die "Modern Tech Indigo" Palette
+        // Tailwind Konfiguration für die "Modern Tech Indigo" Palette im Dark Mode
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         indigo: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
+                            400: '#818cf8',
                             500: '#6366f1',
                             600: '#4f46e5',
-                            700: '#4338ca',
-                            800: '#3730a3',
                             900: '#312e81',
+                            950: '#1e1b4b',
                         }
                     }
                 }
@@ -37,7 +35,7 @@
     </script>
 
     <style>
-        /* Spezifische Anpassungen für den perfekten A4-Ausdruck */
+        /* Spezifische Anpassungen für den perfekten A4-Ausdruck (zwingt Dark Mode in ein helles Layout) */
         @media print {
             body { 
                 background-color: white !important; 
@@ -46,6 +44,7 @@
             .print-no-shadow { 
                 box-shadow: none !important; 
                 border: 1px solid #cbd5e1 !important; 
+                background-color: white !important;
             }
             .print-break-inside-avoid { 
                 page-break-inside: avoid; 
@@ -54,41 +53,43 @@
                 border: 1px solid #94a3b8 !important; 
                 background-color: #f8fafc !important; 
             }
-            code {
+            /* Überschreibe das Dark-Theme von Highlight.js für den Druck */
+            code, .hljs {
+                background-color: transparent !important;
                 color: #000 !important;
             }
-            .hljs-keyword, .hljs-type, .hljs-string, .hljs-number {
+            .hljs-keyword, .hljs-type, .hljs-string, .hljs-number, .hljs-built_in, .hljs-title {
                 color: #000 !important;
                 font-weight: bold;
             }
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen p-4 md:p-8 print:p-0 print:bg-white">
+<body class="bg-slate-950 text-slate-300 font-sans min-h-screen p-4 md:p-8 print:p-0 print:bg-white">
 
     <div class="max-w-4xl mx-auto">
         
         <!-- Header -->
-        <header class="flex justify-between items-center mb-8 print:mb-6 border-b border-indigo-100 pb-4 print:border-slate-300">
-            <h1 class="text-2xl md:text-3xl font-bold text-indigo-900 print:text-black">
-                Wiederholung: Methoden <span class="text-indigo-600 print:text-black text-xl md:text-2xl block md:inline mt-1 md:mt-0 font-medium">(Parameter und Rückgabewerte)</span>
+        <header class="flex justify-between items-center mb-8 print:mb-6 border-b border-slate-800 pb-4 print:border-slate-300">
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-100 print:text-black">
+                Wiederholung: Methoden <span class="text-indigo-400 print:text-black text-xl md:text-2xl block md:inline mt-1 md:mt-0 font-medium">(Parameter und Rückgabewerte)</span>
             </h1>
-            <button onclick="window.print()" class="print:hidden flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl transition-colors shadow-md min-w-[44px] min-h-[44px] font-medium focus:ring-4 focus:ring-indigo-100 outline-none">
+            <button onclick="window.print()" class="print:hidden flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl transition-colors shadow-md min-w-[44px] min-h-[44px] font-medium focus:ring-4 focus:ring-indigo-900 outline-none">
                 <i data-lucide="printer" class="w-5 h-5"></i>
                 <span class="hidden md:inline">Drucken</span>
             </button>
         </header>
 
         <!-- Aufgabe 1 -->
-        <section class="bg-white rounded-2xl shadow-sm border border-indigo-50 p-6 md:p-8 mb-8 print-no-shadow print-break-inside-avoid print:mb-6">
+        <section class="bg-slate-900 rounded-2xl shadow-md border border-slate-800 p-6 md:p-8 mb-8 print-no-shadow print-break-inside-avoid print:mb-6">
             <div class="flex items-center gap-3 mb-5">
-                <div class="bg-indigo-100 text-indigo-700 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border print:border-black print:bg-transparent print:text-black">1</div>
-                <h2 class="text-xl font-semibold text-indigo-900 print:text-black">Code-Analyse</h2>
+                <div class="bg-indigo-950 border border-indigo-900 text-indigo-400 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border-black print:bg-transparent print:text-black">1</div>
+                <h2 class="text-xl font-semibold text-slate-100 print:text-black">Code-Analyse</h2>
             </div>
             
-            <p class="mb-4 text-slate-700 print:text-black">Analysiere den folgenden Java-Quelltext.</p>
+            <p class="mb-4 text-slate-400 print:text-black">Analysiere den folgenden Java-Quelltext.</p>
             
-            <div class="bg-slate-50 rounded-xl overflow-hidden border border-slate-200 mb-6 print:border-slate-400">
+            <div class="bg-slate-950 rounded-xl overflow-hidden border border-slate-800 mb-6 print:border-slate-400">
                 <pre class="m-0"><code class="language-java text-[13px] md:text-sm p-4 leading-relaxed">public static double berechneRabatt(double preis, int prozent) {
     double rabattWert = (preis / 100) * prozent;
     return preis - rabattWert;
@@ -106,81 +107,81 @@ public static void main(String[] args) {
 }</code></pre>
             </div>
             
-            <ol class="list-[lower-alpha] pl-5 space-y-4 text-slate-700 print:text-black">
-                <li class="pl-2">Nenne die Datentypen der Übergabeparameter sowie den Rückgabetyp der Methode <code class="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded text-sm font-mono print:text-black border print:border-slate-300">berechneRabatt</code>.</li>
-                <li class="pl-2">Erkläre die Bedeutung des Schlüsselworts <code class="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded text-sm font-mono print:text-black border print:border-slate-300">void</code> im Methodenkopf von <code class="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded text-sm font-mono print:text-black border print:border-slate-300">druckeRechnung</code> und beschreibe die Konsequenz für den Aufruf dieser Methode.</li>
-                <li class="pl-2">Beschreibe den Ablauf innerhalb der <code class="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded text-sm font-mono print:text-black border print:border-slate-300">main</code>-Methode schrittweise. Gib die exakte Konsolenausgabe an, die bei der Ausführung des Programms erzeugt wird.</li>
+            <ol class="list-[lower-alpha] pl-5 space-y-4 text-slate-300 print:text-black">
+                <li class="pl-2">Nenne die Datentypen der Übergabeparameter sowie den Rückgabetyp der Methode <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">berechneRabatt</code>.</li>
+                <li class="pl-2">Erkläre die Bedeutung des Schlüsselworts <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">void</code> im Methodenkopf von <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">druckeRechnung</code> und beschreibe die Konsequenz für den Aufruf dieser Methode.</li>
+                <li class="pl-2">Beschreibe den Ablauf innerhalb der <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">main</code>-Methode schrittweise. Gib die exakte Konsolenausgabe an, die bei der Ausführung des Programms erzeugt wird.</li>
             </ol>
         </section>
 
         <!-- Aufgabe 2 -->
-        <section class="bg-white rounded-2xl shadow-sm border border-indigo-50 p-6 md:p-8 mb-8 print-no-shadow print-break-inside-avoid print:mb-6">
+        <section class="bg-slate-900 rounded-2xl shadow-md border border-slate-800 p-6 md:p-8 mb-8 print-no-shadow print-break-inside-avoid print:mb-6">
             <div class="flex items-center gap-3 mb-5">
-                <div class="bg-indigo-100 text-indigo-700 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border print:border-black print:bg-transparent print:text-black">2</div>
-                <h2 class="text-xl font-semibold text-indigo-900 print:text-black">Fehlersuche</h2>
+                <div class="bg-indigo-950 border border-indigo-900 text-indigo-400 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border-black print:bg-transparent print:text-black">2</div>
+                <h2 class="text-xl font-semibold text-slate-100 print:text-black">Fehlersuche</h2>
             </div>
             
-            <p class="mb-4 text-slate-700 print:text-black">Gegeben ist die folgende Methodendeklaration für ein Login-System:</p>
+            <p class="mb-4 text-slate-400 print:text-black">Gegeben ist die folgende Methodendeklaration für ein Login-System:</p>
             
-            <div class="bg-slate-50 rounded-xl overflow-hidden border border-slate-200 mb-6 print:border-slate-400">
+            <div class="bg-slate-950 rounded-xl overflow-hidden border border-slate-800 mb-6 print:border-slate-400">
                 <pre class="m-0"><code class="language-java text-[13px] md:text-sm p-4 leading-relaxed">public static boolean ueberpruefePasswort(String nutzername, int pin) { 
     // Logik zur Überprüfung
     return true; 
 }</code></pre>
             </div>
             
-            <p class="mb-5 text-slate-700 print:text-black">Die folgenden vier Methodenaufrufe innerhalb einer <code class="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded text-sm font-mono print:text-black border print:border-slate-300">main</code>-Methode sind fehlerhaft und führen zu Kompilierfehlern. Begründe für jeden der vier Aufrufe präzise die Fehlerursache. Beziehe dich dabei auf die übergebenen Parameter oder den Rückgabewert.</p>
+            <p class="mb-5 text-slate-300 print:text-black">Die folgenden vier Methodenaufrufe innerhalb einer <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">main</code>-Methode sind fehlerhaft und führen zu Kompilierfehlern. Begründe für jeden der vier Aufrufe präzise die Fehlerursache. Beziehe dich dabei auf die übergebenen Parameter oder den Rückgabewert.</p>
             
             <ul class="space-y-4">
                 <li class="flex items-start gap-3">
-                    <i data-lucide="x-circle" class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0 print:text-black"></i>
-                    <code class="bg-red-50 text-red-900 border border-red-100 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort("User123", "Geheim123");</code>
+                    <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black"></i>
+                    <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort("User123", "Geheim123");</code>
                 </li>
                 <li class="flex items-start gap-3">
-                    <i data-lucide="x-circle" class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0 print:text-black"></i>
-                    <code class="bg-red-50 text-red-900 border border-red-100 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort(4567, "Max");</code>
+                    <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black"></i>
+                    <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort(4567, "Max");</code>
                 </li>
                 <li class="flex items-start gap-3">
-                    <i data-lucide="x-circle" class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0 print:text-black"></i>
-                    <code class="bg-red-50 text-red-900 border border-red-100 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort("Anna");</code>
+                    <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black"></i>
+                    <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort("Anna");</code>
                 </li>
                 <li class="flex items-start gap-3">
-                    <i data-lucide="x-circle" class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0 print:text-black"></i>
-                    <code class="bg-red-50 text-red-900 border border-red-100 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">int ergebnis = ueberpruefePasswort("Tom", 9999);</code>
+                    <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black"></i>
+                    <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">int ergebnis = ueberpruefePasswort("Tom", 9999);</code>
                 </li>
             </ul>
         </section>
 
         <!-- Aufgabe 3 -->
-        <section class="bg-white rounded-2xl shadow-sm border border-indigo-50 p-6 md:p-8 print-no-shadow print-break-inside-avoid print:mb-6">
+        <section class="bg-slate-900 rounded-2xl shadow-md border border-slate-800 p-6 md:p-8 print-no-shadow print-break-inside-avoid print:mb-6">
             <div class="flex items-center gap-3 mb-5">
-                <div class="bg-indigo-100 text-indigo-700 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border print:border-black print:bg-transparent print:text-black">3</div>
-                <h2 class="text-xl font-semibold text-indigo-900 print:text-black">Implementierung</h2>
+                <div class="bg-indigo-950 border border-indigo-900 text-indigo-400 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border-black print:bg-transparent print:text-black">3</div>
+                <h2 class="text-xl font-semibold text-slate-100 print:text-black">Implementierung</h2>
             </div>
             
-            <p class="mb-3 text-slate-700 print:text-black">Entwickle eine Methode <code class="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded text-sm font-mono print:text-black border print:border-slate-300">berechneFahrpreis</code> für die Abrechnung eines E-Scooter-Verleihs in Java. Erstelle hierfür ein neues Package namens "wiederholung" und eine Klasse "Methoden".</p>
-            <p class="mb-5 text-slate-700 print:text-black">Berücksichtige dabei die folgenden Vorgaben:</p>
+            <p class="mb-3 text-slate-300 print:text-black">Entwickle eine Methode <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">berechneFahrpreis</code> für die Abrechnung eines E-Scooter-Verleihs in Java. Erstelle hierfür ein neues Package namens "wiederholung" und eine Klasse "Methoden".</p>
+            <p class="mb-5 text-slate-300 print:text-black">Berücksichtige dabei die folgenden Vorgaben:</p>
             
             <ul class="space-y-4 pl-1">
                 <li class="flex items-start gap-3">
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-500 mt-0.5 flex-shrink-0 print:text-black"></i>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0 print:text-black"></i>
                     <div>
-                        <strong class="text-indigo-900 print:text-black">Übergabeparameter:</strong><br> 
-                        <span class="text-slate-700 print:text-black">Die Fahrzeit in Minuten (Ganzzahl) und der Premium-Status des Nutzers (Wahrheitswert).</span>
+                        <strong class="text-slate-100 print:text-black">Übergabeparameter:</strong><br> 
+                        <span class="text-slate-400 print:text-black">Die Fahrzeit in Minuten (Ganzzahl) und der Premium-Status des Nutzers (Wahrheitswert).</span>
                     </div>
                 </li>
                 <li class="flex items-start gap-3">
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-500 mt-0.5 flex-shrink-0 print:text-black"></i>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0 print:text-black"></i>
                     <div>
-                        <strong class="text-indigo-900 print:text-black">Rückgabewert:</strong><br> 
-                        <span class="text-slate-700 print:text-black">Der zu zahlende Endpreis (Kommazahl).</span>
+                        <strong class="text-slate-100 print:text-black">Rückgabewert:</strong><br> 
+                        <span class="text-slate-400 print:text-black">Der zu zahlende Endpreis (Kommazahl).</span>
                     </div>
                 </li>
                 <li class="flex items-start gap-3">
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-500 mt-0.5 flex-shrink-0 print:text-black"></i>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0 print:text-black"></i>
                     <div>
-                        <strong class="text-indigo-900 print:text-black">Berechnungslogik:</strong><br> 
-                        <span class="text-slate-700 print:text-black">Der Preis pro Minute beträgt 0,25 Euro. Die einmalige Grundgebühr für die Entsperrung beträgt 1,00 Euro. Für Nutzer mit einem aktiven Premium-Status entfällt diese Grundgebühr vollständig.</span>
+                        <strong class="text-slate-100 print:text-black">Berechnungslogik:</strong><br> 
+                        <span class="text-slate-400 print:text-black">Der Preis pro Minute beträgt 0,25 Euro. Die einmalige Grundgebühr für die Entsperrung beträgt 1,00 Euro. Für Nutzer mit einem aktiven Premium-Status entfällt diese Grundgebühr vollständig.</span>
                     </div>
                 </li>
             </ul>
