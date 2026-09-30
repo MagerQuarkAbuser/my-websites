@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wiederholung: Methoden (Parameter und Rückgabewerte)</title>
+    <title>Übungen</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,6 +14,11 @@
     
     <!-- Icons (Lucide) -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- KaTeX für mathematische Formeln -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
     <script>
         // Tailwind Konfiguration für die "Modern Tech Indigo" Palette im Dark Mode
@@ -49,6 +54,9 @@
             .print-break-inside-avoid { 
                 page-break-inside: avoid; 
             }
+            .print-page-break-before {
+                page-break-before: always;
+            }
             pre { 
                 border: 1px solid #94a3b8 !important; 
                 background-color: #f8fafc !important; 
@@ -62,6 +70,24 @@
                 color: #000 !important;
                 font-weight: bold;
             }
+            /* Beim Drucken alle Tabs anzeigen und Navigation ausblenden */
+            .tab-content {
+                display: block !important;
+            }
+            .print-hidden {
+                display: none !important;
+            }
+        }
+
+        /* Animation für das Durchstreichen im Grid */
+        .grid-number {
+            transition: all 0.2s ease-in-out;
+        }
+        .grid-number.crossed-out {
+            text-decoration: line-through;
+            color: #64748b; /* slate-500 */
+            background-color: #1e293b; /* slate-800 */
+            border-color: #334155; /* slate-700 */
         }
     </style>
 </head>
@@ -70,27 +96,43 @@
     <div class="max-w-4xl mx-auto">
         
         <!-- Header -->
-        <header class="flex justify-between items-center mb-8 print:mb-6 border-b border-slate-800 pb-4 print:border-slate-300">
-            <h1 class="text-2xl md:text-3xl font-bold text-slate-100 print:text-black">
-                Wiederholung: Methoden <span class="text-indigo-400 print:text-black text-xl md:text-2xl block md:inline mt-1 md:mt-0 font-medium">(Parameter und Rückgabewerte)</span>
+        <header class="flex justify-between items-center mb-6 print:mb-6 border-b border-slate-800 pb-4 print:border-slate-300">
+            <h1 class="text-2xl md:text-4xl font-bold text-slate-100 print:text-black">
+                Übungen
             </h1>
-            <button onclick="window.print()" class="print:hidden flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl transition-colors shadow-md min-w-[44px] min-h-[44px] font-medium focus:ring-4 focus:ring-indigo-900 outline-none">
+            <button onclick="window.print()" class="print-hidden flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl transition-colors shadow-md min-w-[44px] min-h-[44px] font-medium focus:ring-4 focus:ring-indigo-900 outline-none">
                 <i data-lucide="printer" class="w-5 h-5"></i>
-                <span class="hidden md:inline">Drucken</span>
+                <span class="hidden md:inline">Alle Seiten Drucken</span>
             </button>
         </header>
 
-        <!-- Aufgabe 1 -->
-        <section class="bg-slate-900 rounded-2xl shadow-md border border-slate-800 p-6 md:p-8 mb-8 print-no-shadow print-break-inside-avoid print:mb-6">
-            <div class="flex items-center gap-3 mb-5">
-                <div class="bg-indigo-950 border border-indigo-900 text-indigo-400 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border-black print:bg-transparent print:text-black">1</div>
-                <h2 class="text-xl font-semibold text-slate-100 print:text-black">Code-Analyse</h2>
-            </div>
-            
-            <p class="mb-4 text-slate-400 print:text-black">Analysiere den folgenden Java-Quelltext.</p>
-            
-            <div class="bg-slate-950 rounded-xl overflow-hidden border border-slate-800 mb-6 print:border-slate-400">
-                <pre class="m-0"><code class="language-java text-[13px] md:text-sm p-4 leading-relaxed">public static double berechneRabatt(double preis, int prozent) {
+        <!-- Navigation (Tabs) -->
+        <nav class="flex gap-2 mb-8 print-hidden overflow-x-auto pb-2">
+            <button onclick="switchTab('methoden')" id="tab-btn-methoden" class="flex-shrink-0 px-6 py-3 rounded-xl font-medium transition-all min-w-[44px] min-h-[44px] bg-indigo-600 text-white shadow-md">
+                1. Wiederholung Methoden
+            </button>
+            <button onclick="switchTab('arrays')" id="tab-btn-arrays" class="flex-shrink-0 px-6 py-3 rounded-xl font-medium transition-all min-w-[44px] min-h-[44px] bg-slate-800 text-slate-300 hover:bg-slate-700">
+                2. Vertiefung Arrays
+            </button>
+        </nav>
+
+        <!-- SEITE 1: Wiederholung Methoden -->
+        <div id="page-methoden" class="tab-content block">
+            <h2 class="text-2xl font-bold text-indigo-400 print:text-black mb-6 border-b border-slate-800 print:border-slate-300 pb-2">
+                Teil 1: Wiederholung Methoden <span class="text-lg text-slate-500 print:text-slate-700 font-normal">(Parameter und Rückgabewerte)</span>
+            </h2>
+
+            <!-- Aufgabe 1 -->
+            <section class="bg-slate-900 rounded-2xl shadow-md border border-slate-800 p-6 md:p-8 mb-8 print-no-shadow print-break-inside-avoid print:mb-6">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="bg-indigo-950 border border-indigo-900 text-indigo-400 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border-black print:bg-transparent print:text-black">1</div>
+                    <h3 class="text-xl font-semibold text-slate-100 print:text-black">Code-Analyse</h3>
+                </div>
+                
+                <p class="mb-4 text-slate-400 print:text-black">Analysiere den folgenden Java-Quelltext.</p>
+                
+                <div class="bg-slate-950 rounded-xl overflow-hidden border border-slate-800 mb-6 print:border-slate-400">
+                    <pre class="m-0"><code class="language-java text-[13px] md:text-sm p-4 leading-relaxed">public static double berechneRabatt(double preis, int prozent) {
     double rabattWert = (preis / 100) * prozent;
     return preis - rabattWert;
 }
@@ -105,97 +147,233 @@ public static void main(String[] args) {
     double neuerPreis = berechneRabatt(basisPreis, 20);
     druckeRechnung("Alex", neuerPreis);
 }</code></pre>
-            </div>
-            
-            <ol class="list-[lower-alpha] pl-5 space-y-4 text-slate-300 print:text-black">
-                <li class="pl-2">Nenne die Datentypen der Übergabeparameter sowie den Rückgabetyp der Methode <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">berechneRabatt</code>.</li>
-                <li class="pl-2">Erkläre die Bedeutung des Schlüsselworts <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">void</code> im Methodenkopf von <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">druckeRechnung</code> und beschreibe die Konsequenz für den Aufruf dieser Methode.</li>
-                <li class="pl-2">Beschreibe den Ablauf innerhalb der <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">main</code>-Methode schrittweise. Gib die exakte Konsolenausgabe an, die bei der Ausführung des Programms erzeugt wird.</li>
-            </ol>
-        </section>
+                </div>
+                
+                <ol class="list-[lower-alpha] pl-5 space-y-4 text-slate-300 print:text-black">
+                    <li class="pl-2">Nenne die Datentypen der Übergabeparameter sowie den Rückgabetyp der Methode <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">berechneRabatt</code>.</li>
+                    <li class="pl-2">Erkläre die Bedeutung des Schlüsselworts <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">void</code> im Methodenkopf von <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">druckeRechnung</code> und beschreibe die Konsequenz für den Aufruf dieser Methode.</li>
+                    <li class="pl-2">Beschreibe den Ablauf innerhalb der <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">main</code>-Methode schrittweise. Gib die exakte Konsolenausgabe an, die bei der Ausführung des Programms erzeugt wird.</li>
+                </ol>
+            </section>
 
-        <!-- Aufgabe 2 -->
-        <section class="bg-slate-900 rounded-2xl shadow-md border border-slate-800 p-6 md:p-8 mb-8 print-no-shadow print-break-inside-avoid print:mb-6">
-            <div class="flex items-center gap-3 mb-5">
-                <div class="bg-indigo-950 border border-indigo-900 text-indigo-400 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border-black print:bg-transparent print:text-black">2</div>
-                <h2 class="text-xl font-semibold text-slate-100 print:text-black">Fehlersuche</h2>
-            </div>
-            
-            <p class="mb-4 text-slate-400 print:text-black">Gegeben ist die folgende Methodendeklaration für ein Login-System:</p>
-            
-            <div class="bg-slate-950 rounded-xl overflow-hidden border border-slate-800 mb-6 print:border-slate-400">
-                <pre class="m-0"><code class="language-java text-[13px] md:text-sm p-4 leading-relaxed">public static boolean ueberpruefePasswort(String nutzername, int pin) { 
+            <!-- Aufgabe 2 -->
+            <section class="bg-slate-900 rounded-2xl shadow-md border border-slate-800 p-6 md:p-8 mb-8 print-no-shadow print-break-inside-avoid print:mb-6">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="bg-indigo-950 border border-indigo-900 text-indigo-400 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border-black print:bg-transparent print:text-black">2</div>
+                    <h3 class="text-xl font-semibold text-slate-100 print:text-black">Fehlersuche</h3>
+                </div>
+                
+                <p class="mb-4 text-slate-400 print:text-black">Gegeben ist die folgende Methodendeklaration für ein Login-System:</p>
+                
+                <div class="bg-slate-950 rounded-xl overflow-hidden border border-slate-800 mb-6 print:border-slate-400">
+                    <pre class="m-0"><code class="language-java text-[13px] md:text-sm p-4 leading-relaxed">public static boolean ueberpruefePasswort(String nutzername, int pin) { 
     // Logik zur Überprüfung
     return true; 
 }</code></pre>
-            </div>
-            
-            <p class="mb-5 text-slate-300 print:text-black">Die folgenden vier Methodenaufrufe innerhalb einer <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">main</code>-Methode sind fehlerhaft und führen zu Kompilierfehlern. Begründe für jeden der vier Aufrufe präzise die Fehlerursache. Beziehe dich dabei auf die übergebenen Parameter oder den Rückgabewert.</p>
-            
-            <ul class="space-y-4">
-                <li class="flex items-start gap-3">
-                    <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black"></i>
-                    <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort("User123", "Geheim123");</code>
-                </li>
-                <li class="flex items-start gap-3">
-                    <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black"></i>
-                    <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort(4567, "Max");</code>
-                </li>
-                <li class="flex items-start gap-3">
-                    <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black"></i>
-                    <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort("Anna");</code>
-                </li>
-                <li class="flex items-start gap-3">
-                    <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black"></i>
-                    <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">int ergebnis = ueberpruefePasswort("Tom", 9999);</code>
-                </li>
-            </ul>
-        </section>
+                </div>
+                
+                <p class="mb-5 text-slate-300 print:text-black">Die folgenden vier Methodenaufrufe innerhalb einer <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">main</code>-Methode sind fehlerhaft und führen zu Kompilierfehlern. Begründe für jeden der vier Aufrufe präzise die Fehlerursache. Beziehe dich dabei auf die übergebenen Parameter oder den Rückgabewert.</p>
+                
+                <ul class="space-y-4">
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black print-hidden"></i>
+                        <span class="hidden print:inline font-bold mt-0.5 text-red-600">x</span>
+                        <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort("User123", "Geheim123");</code>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black print-hidden"></i>
+                        <span class="hidden print:inline font-bold mt-0.5 text-red-600">x</span>
+                        <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort(4567, "Max");</code>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black print-hidden"></i>
+                        <span class="hidden print:inline font-bold mt-0.5 text-red-600">x</span>
+                        <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">ueberpruefePasswort("Anna");</code>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="x-circle" class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0 print:text-black print-hidden"></i>
+                        <span class="hidden print:inline font-bold mt-0.5 text-red-600">x</span>
+                        <code class="bg-red-950/30 text-red-300 border border-red-900/50 px-3 py-1.5 rounded-lg text-sm font-mono w-full print:bg-transparent print:border-slate-400 print:text-black">int ergebnis = ueberpruefePasswort("Tom", 9999);</code>
+                    </li>
+                </ul>
+            </section>
 
-        <!-- Aufgabe 3 -->
-        <section class="bg-slate-900 rounded-2xl shadow-md border border-slate-800 p-6 md:p-8 print-no-shadow print-break-inside-avoid print:mb-6">
-            <div class="flex items-center gap-3 mb-5">
-                <div class="bg-indigo-950 border border-indigo-900 text-indigo-400 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border-black print:bg-transparent print:text-black">3</div>
-                <h2 class="text-xl font-semibold text-slate-100 print:text-black">Implementierung</h2>
-            </div>
-            
-            <p class="mb-3 text-slate-300 print:text-black">Entwickle eine Methode <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">berechneFahrpreis</code> für die Abrechnung eines E-Scooter-Verleihs in Java. Erstelle hierfür ein neues Package namens "wiederholung" und eine Klasse "Methoden".</p>
-            <p class="mb-5 text-slate-300 print:text-black">Berücksichtige dabei die folgenden Vorgaben:</p>
-            
-            <ul class="space-y-4 pl-1">
-                <li class="flex items-start gap-3">
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0 print:text-black"></i>
-                    <div>
-                        <strong class="text-slate-100 print:text-black">Übergabeparameter:</strong><br> 
-                        <span class="text-slate-400 print:text-black">Die Fahrzeit in Minuten (Ganzzahl) und der Premium-Status des Nutzers (Wahrheitswert).</span>
+            <!-- Aufgabe 3 -->
+            <section class="bg-slate-900 rounded-2xl shadow-md border border-slate-800 p-6 md:p-8 print-no-shadow print-break-inside-avoid print:mb-6">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="bg-indigo-950 border border-indigo-900 text-indigo-400 font-bold w-8 h-8 rounded-lg flex items-center justify-center print:border-black print:bg-transparent print:text-black">3</div>
+                    <h3 class="text-xl font-semibold text-slate-100 print:text-black">Implementierung</h3>
+                </div>
+                
+                <p class="mb-3 text-slate-300 print:text-black">Entwickle eine Methode <code class="bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono print:bg-transparent print:text-black border border-slate-700 print:border-slate-300">berechneFahrpreis</code> für die Abrechnung eines E-Scooter-Verleihs in Java. Erstelle hierfür ein neues Package namens "wiederholung" und eine Klasse "Methoden".</p>
+                <p class="mb-5 text-slate-300 print:text-black">Berücksichtige dabei die folgenden Vorgaben:</p>
+                
+                <ul class="space-y-4 pl-1">
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0 print:text-black print-hidden"></i>
+                        <span class="hidden print:inline font-bold mt-0.5 text-indigo-600">-</span>
+                        <div>
+                            <strong class="text-slate-100 print:text-black">Übergabeparameter:</strong><br> 
+                            <span class="text-slate-400 print:text-black">Die Fahrzeit in Minuten (Ganzzahl) und der Premium-Status des Nutzers (Wahrheitswert).</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0 print:text-black print-hidden"></i>
+                        <span class="hidden print:inline font-bold mt-0.5 text-indigo-600">-</span>
+                        <div>
+                            <strong class="text-slate-100 print:text-black">Rückgabewert:</strong><br> 
+                            <span class="text-slate-400 print:text-black">Der zu zahlende Endpreis (Kommazahl).</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0 print:text-black print-hidden"></i>
+                        <span class="hidden print:inline font-bold mt-0.5 text-indigo-600">-</span>
+                        <div>
+                            <strong class="text-slate-100 print:text-black">Berechnungslogik:</strong><br> 
+                            <span class="text-slate-400 print:text-black">Der Preis pro Minute beträgt 0,25 Euro. Die einmalige Grundgebühr für die Entsperrung beträgt 1,00 Euro. Für Nutzer mit einem aktiven Premium-Status entfällt diese Grundgebühr vollständig.</span>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+
+        <!-- SEITE 2: Vertiefung Arrays -->
+        <div id="page-arrays" class="tab-content hidden print-page-break-before">
+            <h2 class="text-2xl font-bold text-indigo-400 print:text-black mb-6 border-b border-slate-800 print:border-slate-300 pb-2">
+                Teil 2: Vertiefung Arrays
+            </h2>
+
+            <section class="bg-slate-900 rounded-2xl shadow-md border border-slate-800 p-6 md:p-8 mb-8 print-no-shadow print-break-inside-avoid print:mb-6">
+                <h3 class="text-xl font-semibold text-slate-100 print:text-black mb-4">Das Sieb des Eratosthenes</h3>
+                
+                <p class="mb-4 text-slate-300 print:text-black">Eine Primzahl ist eine natürliche Zahl, die genau 2 unterschiedliche Teiler hat: Die 1 und die Zahl selbst.[cite: 1] Um Primzahlen zu finden, kann man das folgende Verfahren durchführen, das sogenannte Sieb des Eratosthenes.[cite: 1]</p>
+                <p class="mb-4 text-slate-300 print:text-black">Fertige eine Liste oder Tabelle der natürlichen Zahlen bis zu einer beliebigen Größe an, zum Beispiel 100.[cite: 1]</p>
+
+                <ul class="list-disc pl-5 space-y-2 mb-8 text-slate-300 print:text-black">
+                    <li>Zuerst wird die Zahl 1 gestrichen, da sie per Definition keine Primzahl ist.[cite: 1]</li>
+                    <li>Die Zahl 2 wird als Primzahl umkreist und dann alle Vielfachen von ihr gestrichen, da diese keine Primzahlen sein können.[cite: 1]</li>
+                    <li>Dann wird die nach der 2 nächste nicht gestrichene Zahl, die 3, umkreist und alle Vielfachen von ihr gestrichen.[cite: 1]</li>
+                    <li>Jetzt wird die nach der 3 nächste freie Zahl umkreist (die 5) und ihre Vielfachen gestrichen, usw.[cite: 1]</li>
+                </ul>
+
+                <!-- Interaktives Grid Modul -->
+                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 mb-8 print:border-slate-400 print:bg-transparent">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-medium text-indigo-400 print:text-black">Interaktives Zahlensieb</h4>
+                        <button id="reset-grid-btn" class="print-hidden flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-sm transition-colors border border-slate-700 min-w-[44px] min-h-[44px] focus:ring-2 focus:ring-slate-600 outline-none">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                            Reset
+                        </button>
                     </div>
-                </li>
-                <li class="flex items-start gap-3">
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0 print:text-black"></i>
-                    <div>
-                        <strong class="text-slate-100 print:text-black">Rückgabewert:</strong><br> 
-                        <span class="text-slate-400 print:text-black">Der zu zahlende Endpreis (Kommazahl).</span>
+                    
+                    <!-- 10x10 Grid Container -->
+                    <div id="number-grid" class="grid grid-cols-10 gap-1 md:gap-2">
+                        <!-- Wird per JavaScript generiert -->
                     </div>
-                </li>
-                <li class="flex items-start gap-3">
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0 print:text-black"></i>
+                </div>
+
+                <!-- Aufgaben aus PDF -->
+                <div class="space-y-6">
                     <div>
-                        <strong class="text-slate-100 print:text-black">Berechnungslogik:</strong><br> 
-                        <span class="text-slate-400 print:text-black">Der Preis pro Minute beträgt 0,25 Euro. Die einmalige Grundgebühr für die Entsperrung beträgt 1,00 Euro. Für Nutzer mit einem aktiven Premium-Status entfällt diese Grundgebühr vollständig.</span>
+                        <h4 class="font-bold text-slate-100 print:text-black mb-2">Aufgabe 1</h4>
+                        <p class="text-slate-300 print:text-black">Finde mit dem Sieb des Eratosthenes alle Primzahlen bis 100.[cite: 1]</p>
                     </div>
-                </li>
-            </ul>
-        </section>
+                    
+                    <div>
+                        <h4 class="font-bold text-slate-100 print:text-black mb-2">Aufgabe 2</h4>
+                        <p class="text-slate-300 print:text-black">Welche Datenstrukturen (Arrays, Variablen) und Kontrollstrukturen (Verzweigungen, Schleifen,...) werden benötigt, um das Sieb des Eratosthenes in Java zu programmieren?[cite: 1]</p>
+                    </div>
+
+                    <div class="bg-indigo-950/30 border border-indigo-900/50 p-5 rounded-xl print:bg-transparent print:border-slate-400">
+                        <h4 class="font-bold text-indigo-400 print:text-black mb-2 flex items-center gap-2">
+                            <i data-lucide="star" class="w-5 h-5 print-hidden"></i>
+                            Bonus-Aufgabe
+                        </h4>
+                        <p class="text-slate-300 print:text-black">Es sollen die Primzahlen bis zu einer Zahl $n\in\mathbb{N}$ bestimmt werden.[cite: 1] Begründe, warum man bereits alle Primzahlen bis n gefunden hat, sobald die Vielfachen aller Zahlen bis $\sqrt{n}$ gestrichen wurden.[cite: 1]</p>
+                    </div>
+                </div>
+            </section>
+        </div>
         
     </div>
 
-    <!-- Scripte Initialisieren -->
+    <!-- Logik & Initialisierung -->
     <script>
         // Syntax Highlighting aktivieren
         hljs.highlightAll();
         
         // Icons rendern
         lucide.createIcons();
+
+        // KaTeX (Mathematische Formeln) rendern
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError : false
+            });
+            
+            // Grid initialisieren, sobald DOM geladen ist
+            initGrid();
+        });
+
+        // Tab Navigation Logik
+        function switchTab(tabId) {
+            // Alle Inhalte ausblenden
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('block'));
+            
+            // Ziel-Inhalt einblenden
+            document.getElementById('page-' + tabId).classList.remove('hidden');
+            document.getElementById('page-' + tabId).classList.add('block');
+
+            // Button Styles zurücksetzen
+            const btnMethoden = document.getElementById('tab-btn-methoden');
+            const btnArrays = document.getElementById('tab-btn-arrays');
+
+            // Klassen resetten
+            btnMethoden.className = "flex-shrink-0 px-6 py-3 rounded-xl font-medium transition-all min-w-[44px] min-h-[44px] bg-slate-800 text-slate-300 hover:bg-slate-700";
+            btnArrays.className = "flex-shrink-0 px-6 py-3 rounded-xl font-medium transition-all min-w-[44px] min-h-[44px] bg-slate-800 text-slate-300 hover:bg-slate-700";
+
+            // Aktiven Button hervorheben
+            if(tabId === 'methoden') {
+                btnMethoden.className = "flex-shrink-0 px-6 py-3 rounded-xl font-medium transition-all min-w-[44px] min-h-[44px] bg-indigo-600 text-white shadow-md";
+            } else {
+                btnArrays.className = "flex-shrink-0 px-6 py-3 rounded-xl font-medium transition-all min-w-[44px] min-h-[44px] bg-indigo-600 text-white shadow-md";
+            }
+        }
+
+        // Interaktives 10x10 Grid Logik
+        function initGrid() {
+            const gridContainer = document.getElementById('number-grid');
+            const resetBtn = document.getElementById('reset-grid-btn');
+            
+            // 100 Buttons erstellen
+            for (let i = 1; i <= 100; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                
+                // Basis-Styling für jeden Number-Block
+                btn.className = "grid-number flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-200 rounded md:rounded-lg font-medium text-sm md:text-base aspect-square min-w-[30px] min-h-[30px] md:min-w-[44px] md:min-h-[44px] hover:bg-indigo-600 hover:text-white hover:border-indigo-500 focus:outline-none print:border-slate-300 print:text-black print:bg-transparent";
+                
+                // Click-Event zum Durchstreichen (Toggle)
+                btn.addEventListener('click', () => {
+                    btn.classList.toggle('crossed-out');
+                });
+                
+                gridContainer.appendChild(btn);
+            }
+
+            // Reset-Button Funktionalität
+            resetBtn.addEventListener('click', () => {
+                const allNumbers = gridContainer.querySelectorAll('.grid-number');
+                allNumbers.forEach(btn => {
+                    btn.classList.remove('crossed-out');
+                });
+            });
+        }
     </script>
 </body>
 </html>
