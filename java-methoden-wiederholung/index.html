@@ -61,7 +61,6 @@
                 border: 1px solid #94a3b8 !important; 
                 background-color: #f8fafc !important; 
             }
-            /* Überschreibe das Dark-Theme von Highlight.js für den Druck */
             code, .hljs {
                 background-color: transparent !important;
                 color: #000 !important;
@@ -70,24 +69,55 @@
                 color: #000 !important;
                 font-weight: bold;
             }
-            /* Beim Drucken alle Tabs anzeigen und Navigation ausblenden */
             .tab-content {
                 display: block !important;
             }
             .print-hidden {
                 display: none !important;
             }
+            /* Für den Druck alle Markierungen der Schüler im Grid ignorieren, damit das Blatt leer ist */
+            .grid-number {
+                border-radius: 4px !important;
+                border: 1px solid #cbd5e1 !important;
+                color: black !important;
+                background: transparent !important;
+                text-decoration: none !important;
+            }
         }
 
-        /* Animation für das Durchstreichen im Grid */
+        /* Styling für das interaktive Grid */
         .grid-number {
             transition: all 0.2s ease-in-out;
         }
+        
+        /* Zustand: Durchgestrichen (Linksklick) */
         .grid-number.crossed-out {
             text-decoration: line-through;
-            color: #64748b; /* slate-500 */
-            background-color: #1e293b; /* slate-800 */
-            border-color: #334155; /* slate-700 */
+            color: #475569; /* slate-600 */
+            background-color: #0f172a; /* slate-900 */
+            border-color: #1e293b; /* slate-800 */
+            opacity: 0.6;
+        }
+
+        /* Zustand: Eingekreist (Rechtsklick) */
+        .grid-number.circled {
+            border-radius: 50% !important; /* Macht den Button zu einem Kreis */
+            border: 2px solid #10b981 !important; /* emerald-500 */
+            color: #10b981;
+            background-color: rgba(16, 185, 129, 0.1);
+            font-weight: bold;
+        }
+
+        /* Sieges-Animation */
+        @keyframes win-pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+            50% { transform: scale(1.02); box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
+        }
+        .grid-success-anim {
+            animation: win-pulse 0.6s ease-in-out;
+            border-color: #10b981 !important;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
         }
     </style>
 </head>
@@ -246,18 +276,18 @@ public static void main(String[] args) {
             <section class="bg-slate-900 rounded-2xl shadow-md border border-slate-800 p-6 md:p-8 mb-8 print-no-shadow print-break-inside-avoid print:mb-6">
                 <h3 class="text-xl font-semibold text-slate-100 print:text-black mb-4">Das Sieb des Eratosthenes</h3>
                 
-                <p class="mb-4 text-slate-300 print:text-black">Eine Primzahl ist eine natürliche Zahl, die genau 2 unterschiedliche Teiler hat: Die 1 und die Zahl selbst.[cite: 1] Um Primzahlen zu finden, kann man das folgende Verfahren durchführen, das sogenannte Sieb des Eratosthenes.[cite: 1]</p>
-                <p class="mb-4 text-slate-300 print:text-black">Fertige eine Liste oder Tabelle der natürlichen Zahlen bis zu einer beliebigen Größe an, zum Beispiel 100.[cite: 1]</p>
+                <p class="mb-4 text-slate-300 print:text-black">Eine Primzahl ist eine natürliche Zahl, die genau 2 unterschiedliche Teiler hat: Die 1 und die Zahl selbst. Um Primzahlen zu finden, kann man das folgende Verfahren durchführen, das sogenannte Sieb des Eratosthenes.</p>
+                <p class="mb-4 text-slate-300 print:text-black">Fertige eine Liste oder Tabelle der natürlichen Zahlen bis zu einer beliebigen Größe an, zum Beispiel 100.</p>
 
                 <ul class="list-disc pl-5 space-y-2 mb-8 text-slate-300 print:text-black">
-                    <li>Zuerst wird die Zahl 1 gestrichen, da sie per Definition keine Primzahl ist.[cite: 1]</li>
-                    <li>Die Zahl 2 wird als Primzahl umkreist und dann alle Vielfachen von ihr gestrichen, da diese keine Primzahlen sein können.[cite: 1]</li>
-                    <li>Dann wird die nach der 2 nächste nicht gestrichene Zahl, die 3, umkreist und alle Vielfachen von ihr gestrichen.[cite: 1]</li>
-                    <li>Jetzt wird die nach der 3 nächste freie Zahl umkreist (die 5) und ihre Vielfachen gestrichen, usw.[cite: 1]</li>
+                    <li>Zuerst wird die Zahl 1 gestrichen, da sie per Definition keine Primzahl ist.</li>
+                    <li>Die Zahl 2 wird als Primzahl umkreist und dann alle Vielfachen von ihr gestrichen, da diese keine Primzahlen sein können.</li>
+                    <li>Dann wird die nach der 2 nächste nicht gestrichene Zahl, die 3, umkreist und alle Vielfachen von ihr gestrichen.</li>
+                    <li>Jetzt wird die nach der 3 nächste freie Zahl umkreist (die 5) und ihre Vielfachen gestrichen, usw.</li>
                 </ul>
 
                 <!-- Interaktives Grid Modul -->
-                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 mb-8 print:border-slate-400 print:bg-transparent">
+                <div id="grid-wrapper" class="bg-slate-950 p-6 rounded-xl border border-slate-800 mb-8 print:border-slate-400 print:bg-transparent transition-all duration-300 relative">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="font-medium text-indigo-400 print:text-black">Interaktives Zahlensieb</h4>
                         <button id="reset-grid-btn" class="print-hidden flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-sm transition-colors border border-slate-700 min-w-[44px] min-h-[44px] focus:ring-2 focus:ring-slate-600 outline-none">
@@ -265,9 +295,23 @@ public static void main(String[] args) {
                             Reset
                         </button>
                     </div>
+
+                    <!-- Bedienungshinweis -->
+                    <div class="bg-indigo-950/40 border border-indigo-900/50 p-3 rounded-lg mb-6 flex flex-col md:flex-row items-start gap-3 print-hidden">
+                        <i data-lucide="info" class="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0"></i>
+                        <p class="text-sm text-indigo-200 leading-relaxed">
+                            <strong>Tipp zur Bedienung:</strong> Mit einem <strong>Linksklick</strong> kannst du Zahlen durchstreichen (keine Primzahlen). Mit einem <strong>Rechtsklick</strong> kannst du Primzahlen einkreisen.
+                        </p>
+                    </div>
+
+                    <!-- Erfolgsmeldung (Standardmäßig versteckt) -->
+                    <div id="success-message" class="hidden bg-emerald-950/40 border border-emerald-500/50 p-4 rounded-lg mb-6 flex items-center justify-center gap-3 print-hidden shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                        <i data-lucide="party-popper" class="w-6 h-6 text-emerald-400 animate-bounce"></i>
+                        <p class="text-emerald-300 font-bold">Perfekt! Du hast alle Primzahlen korrekt gefunden und den Rest durchgestrichen.</p>
+                    </div>
                     
                     <!-- 10x10 Grid Container -->
-                    <div id="number-grid" class="grid grid-cols-10 gap-1 md:gap-2">
+                    <div id="number-grid" class="grid grid-cols-10 gap-1 md:gap-2 select-none">
                         <!-- Wird per JavaScript generiert -->
                     </div>
                 </div>
@@ -276,12 +320,12 @@ public static void main(String[] args) {
                 <div class="space-y-6">
                     <div>
                         <h4 class="font-bold text-slate-100 print:text-black mb-2">Aufgabe 1</h4>
-                        <p class="text-slate-300 print:text-black">Finde mit dem Sieb des Eratosthenes alle Primzahlen bis 100.[cite: 1]</p>
+                        <p class="text-slate-300 print:text-black">Finde mit dem Sieb des Eratosthenes alle Primzahlen bis 100.</p>
                     </div>
                     
                     <div>
                         <h4 class="font-bold text-slate-100 print:text-black mb-2">Aufgabe 2</h4>
-                        <p class="text-slate-300 print:text-black">Welche Datenstrukturen (Arrays, Variablen) und Kontrollstrukturen (Verzweigungen, Schleifen,...) werden benötigt, um das Sieb des Eratosthenes in Java zu programmieren?[cite: 1]</p>
+                        <p class="text-slate-300 print:text-black">Welche Datenstrukturen (Arrays, Variablen) und Kontrollstrukturen (Verzweigungen, Schleifen,...) werden benötigt, um das Sieb des Eratosthenes in Java zu programmieren?</p>
                     </div>
 
                     <div class="bg-indigo-950/30 border border-indigo-900/50 p-5 rounded-xl print:bg-transparent print:border-slate-400">
@@ -289,7 +333,7 @@ public static void main(String[] args) {
                             <i data-lucide="star" class="w-5 h-5 print-hidden"></i>
                             Bonus-Aufgabe
                         </h4>
-                        <p class="text-slate-300 print:text-black">Es sollen die Primzahlen bis zu einer Zahl $n\in\mathbb{N}$ bestimmt werden.[cite: 1] Begründe, warum man bereits alle Primzahlen bis n gefunden hat, sobald die Vielfachen aller Zahlen bis $\sqrt{n}$ gestrichen wurden.[cite: 1]</p>
+                        <p class="text-slate-300 print:text-black">Es sollen die Primzahlen bis zu einer Zahl $n\in\mathbb{N}$ bestimmt werden. Begründe, warum man bereits alle Primzahlen bis n gefunden hat, sobald die Vielfachen aller Zahlen bis $\sqrt{n}$ gestrichen wurden.</p>
                     </div>
                 </div>
             </section>
@@ -321,23 +365,18 @@ public static void main(String[] args) {
 
         // Tab Navigation Logik
         function switchTab(tabId) {
-            // Alle Inhalte ausblenden
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('block'));
             
-            // Ziel-Inhalt einblenden
             document.getElementById('page-' + tabId).classList.remove('hidden');
             document.getElementById('page-' + tabId).classList.add('block');
 
-            // Button Styles zurücksetzen
             const btnMethoden = document.getElementById('tab-btn-methoden');
             const btnArrays = document.getElementById('tab-btn-arrays');
 
-            // Klassen resetten
             btnMethoden.className = "flex-shrink-0 px-6 py-3 rounded-xl font-medium transition-all min-w-[44px] min-h-[44px] bg-slate-800 text-slate-300 hover:bg-slate-700";
             btnArrays.className = "flex-shrink-0 px-6 py-3 rounded-xl font-medium transition-all min-w-[44px] min-h-[44px] bg-slate-800 text-slate-300 hover:bg-slate-700";
 
-            // Aktiven Button hervorheben
             if(tabId === 'methoden') {
                 btnMethoden.className = "flex-shrink-0 px-6 py-3 rounded-xl font-medium transition-all min-w-[44px] min-h-[44px] bg-indigo-600 text-white shadow-md";
             } else {
@@ -345,33 +384,87 @@ public static void main(String[] args) {
             }
         }
 
-        // Interaktives 10x10 Grid Logik
+        // --- Logik für das interaktive Zahlensieb ---
+        
+        // Set mit allen korrekten Primzahlen bis 100 zur Verifikation
+        const primeNumbers = new Set([2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]);
+
         function initGrid() {
             const gridContainer = document.getElementById('number-grid');
             const resetBtn = document.getElementById('reset-grid-btn');
+            const wrapper = document.getElementById('grid-wrapper');
+            const successMsg = document.getElementById('success-message');
             
-            // 100 Buttons erstellen
+            // 100 Buttons generieren
             for (let i = 1; i <= 100; i++) {
                 const btn = document.createElement('button');
                 btn.textContent = i;
+                btn.dataset.number = i; // Zum späteren Auslesen der Zahl
                 
-                // Basis-Styling für jeden Number-Block
+                // Basis-Styling
                 btn.className = "grid-number flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-200 rounded md:rounded-lg font-medium text-sm md:text-base aspect-square min-w-[30px] min-h-[30px] md:min-w-[44px] md:min-h-[44px] hover:bg-indigo-600 hover:text-white hover:border-indigo-500 focus:outline-none print:border-slate-300 print:text-black print:bg-transparent";
                 
-                // Click-Event zum Durchstreichen (Toggle)
-                btn.addEventListener('click', () => {
+                // EVENT: Linksklick -> Durchstreichen umschalten (Toggle)
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Falls die Zahl eingekreist ist, heben wir das erst auf
+                    if (btn.classList.contains('circled')) {
+                        btn.classList.remove('circled');
+                    }
                     btn.classList.toggle('crossed-out');
+                    checkWinCondition();
+                });
+
+                // EVENT: Rechtsklick -> Einkreisen umschalten (Toggle)
+                btn.addEventListener('contextmenu', (e) => {
+                    e.preventDefault(); // Verhindert das Browser-Menü
+                    // Falls die Zahl durchgestrichen ist, heben wir das erst auf
+                    if (btn.classList.contains('crossed-out')) {
+                        btn.classList.remove('crossed-out');
+                    }
+                    btn.classList.toggle('circled');
+                    checkWinCondition();
                 });
                 
                 gridContainer.appendChild(btn);
             }
 
+            // Funktion zur Überprüfung, ob das Rätsel perfekt gelöst wurde
+            function checkWinCondition() {
+                const allButtons = gridContainer.querySelectorAll('.grid-number');
+                let isWinner = true;
+
+                allButtons.forEach(btn => {
+                    const num = parseInt(btn.dataset.number);
+                    const isPrime = primeNumbers.has(num);
+                    const isCircled = btn.classList.contains('circled');
+                    const isCrossed = btn.classList.contains('crossed-out');
+
+                    // Überprüfe jede der 4 möglichen Fehlerquellen
+                    if (isPrime && !isCircled) isWinner = false; // Primzahl vergessen einzukreisen
+                    if (!isPrime && !isCrossed) isWinner = false; // Nicht-Primzahl vergessen durchzustreichen
+                    if (isPrime && isCrossed) isWinner = false; // Primzahl fälschlicherweise durchgestrichen
+                    if (!isPrime && isCircled) isWinner = false; // Nicht-Primzahl fälschlicherweise eingekreist
+                });
+
+                // Trigger Animation und zeige Message bei Erfolg
+                if (isWinner) {
+                    wrapper.classList.add('grid-success-anim');
+                    successMsg.classList.remove('hidden');
+                } else {
+                    wrapper.classList.remove('grid-success-anim');
+                    successMsg.classList.add('hidden');
+                }
+            }
+
             // Reset-Button Funktionalität
             resetBtn.addEventListener('click', () => {
-                const allNumbers = gridContainer.querySelectorAll('.grid-number');
-                allNumbers.forEach(btn => {
-                    btn.classList.remove('crossed-out');
+                const allButtons = gridContainer.querySelectorAll('.grid-number');
+                allButtons.forEach(btn => {
+                    btn.classList.remove('crossed-out', 'circled');
                 });
+                wrapper.classList.remove('grid-success-anim');
+                successMsg.classList.add('hidden');
             });
         }
     </script>
