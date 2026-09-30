@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wiederholung: Methoden</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --card: #1a1a1a;
+            --text: #e5e5e5;
+            --gray: #a3a3a3;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; }
+        h1 { font-size: 1.8rem; font-weight: 600; }
+        .card { background: var(--card); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); margin-bottom: 2rem; }
+        pre { border-radius: 8px; overflow-x: auto; }
+        code { font-family: 'Courier New', Courier, monospace; }
+        .btn-print { background: #333; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        ul { padding-left: 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .card { background: white; color: black; box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            .btn-print { display: none; }
+            pre { background: #f4f4f4 !important; color: black !important; border: 1px solid #ddd; }
+            code { color: black !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Wiederholung: Methoden</h1>
+            <button class="btn-print" onclick="window.print()">🖨 Drucken</button>
+        </header>
+
+        <section class="card">
+            <h2>Aufgabe 1: Code-Analyse</h2>
+            <p>Analysiere den folgenden Java-Quelltext.</p>
+            <pre><code class="language-java">public static double berechneRabatt(double preis, int prozent) {
+    double rabattWert = (preis / 100) * prozent;
+    return preis - rabattWert;
+}
+
+public static void druckeRechnung(String kundenName, double endPreis) {
+    System.out.println("Hallo " + kundenName);
+    System.out.println("Zu zahlen: " + endPreis + " Euro.");
+}
+
+public static void main(String[] args) {
+    double basisPreis = 50.0;
+    double neuerPreis = berechneRabatt(basisPreis, 20);
+    druckeRechnung("Alex", neuerPreis);
+}</code></pre>
+            <ul>
+                <li><strong>a)</strong> Parameter: <code>double</code>, <code>int</code>. Rückgabetyp: <code>double</code>.</li>
+                <li><strong>b)</strong> <code>void</code> bedeutet, die Methode gibt keinen Wert zurück. Der Aufruf erfolgt als eigenständiges Statement.</li>
+                <li><strong>c)</strong> Ablauf: <code>basisPreis</code> wird definiert, <code>berechneRabatt</code> berechnet 40.0, <code>druckeRechnung</code> gibt aus:<br>
+                <em>Hallo Alex<br>Zu zahlen: 40.0 Euro.</em></li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Aufgabe 2: Fehlersuche</h2>
+            <p>Gegeben ist die folgende Methodendeklaration für ein Login-System:</p>
+            <pre><code class="language-java">public static boolean ueberpruefePasswort(String nutzername, int pin) { 
+    return true; 
+}</code></pre>
+            <p>Begründung der Fehler:</p>
+            <ul>
+                <li><code>ueberpruefePasswort("User123", "Geheim123")</code>: Zweiter Parameter erwartet <code>int</code>, erhält <code>String</code>.</li>
+                <li><code>ueberpruefePasswort(4567, "Max")</code>: Parameter vertauscht (Typ-Mismatch).</li>
+                <li><code>ueberpruefePasswort("Anna")</code>: Zu wenig Argumente übergeben.</li>
+                <li><code>int ergebnis = ...</code>: Methode gibt <code>boolean</code> zurück, kann nicht in <code>int</code> gespeichert werden.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Aufgabe 3: Implementierung</h2>
+            <p>Entwickle eine Methode <code>berechneFahrpreis</code> für einen E-Scooter-Verleih:</p>
+            <ul>
+                <li><strong>Parameter:</strong> <code>int minuten</code>, <code>boolean isPremium</code></li>
+                <li><strong>Rückgabewert:</strong> <code>double</code></li>
+                <li><strong>Logik:</strong> Preis = (minuten * 0.25) + (isPremium ? 0 : 1.00)</li>
+            </ul>
+            <pre><code class="language-java">package wiederholung;
+
+public class Methoden {
+    public static double berechneFahrpreis(int minuten, boolean isPremium) {
+        double preis = minuten * 0.25;
+        if (!isPremium) {
+            preis += 1.00;
+        }
+        return preis;
+    }
+}</code></pre>
+        </section>
+    </div>
+</body>
+</html>
