@@ -259,7 +259,7 @@ m1.<span class="method">angreifen</span>(m2);</code></pre>
             <!-- STATION 3 -->
             <div id="station-3" class="station-content hidden fade-in">
                 <div class="inline-block bg-blue-900 text-blue-300 px-3 py-1 rounded-full text-sm font-semibold mb-4">Station 3</div>
-                <h2 class="text-3xl font-bold text-white mb-6">Konstruktoren & die Geburtsstunde</h2>
+                <h2 class="text-3xl font-bold text-white mb-6">Konstruktoren</h2>
                 
                 <div class="space-y-6 text-gray-300">
                     <div class="bg-gray-700 p-5 rounded-lg border-l-4 border-blue-500">
@@ -338,7 +338,13 @@ Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@sc
                 <div class="space-y-6 text-gray-300">
                     <div class="bg-gray-700 p-5 rounded-lg border-l-4 border-blue-500">
                         <h3 class="text-xl font-bold text-white mb-2">🧠 Der Wissens-Snack</h3>
-                        <p><strong>Geheimnisprinzip:</strong> Direkter Zugriff auf Attribute muss verhindert werden, da man die Daten sonst von außen auf unsinnige Werte setzen könnte. Wir schützen Attribute mit <code>private</code> und erlauben den Zugriff nur über kontrollierte <code>public</code> Methoden (Getter und Setter).</p>
+                        <p class="mb-3"><strong>Geheimnisprinzip & Zugriffsmodifikatoren:</strong> Direkter Zugriff auf Attribute muss verhindert werden, da man die Daten sonst von außen auf unsinnige Werte setzen könnte. Wir steuern die Sichtbarkeit von Attributen und Methoden mit Schlüsselwörtern:</p>
+                        <ul class="list-disc pl-5 mb-4 space-y-1">
+                            <li><code class="text-blue-300">private</code>: <strong>Streng geheim!</strong> Nur die Klasse selbst darf das Element sehen und ändern.</li>
+                            <li><code class="text-blue-300">public</code>: <strong>Öffentlich!</strong> Jeder darf von überall auf das Element zugreifen.</li>
+                            <li><code class="text-blue-300">protected</code>: <strong>Familiengeheimnis.</strong> Nur das eigene Package und erbende Klassen dürfen zugreifen (mehr dazu in Station 5).</li>
+                        </ul>
+                        <p class="mb-3 border-t border-gray-600 pt-3"><strong>Was bringen Packages?</strong> Wenn Programme größer werden, reicht es nicht, alle Dateien in einen Ordner zu werfen. Wir sortieren Klassen in sogenannte <strong>Packages</strong> (Ordner-Strukturen, z.B. <code>wesen</code> und <code>arena</code>). Das schafft Übersicht, verhindert Namenskonflikte und stärkt die Sicherheit, da wir Klassen so logisch voneinander abschotten.</p>
 
                         <!-- Alltagsbeispiel -->
                         <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
@@ -348,10 +354,15 @@ Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@sc
     <span class="kw">private int</span> akkuStand; <span class="comment">// Sicher versteckt</span>
 
     <span class="comment">// Der Setter kontrolliert die Eingabe</span>
-    <span class="kw">public void</span> <span class="method">ladeAkku</span>(<span class="kw">int</span> ladung) {
-        <span class="kw">if</span> (<span class="kw">this</span>.akkuStand + ladung <= 100) {
-            <span class="kw">this</span>.akkuStand = <span class="kw">this</span>.akkuStand + ladung;
+    <span class="kw">public void</span> <span class="method">setAkkuStand</span>(<span class="kw">int</span> ladung) {
+        <span class="kw">if</span> (ladung <= 100 && ladung >= 0) {
+            <span class="kw">this</span>.akkuStand = ladung;
         }
+    }
+    
+    <span class="comment">// Der Getter lässt uns den Wert sicher auslesen</span>
+    <span class="kw">public int</span> <span class="method">getAkkuStand</span>() {
+        <span class="kw">return this</span>.akkuStand;
     }
 }</code></pre>
                         </div>
@@ -370,7 +381,16 @@ Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@sc
     <span class="kw">if</span> (neuerWert >= 0) {  <span class="comment">// Check: Leben darf nicht negativ sein</span>
         <span class="kw">this</span>.lebenspunkte = neuerWert;
     }
-}</code></pre>
+}
+
+<span class="comment">// ----------------------------------------------------</span>
+<span class="comment">// So greifst du ab jetzt in der Arena auf Monster zu:</span>
+<span class="comment">// ----------------------------------------------------</span>
+Monster m1 = <span class="kw">new</span> Monster(<span class="str">"Ork"</span>, 100, 20);
+
+<span class="comment">// m1.lebenspunkte = -500;              // ❌ GEHT NICHT MEHR (Da private!)</span>
+m1.<span class="method">setLebenspunkte</span>(80);                 <span class="comment">// ✅ Richtig: Ändern über den Setter</span>
+System.out.println(m1.<span class="method">getLebenspunkte</span>()); <span class="comment">// ✅ Richtig: Lesen über den Getter</span></code></pre>
 
                     <div class="mt-8">
                         <h3 class="text-xl font-bold text-white mb-4">💻 Deine Aufgaben in IntelliJ</h3>
