@@ -144,6 +144,7 @@ meinGolf.farbe = <span class="str">"Rot"</span>;</code></pre>
 <pre class="code-block"><code><span class="kw">public class</span> Monster {
     <span class="type">String</span> name;          <span class="comment">// Attribut 1 (Eigenschaft)</span>
     <span class="kw">int</span> lebenspunkte;     <span class="comment">// Attribut 2</span>
+    <span class="kw">int</span> angriffskraft;    <span class="comment">// Attribut 3</span>
 }
 
 <span class="comment">// In einer anderen Klasse (Arena) innerhalb der main-Methode:</span>
@@ -192,8 +193,10 @@ System.out.println(meinMonster.name);</code></pre>
                         <h3 class="text-xl font-bold text-white mb-2">🧠 Der Wissens-Snack</h3>
                         <p>Bisher sind unsere Objekte reine Datenspeicher. Sie brauchen <strong>Verhalten (Fähigkeiten)</strong>. Das lösen wir mit Methoden. Besonders spannend wird es, wenn wir die Referenz eines <em>anderen</em> Objekts als Parameter übergeben – so können Objekte miteinander interagieren!</p>
 
+                        <p class="mt-4 border-t border-gray-600 pt-4"><strong>Das Schlüsselwort <code>this</code>:</strong> Wenn ein Objekt eine Methode ausführt, bedeutet <code>this</code> (englisch für "dieses") immer <em>"ich selbst"</em>. Es verweist auf das Objekt, das die Methode gerade aufgerufen hat.</p>
+
                         <!-- Alltagsbeispiel -->
-                        <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
+                        <div class="bg-gray-800 p-4 rounded mt-4 border border-gray-600">
                             <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
                             <p class="text-sm mb-3">Zwei Bankkonten tauschen Geld aus. Konto A ruft seine Methode <code>ueberweisen(...)</code> auf und übergibt Konto B als Ziel-Objekt.</p>
 <pre class="code-block mt-0 mb-0"><code><span class="kw">public class</span> Bankkonto {
@@ -201,6 +204,7 @@ System.out.println(meinMonster.name);</code></pre>
 
     <span class="comment">// Methode, die ein anderes Konto-Objekt als Parameter erwartet</span>
     <span class="kw">public void</span> <span class="method">ueberweisen</span>(Bankkonto zielKonto, <span class="kw">int</span> betrag) {
+        <span class="comment">// "Mein" (this) Kontostand sinkt, der vom Ziel-Konto steigt</span>
         <span class="kw">this</span>.kontostand = <span class="kw">this</span>.kontostand - betrag;
         zielKonto.kontostand = zielKonto.kontostand + betrag;
     }
@@ -209,9 +213,17 @@ System.out.println(meinMonster.name);</code></pre>
                     </div>
 
                     <h3 class="text-xl font-bold text-white mt-8 mb-2">Dein Code für die Arena</h3>
-<pre class="code-block"><code><span class="kw">public void</span> <span class="method">angreifen</span>(Monster gegner) {
-    <span class="comment">// Eigene Kraft vom Leben des gegnerischen Objekts abziehen</span>
+<pre class="code-block"><code><span class="comment">// Neues Attribut (oben in der Klasse bei den anderen ergänzen!)</span>
+<span class="kw">int</span> heilungskraft;
+
+<span class="kw">public void</span> <span class="method">angreifen</span>(Monster gegner) {
+    <span class="comment">// 'this' ist der Angreifer, 'gegner' ist das Ziel</span>
     gegner.lebenspunkte = gegner.lebenspunkte - <span class="kw">this</span>.angriffskraft;
+}
+
+<span class="kw">public void</span> <span class="method">heilen</span>() {
+    <span class="comment">// Das Monster heilt sich selbst mit seiner eigenen Heilungskraft</span>
+    <span class="kw">this</span>.lebenspunkte = <span class="kw">this</span>.lebenspunkte + <span class="kw">this</span>.heilungskraft;
 }
 
 <span class="comment">// Aufruf in der Arena: m1 führt die Aktion aus, m2 ist das Ziel</span>
@@ -220,8 +232,9 @@ m1.<span class="method">angreifen</span>(m2);</code></pre>
                     <div class="mt-8">
                         <h3 class="text-xl font-bold text-white mb-4">💻 Deine Aufgaben in IntelliJ</h3>
                         <ol class="list-decimal pl-5 space-y-3 bg-gray-900 p-6 rounded-lg border border-gray-700">
-                            <li>Baue die Methoden <code>heilen()</code> und <code>angreifen(Monster gegner)</code> in deine <code>Monster</code>-Klasse ein.</li>
-                            <li>Erstelle in der <code>Arena</code> zwei verschiedene Monster-Instanzen.</li>
+                            <li>Ergänze in deiner Klasse <code>Monster</code> das neue Attribut <code>int heilungskraft;</code></li>
+                            <li>Baue die beiden Methoden <code>heilen()</code> und <code>angreifen(Monster gegner)</code> in deine <code>Monster</code>-Klasse ein.</li>
+                            <li>Erstelle in der <code>Arena</code> zwei verschiedene Monster-Instanzen und gib ihnen Werte für ihre Attribute.</li>
                             <li>Lass sie in der <code>main</code>-Methode abwechselnd angreifen und heilen.</li>
                             <li>Nutze <code>System.out.println(...)</code>, um den Kampfverlauf und die verbleibenden Lebenspunkte auf der Konsole zu protokollieren.</li>
                         </ol>
@@ -237,7 +250,7 @@ m1.<span class="method">angreifen</span>(m2);</code></pre>
                         <div class="text-5xl">🛑</div>
                         <div>
                             <h3 class="text-2xl font-bold uppercase tracking-wide">Stopp-Schild: Pausiere hier!</h3>
-                            <p class="mt-1 text-red-100 font-medium">Hole dir nun das Arbeitsblatt für diese Station bei der Lehrkraft, damit wir die Ergebnisse gemeinsam sichern können.</p>
+                            <p class="mt-1 text-red-100 font-medium">Hole dir nun das Arbeitsblatt für diese Station bei der Lehrkraft, damit wir die Ergebnisse (und das Wort "this") gemeinsam sichern können.</p>
                         </div>
                     </div>
                 </div>
@@ -255,7 +268,7 @@ m1.<span class="method">angreifen</span>(m2);</code></pre>
                         <ul class="list-disc pl-5 mt-2 space-y-1 mb-4">
                             <li>Er wird genau <strong>einmal</strong> bei dem <code>new</code>-Befehl aufgerufen.</li>
                             <li>Er heißt <strong>exakt wie die Klasse</strong> und hat keinen Rückgabetyp.</li>
-                            <li>Wir nutzen <code>this</code>, um unsere eigenen Attribute von den übergebenen Parametern zu unterscheiden.</li>
+                            <li>Wir nutzen <code>this</code>, um unsere eigenen Attribute von den übergebenen Parametern (die oft denselben Namen haben) zu unterscheiden.</li>
                         </ul>
 
                         <!-- Alltagsbeispiel -->
@@ -280,11 +293,15 @@ Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@sc
 <pre class="code-block"><code><span class="kw">public class</span> Monster {
     <span class="type">String</span> name;
     <span class="kw">int</span> lebenspunkte;
+    <span class="kw">int</span> angriffskraft;
+    <span class="kw">int</span> heilungskraft;
 
     <span class="comment">// Der Konstruktor für unsere Monster</span>
-    <span class="kw">public</span> Monster(<span class="type">String</span> name, <span class="kw">int</span> lebenspunkte) {
+    <span class="kw">public</span> Monster(<span class="type">String</span> name, <span class="kw">int</span> lebenspunkte, <span class="kw">int</span> angriffskraft) {
         <span class="kw">this</span>.name = name;
         <span class="kw">this</span>.lebenspunkte = lebenspunkte;
+        <span class="kw">this</span>.angriffskraft = angriffskraft;
+        <span class="comment">// heilungskraft könnte man hier ebenfalls ergänzen</span>
     }
 }</code></pre>
 
