@@ -42,7 +42,7 @@
 
     <!-- Header -->
     <header class="bg-gray-800 border-b border-gray-700 py-6 px-4 shadow-md">
-        <div class="max-w-5xl mx-auto flex items-center gap-4">
+        <div class="max-w-6xl mx-auto flex items-center gap-4">
             <div class="text-4xl">👾</div>
             <div>
                 <h1 class="text-3xl font-bold text-white tracking-tight">Die Monster-Arena</h1>
@@ -51,7 +51,7 @@
         </div>
     </header>
 
-    <div class="max-w-5xl mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto px-4 py-8">
         
         <!-- DIE LERNLANDKARTE (Interaktives SVG) -->
         <div class="w-full bg-[#0f172a] rounded-xl border-4 border-gray-700 shadow-2xl overflow-hidden mb-8 relative">
@@ -59,11 +59,11 @@
             <div class="absolute top-4 left-8 text-4xl opacity-30 select-none pointer-events-none">🌲🌲</div>
             <div class="absolute bottom-8 left-1/3 text-4xl opacity-30 select-none pointer-events-none">⛰️</div>
             <div class="absolute top-12 right-1/4 text-4xl opacity-30 select-none pointer-events-none">🏰</div>
-            <div class="absolute bottom-12 right-8 text-4xl opacity-30 select-none pointer-events-none">🌲</div>
+            <div class="absolute bottom-12 right-16 text-4xl opacity-30 select-none pointer-events-none">🌲</div>
 
-            <svg viewBox="0 0 1000 400" class="w-full h-auto drop-shadow-xl">
-                <!-- Der geschwungene Pfad -->
-                <path d="M 100,300 C 200,300 200,100 300,100 S 400,300 500,300 S 600,100 700,100 S 800,300 900,300" 
+            <svg viewBox="0 0 1200 400" class="w-full h-auto drop-shadow-xl">
+                <!-- Der geschwungene Pfad (Erweitert auf 6 Stationen) -->
+                <path d="M 100,300 C 200,300 200,100 300,100 S 400,300 500,300 S 600,100 700,100 S 800,300 900,300 S 1000,100 1100,100" 
                       fill="none" stroke="#fbbf24" stroke-width="8" stroke-dasharray="15,10" stroke-linecap="round"/>
                 
                 <!-- STATION 1 -->
@@ -104,6 +104,14 @@
                     <text class="label-text transition-colors" x="0" y="60" fill="#94a3b8" text-anchor="middle" font-size="14" font-weight="bold">Vererbung</text>
                     <circle id="circle-5" cx="0" cy="0" r="28" fill="#475569" stroke="#94a3b8" stroke-width="4"/>
                     <text id="text-5" x="0" y="8" fill="#cbd5e1" text-anchor="middle" font-size="24" font-weight="bold">5</text>
+                </g>
+                
+                <!-- STATION 6 -->
+                <g class="station-group" onclick="showStation(6)" transform="translate(1100, 100)">
+                    <rect class="label-bg transition-colors" x="-90" y="-70" width="180" height="30" rx="5" fill="#1e293b" opacity="0.8"/>
+                    <text class="label-text transition-colors" x="0" y="-50" fill="#94a3b8" text-anchor="middle" font-size="14" font-weight="bold">Open World</text>
+                    <circle id="circle-6" cx="0" cy="0" r="28" fill="#475569" stroke="#94a3b8" stroke-width="4"/>
+                    <text id="text-6" x="0" y="8" fill="#cbd5e1" text-anchor="middle" font-size="24" font-weight="bold">6</text>
                 </g>
             </svg>
         </div>
@@ -476,8 +484,68 @@ System.out.println(m1.<span class="method">getLebenspunkte</span>()); <span clas
                     <div class="bg-red-600 text-white p-6 rounded-xl mt-12 border-l-8 border-red-900 shadow-lg flex items-center gap-6">
                         <div class="text-5xl">🛑</div>
                         <div>
-                            <h3 class="text-2xl font-bold uppercase tracking-wide">Ziel erreicht!</h3>
-                            <p class="mt-1 text-red-100 font-medium">Hole dir nun das finale Arbeitsblatt, damit wir den Stammbaum (UML) gemeinsam sichern können.</p>
+                            <h3 class="text-2xl font-bold uppercase tracking-wide">Stopp-Schild: Pausiere hier!</h3>
+                            <p class="mt-1 text-red-100 font-medium">Hole dir nun das Arbeitsblatt für diese Station bei der Lehrkraft, damit wir den Stammbaum (UML) gemeinsam sichern können. Danach öffnet sich die Arena für eigene Ideen!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATION 6 -->
+            <div id="station-6" class="station-content hidden fade-in">
+                <div class="inline-block bg-blue-900 text-blue-300 px-3 py-1 rounded-full text-sm font-semibold mb-4">Station 6</div>
+                <h2 class="text-3xl font-bold text-white mb-6">Open World!</h2>
+                
+                <div class="space-y-6 text-gray-300">
+                    <div class="bg-gray-700 p-5 rounded-lg border-l-4 border-yellow-500">
+                        <h3 class="text-xl font-bold text-white mb-2">🚀 Zeit für deine Ideen!</h3>
+                        <p>Du hast nun alle wichtigen Werkzeuge der Objektorientierung kennengelernt. Jetzt bist du der Spieledesigner! Die Arena gehört dir. Erweitere dein Projekt nach Belieben und mache die Kämpfe spannender.</p>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-white mt-8 mb-4">💡 Ideen-Kiste für Erweiterungen</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Idee 1 -->
+                        <div class="bg-gray-800 p-4 rounded border border-gray-600">
+                            <h4 class="font-bold text-blue-300 mb-2">🎲 Zufallsschaden</h4>
+                            <p class="text-sm">Statt immer denselben Schaden zu machen, könnte die Angriffskraft einen Zufallswert zwischen einem Minimum und Maximum haben. <br><em>(Tipp: Nutze <code>Math.random()</code>)</em></p>
+                        </div>
+                        <!-- Idee 2 -->
+                        <div class="bg-gray-800 p-4 rounded border border-gray-600">
+                            <h4 class="font-bold text-blue-300 mb-2">💨 Ausweichen</h4>
+                            <p class="text-sm">Beim Angriff wird gewürfelt: Es besteht eine 20% Chance, dass das angegriffene Monster dem Schlag komplett ausweicht und 0 Schaden nimmt.</p>
+                        </div>
+                        <!-- Idee 3 -->
+                        <div class="bg-gray-800 p-4 rounded border border-gray-600">
+                            <h4 class="font-bold text-blue-300 mb-2">💥 Kritischer Treffer</h4>
+                            <p class="text-sm">Mit einer gewissen Wahrscheinlichkeit trifft ein Angriff eine Schwachstelle und richtet den doppelten Schaden an!</p>
+                        </div>
+                        <!-- Idee 4 -->
+                        <div class="bg-gray-800 p-4 rounded border border-gray-600">
+                            <h4 class="font-bold text-blue-300 mb-2">🔄 Die Kampf-Schleife</h4>
+                            <p class="text-sm">Nutze eine <code>while</code>-Schleife in deiner Arena, in der sich die Monster so lange gegenseitig angreifen, bis die Lebenspunkte eines Monsters auf 0 oder darunter fallen.</p>
+                        </div>
+                        <!-- Idee 5 -->
+                        <div class="bg-gray-800 p-4 rounded border border-gray-600 md:col-span-2">
+                            <h4 class="font-bold text-blue-300 mb-2">🧪 Heiltränke (Items) als neue Objekte</h4>
+                            <p class="text-sm">Erstelle eine völlig neue Klasse <code>Heiltrank</code>. Ein Monster könnte eine Methode <code>trankTrinken(Heiltrank trank)</code> haben, um sich zu heilen, wodurch das Objekt <em>trank</em> aufgebraucht wird.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h3 class="text-xl font-bold text-white mb-4">💻 Deine Aufgabe in IntelliJ</h3>
+                        <ol class="list-decimal pl-5 space-y-3 bg-gray-900 p-6 rounded-lg border border-gray-700">
+                            <li>Suche dir <strong>mindestens zwei</strong> Ideen aus der Box oben aus (oder erfinde eigene!).</li>
+                            <li>Überlege, ob du dafür neue Attribute, neue Methoden oder sogar neue Klassen brauchst.</li>
+                            <li>Programmiere die Erweiterungen. Nutze <code>System.out.println()</code>, um dir den Kampfverlauf detailliert auf der Konsole ausgeben zu lassen.</li>
+                        </ol>
+                    </div>
+
+                    <!-- STOPP-SCHILD FINALE -->
+                    <div class="bg-gradient-to-r from-yellow-600 to-yellow-700 text-white p-6 rounded-xl mt-12 border-l-8 border-yellow-900 shadow-lg flex items-center gap-6">
+                        <div class="text-5xl">🏆</div>
+                        <div>
+                            <h3 class="text-2xl font-bold uppercase tracking-wide">Das Finale!</h3>
+                            <p class="mt-1 text-yellow-100 font-medium">Glückwunsch! Deine Arena ist fertig. Zeige der Lehrkraft und der Klasse deine besten Erweiterungen. Lass uns schauen, wessen Monster am stärksten sind!</p>
                         </div>
                     </div>
                 </div>
@@ -494,7 +562,7 @@ System.out.println(m1.<span class="method">getLebenspunkte</span>()); <span clas
             allStations.forEach(station => station.classList.add('hidden'));
 
             // Setze alle Knotenpunkte der SVG-Karte auf inaktiv zurück (Grau)
-            for(let i = 1; i <= 5; i++) {
+            for(let i = 1; i <= 6; i++) {
                 const circle = document.getElementById('circle-' + i);
                 const text = document.getElementById('text-' + i);
                 
