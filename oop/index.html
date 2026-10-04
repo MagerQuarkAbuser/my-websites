@@ -8,7 +8,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Syntax-Highlighting für die Code-Blöcke (IntelliJ Dark Theme Style) */
-        .code-block { background-color: #2b2b2b; color: #a9b7c6; font-family: 'JetBrains Mono', 'Consolas', monospace; padding: 1.25rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.95rem; line-height: 1.6; border: 1px solid #3f4b5e; }
+        .code-block { 
+            background-color: #2b2b2b; 
+            color: #a9b7c6; 
+            font-family: 'JetBrains Mono', 'Consolas', monospace; 
+            padding: 1.25rem; 
+            border-radius: 0.5rem; 
+            overflow-x: auto; 
+            font-size: 0.95rem; 
+            line-height: 1.6; 
+            border: 1px solid #3f4b5e; 
+            white-space: pre-wrap; /* Zwingt den Browser, Umbrüche und Leerzeichen zu respektieren */
+            tab-size: 4;
+        }
         .kw { color: #cc7832; font-weight: bold; } /* Keywords */
         .type { color: #287bde; } /* Datentypen */
         .str { color: #6a8759; } /* Strings */
@@ -117,30 +129,26 @@
                         <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
                             <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
                             <p class="text-sm mb-3">Die Klasse <code>Auto</code> ist der allgemeine Bauplan bei VW. Eine Instanz (das Objekt) ist dein spezifischer, roter Golf, der bei dir in der Einfahrt steht.</p>
-                            <div class="code-block mt-0 mb-0">
-<span class="kw">public class</span> Auto {
+<pre class="code-block mt-0 mb-0"><code><span class="kw">public class</span> Auto {
     <span class="type">String</span> farbe;
     <span class="type">String</span> kennzeichen;
 }
 
 <span class="comment">// Aus dem Bauplan eine Instanz (ein konkretes Objekt) erstellen:</span>
 Auto meinGolf = <span class="kw">new</span> Auto();
-meinGolf.farbe = <span class="str">"Rot"</span>;
-                            </div>
+meinGolf.farbe = <span class="str">"Rot"</span>;</code></pre>
                         </div>
                     </div>
 
                     <h3 class="text-xl font-bold text-white mt-8 mb-2">Dein Code für die Arena</h3>
-                    <div class="code-block">
-<span class="kw">public class</span> Monster {
+<pre class="code-block"><code><span class="kw">public class</span> Monster {
     <span class="type">String</span> name;          <span class="comment">// Attribut 1 (Eigenschaft)</span>
     <span class="kw">int</span> lebenspunkte;     <span class="comment">// Attribut 2</span>
 }
 
 <span class="comment">// In einer anderen Klasse (Arena) innerhalb der main-Methode:</span>
 Monster meinMonster = <span class="kw">new</span> Monster();
-meinMonster.name = <span class="str">"Feuer-Blob"</span>;   <span class="comment">// Über die Punktnotation Werte zuweisen</span>
-                    </div>
+meinMonster.name = <span class="str">"Feuer-Blob"</span>;   <span class="comment">// Über die Punktnotation Werte zuweisen</span></code></pre>
 
                     <div class="mt-8">
                         <h3 class="text-xl font-bold text-white mb-4">💻 Deine Aufgaben in IntelliJ</h3>
@@ -156,12 +164,10 @@ meinMonster.name = <span class="str">"Feuer-Blob"</span>;   <span class="comment
                     <div class="bg-indigo-900 border border-indigo-500 p-5 rounded-lg mt-6">
                         <h4 class="text-lg font-bold text-indigo-200 mb-2">⭐ Bonusaufgabe für Schnelle: Der Klon-Irrtum</h4>
                         <p>Tippe folgenden Code in der main-Methode ab:</p>
-                        <div class="code-block bg-black mt-2 mb-2">
-Monster zweitesMonster = meinMonster;
+<pre class="code-block bg-black mt-2 mb-2"><code>Monster zweitesMonster = meinMonster;
 zweitesMonster.name = <span class="str">"Eis-Drache"</span>;
 
-System.out.println(meinMonster.name);
-                        </div>
+System.out.println(meinMonster.name);</code></pre>
                         <p class="mt-2 text-sm italic text-indigo-300">Welcher Name hat nun das ERSTE Monster? Was genau bedeutet das '=' bei Referenzvariablen?</p>
                     </div>
 
@@ -190,8 +196,7 @@ System.out.println(meinMonster.name);
                         <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
                             <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
                             <p class="text-sm mb-3">Zwei Bankkonten tauschen Geld aus. Konto A ruft seine Methode <code>ueberweisen(...)</code> auf und übergibt Konto B als Ziel-Objekt.</p>
-                            <div class="code-block mt-0 mb-0">
-<span class="kw">public class</span> Bankkonto {
+<pre class="code-block mt-0 mb-0"><code><span class="kw">public class</span> Bankkonto {
     <span class="kw">int</span> kontostand;
 
     <span class="comment">// Methode, die ein anderes Konto-Objekt als Parameter erwartet</span>
@@ -199,21 +204,18 @@ System.out.println(meinMonster.name);
         <span class="kw">this</span>.kontostand = <span class="kw">this</span>.kontostand - betrag;
         zielKonto.kontostand = zielKonto.kontostand + betrag;
     }
-}
-                            </div>
+}</code></pre>
                         </div>
                     </div>
 
                     <h3 class="text-xl font-bold text-white mt-8 mb-2">Dein Code für die Arena</h3>
-                    <div class="code-block">
-<span class="kw">public void</span> <span class="method">angreifen</span>(Monster gegner) {
+<pre class="code-block"><code><span class="kw">public void</span> <span class="method">angreifen</span>(Monster gegner) {
     <span class="comment">// Eigene Kraft vom Leben des gegnerischen Objekts abziehen</span>
     gegner.lebenspunkte = gegner.lebenspunkte - <span class="kw">this</span>.angriffskraft;
 }
 
 <span class="comment">// Aufruf in der Arena: m1 führt die Aktion aus, m2 ist das Ziel</span>
-m1.<span class="method">angreifen</span>(m2);
-                    </div>
+m1.<span class="method">angreifen</span>(m2);</code></pre>
 
                     <div class="mt-8">
                         <h3 class="text-xl font-bold text-white mb-4">💻 Deine Aufgaben in IntelliJ</h3>
@@ -260,8 +262,7 @@ m1.<span class="method">angreifen</span>(m2);
                         <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
                             <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
                             <p class="text-sm mb-3">Ein Benutzer-Account darf im System gar nicht erst existieren, wenn er keine E-Mail hat. Der Konstruktor zwingt uns, die Daten sofort bei der Erstellung mitzuliefern.</p>
-                            <div class="code-block mt-0 mb-0">
-<span class="kw">public class</span> Benutzer {
+<pre class="code-block mt-0 mb-0"><code><span class="kw">public class</span> Benutzer {
     <span class="type">String</span> email;
 
     <span class="comment">// Der Konstruktor zwingt zur sofortigen Übergabe</span>
@@ -271,14 +272,12 @@ m1.<span class="method">angreifen</span>(m2);
 }
 
 <span class="comment">// Instanziierung ist jetzt nur noch mit Parameter möglich!</span>
-Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@schule.de"</span>);
-                            </div>
+Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@schule.de"</span>);</code></pre>
                         </div>
                     </div>
 
                     <h3 class="text-xl font-bold text-white mt-8 mb-2">Dein Code für die Arena</h3>
-                    <div class="code-block">
-<span class="kw">public class</span> Monster {
+<pre class="code-block"><code><span class="kw">public class</span> Monster {
     <span class="type">String</span> name;
     <span class="kw">int</span> lebenspunkte;
 
@@ -287,8 +286,7 @@ Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@sc
         <span class="kw">this</span>.name = name;
         <span class="kw">this</span>.lebenspunkte = lebenspunkte;
     }
-}
-                    </div>
+}</code></pre>
 
                     <div class="mt-8">
                         <h3 class="text-xl font-bold text-white mb-4">💻 Deine Aufgaben in IntelliJ</h3>
@@ -328,9 +326,8 @@ Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@sc
                         <!-- Alltagsbeispiel -->
                         <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
                             <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
-                            <p class="text-sm mb-3">Bei einem Smartphone darf der Akku nie auf über 100% geladen werden. Ein direkter Zugriff (<code>meinHandy.akku = 500;</code>) wird durch <code>private</code> blockiert. Der Setter ist der "Türsteher".</p>
-                            <div class="code-block mt-0 mb-0">
-<span class="kw">public class</span> Smartphone {
+                            <p class="text-sm mb-3">Bei einem Smartphone darf der Akku nie auf über 100% geladen werden. Ein direkter Zugriff (<code>meinHandy.akkuStand = 500;</code>) wird durch <code>private</code> blockiert. Der Setter ist der "Türsteher".</p>
+<pre class="code-block mt-0 mb-0"><code><span class="kw">public class</span> Smartphone {
     <span class="kw">private int</span> akkuStand; <span class="comment">// Sicher versteckt</span>
 
     <span class="comment">// Der Setter kontrolliert die Eingabe</span>
@@ -339,14 +336,12 @@ Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@sc
             <span class="kw">this</span>.akkuStand = <span class="kw">this</span>.akkuStand + ladung;
         }
     }
-}
-                            </div>
+}</code></pre>
                         </div>
                     </div>
 
                     <h3 class="text-xl font-bold text-white mt-8 mb-2">Dein Code für die Arena</h3>
-                    <div class="code-block">
-<span class="kw">private int</span> lebenspunkte; <span class="comment">// 🔐 Streng geheim!</span>
+<pre class="code-block"><code><span class="kw">private int</span> lebenspunkte; <span class="comment">// 🔐 Streng geheim!</span>
 
 <span class="comment">// Getter (Lesen)</span>
 <span class="kw">public int</span> <span class="method">getLebenspunkte</span>() {
@@ -358,8 +353,7 @@ Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@sc
     <span class="kw">if</span> (neuerWert >= 0) {  <span class="comment">// Check: Leben darf nicht negativ sein</span>
         <span class="kw">this</span>.lebenspunkte = neuerWert;
     }
-}
-                    </div>
+}</code></pre>
 
                     <div class="mt-8">
                         <h3 class="text-xl font-bold text-white mb-4">💻 Deine Aufgaben in IntelliJ</h3>
@@ -402,8 +396,7 @@ Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@sc
                         <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
                             <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
                             <p class="text-sm mb-3">Ein Elektro-Auto hat alles, was ein normales Fahrzeug auch hat (z.B. Geschwindigkeit), bringt aber noch eine Batterie-Kapazität mit.</p>
-                            <div class="code-block mt-0 mb-0">
-<span class="kw">public class</span> Fahrzeug {
+<pre class="code-block mt-0 mb-0"><code><span class="kw">public class</span> Fahrzeug {
     <span class="kw">protected int</span> geschwindigkeit; <span class="comment">// protected erlaubt Zugriff durch Kinder</span>
 }
 
@@ -414,22 +407,19 @@ Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@sc
         <span class="comment">// Kann auf geerbte Attribute zugreifen!</span>
         <span class="kw">this</span>.geschwindigkeit = <span class="kw">this</span>.geschwindigkeit + 10;
     }
-}
-                            </div>
+}</code></pre>
                         </div>
                     </div>
 
                     <h3 class="text-xl font-bold text-white mt-8 mb-2">Dein Code für die Arena</h3>
-                    <div class="code-block">
-<span class="kw">public class</span> FeuerMonster <span class="kw">extends</span> Monster {
+<pre class="code-block"><code><span class="kw">public class</span> FeuerMonster <span class="kw">extends</span> Monster {
     <span class="kw">private int</span> feuerSchaden;
 
     <span class="kw">public</span> FeuerMonster(<span class="type">String</span> name, <span class="kw">int</span> lp, <span class="kw">int</span> feuerSchaden) {
         <span class="kw">super</span>(name, lp); <span class="comment">// Ruft den Konstruktor der Basisklasse (Monster) auf!</span>
         <span class="kw">this</span>.feuerSchaden = feuerSchaden;
     }
-}
-                    </div>
+}</code></pre>
 
                     <div class="mt-8">
                         <h3 class="text-xl font-bold text-white mb-4">💻 Deine Aufgaben in IntelliJ</h3>
