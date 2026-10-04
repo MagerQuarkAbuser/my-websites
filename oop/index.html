@@ -7,8 +7,8 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Syntax-Highlighting für die Code-Blöcke (IntelliJ Dark Theme) */
-        .code-block { background-color: #2b2b2b; color: #a9b7c6; font-family: 'JetBrains Mono', 'Consolas', monospace; padding: 1.5rem; border-radius: 0.5rem; overflow-x: auto; margin: 1rem 0; font-size: 0.95rem; line-height: 1.5; }
+        /* Syntax-Highlighting für die Code-Blöcke (IntelliJ Dark Theme Style) */
+        .code-block { background-color: #2b2b2b; color: #a9b7c6; font-family: 'JetBrains Mono', 'Consolas', monospace; padding: 1.25rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.95rem; line-height: 1.6; border: 1px solid #3f4b5e; }
         .kw { color: #cc7832; font-weight: bold; } /* Keywords */
         .type { color: #287bde; } /* Datentypen */
         .str { color: #6a8759; } /* Strings */
@@ -43,7 +43,6 @@
         
         <!-- DIE LERNLANDKARTE (Interaktives SVG) -->
         <div class="w-full bg-[#0f172a] rounded-xl border-4 border-gray-700 shadow-2xl overflow-hidden mb-8 relative">
-            
             <!-- Dekorative Karten-Elemente -->
             <div class="absolute top-4 left-8 text-4xl opacity-30 select-none pointer-events-none">🌲🌲</div>
             <div class="absolute bottom-8 left-1/3 text-4xl opacity-30 select-none pointer-events-none">⛰️</div>
@@ -108,23 +107,39 @@
                 <div class="space-y-6 text-gray-300">
                     <div class="bg-gray-700 p-5 rounded-lg border-l-4 border-blue-500">
                         <h3 class="text-xl font-bold text-white mb-2">🧠 Der Wissens-Snack</h3>
-                        <ul class="list-disc pl-5 space-y-2">
-                            <li><strong>Die Klasse:</strong> Ist nur der Bauplan im Code. <br><em class="text-gray-400">Analogie: Ein 3D-Modell in einer CAD-Software. Es ist nur eine Beschreibung, existiert aber in der echten Welt noch nicht.</em></li>
-                            <li><strong>Das Objekt (Instanz):</strong> Ist das fertige Produkt. <br><em class="text-gray-400">Analogie: Der fertige 3D-Druck. Er nimmt nun tatsächlichen Platz im Arbeitsspeicher ein.</em></li>
-                            <li><strong>Die Referenzvariable:</strong> Speichert nicht das Objekt, sondern nur seine Speicheradresse! <br><em class="text-gray-400">Analogie: Ein Lesezeichen im Browser. Es speichert nicht die ganze Webseite, sondern nur den Pfad (URL) dorthin.</em></li>
+                        <ul class="list-disc pl-5 space-y-3">
+                            <li><strong>Die Klasse:</strong> Ist der abstrakte Bauplan im Code. Er definiert die Struktur, verbraucht aber noch keinen Platz für Daten.</li>
+                            <li><strong>Das Objekt (Instanz):</strong> Wenn wir aus dem Bauplan ein konkretes Produkt herstellen, nennen wir das Objekt oder <em>Instanz</em>. Eine Instanz existiert wirklich im Arbeitsspeicher deines Computers. Man nennt den Vorgang der Erschaffung deshalb "Instanziierung".</li>
+                            <li><strong>Die Referenzvariable:</strong> Speichert nicht das Objekt selbst, sondern nur seine <strong>Speicheradresse</strong>! <em>(Analogie: Ein Lesezeichen im Browser. Es speichert nicht die Webseite, sondern nur den Pfad dorthin).</em></li>
                         </ul>
+
+                        <!-- Alltagsbeispiel -->
+                        <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
+                            <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
+                            <p class="text-sm mb-3">Die Klasse <code>Auto</code> ist der allgemeine Bauplan bei VW. Eine Instanz (das Objekt) ist dein spezifischer, roter Golf, der bei dir in der Einfahrt steht.</p>
+                            <div class="code-block mt-0 mb-0">
+<span class="kw">public class</span> Auto {
+    <span class="type">String</span> farbe;
+    <span class="type">String</span> kennzeichen;
+}
+
+<span class="comment">// Aus dem Bauplan eine Instanz (ein konkretes Objekt) erstellen:</span>
+Auto meinGolf = <span class="kw">new</span> Auto();
+meinGolf.farbe = <span class="str">"Rot"</span>;
+                            </div>
+                        </div>
                     </div>
 
-                    <h3 class="text-xl font-bold text-white mt-8 mb-2">Der Code-Bauplan</h3>
+                    <h3 class="text-xl font-bold text-white mt-8 mb-2">Dein Code für die Arena</h3>
                     <div class="code-block">
 <span class="kw">public class</span> Monster {
-<span class="type">String</span> name;          <span class="comment">// Attribut 1 (Eigenschaft)</span>
-<span class="kw">int</span> lebenspunkte;     <span class="comment">// Attribut 2</span>
+    <span class="type">String</span> name;          <span class="comment">// Attribut 1 (Eigenschaft)</span>
+    <span class="kw">int</span> lebenspunkte;     <span class="comment">// Attribut 2</span>
 }
 
 <span class="comment">// In einer anderen Klasse (Arena) innerhalb der main-Methode:</span>
-Monster meinMonster = <span class="kw">new</span> Monster(); <span class="comment">// Objekt erschaffen</span>
-meinMonster.name = <span class="str">"Feuer-Blob"</span>;   <span class="comment">// Punktnotation</span>
+Monster meinMonster = <span class="kw">new</span> Monster();
+meinMonster.name = <span class="str">"Feuer-Blob"</span>;   <span class="comment">// Über die Punktnotation Werte zuweisen</span>
                     </div>
 
                     <div class="mt-8">
@@ -133,16 +148,21 @@ meinMonster.name = <span class="str">"Feuer-Blob"</span>;   <span class="comment
                             <li>Erstelle ein neues Projekt namens <code>MonsterArena</code>.</li>
                             <li>Lege die Klasse <code>Monster</code> an (mit den Attributen <code>name</code>, <code>lebenspunkte</code> und <code>angriffskraft</code>).</li>
                             <li>Lege eine Klasse <code>Arena</code> mit einer <code>public static void main(String[] args)</code> an.</li>
-                            <li>Erschaffe dort ein Monster-Objekt und weise ihm Werte über die Punktnotation zu.</li>
-                            <li><strong>Das Speicherexperiment:</strong> Lass dir das Monster direkt ausgeben: <br><code>System.out.println(meinMonster);</code> <br>Betrachte die kryptische Ausgabe (die Speicheradresse!).</li>
+                            <li>Instanziiere dort ein Monster-Objekt und weise ihm Werte über die Punktnotation zu.</li>
+                            <li><strong>Das Speicherexperiment:</strong> Lass dir das Monster direkt ausgeben: <br><code class="text-gray-400">System.out.println(meinMonster);</code> <br>Betrachte die kryptische Ausgabe (die Speicheradresse!).</li>
                         </ol>
                     </div>
 
                     <div class="bg-indigo-900 border border-indigo-500 p-5 rounded-lg mt-6">
                         <h4 class="text-lg font-bold text-indigo-200 mb-2">⭐ Bonusaufgabe für Schnelle: Der Klon-Irrtum</h4>
-                        <p>Tippe folgenden Code ab:</p>
-                        <code class="block bg-black p-2 mt-2 rounded text-indigo-300">Monster zweitesMonster = meinMonster;<br>zweitesMonster.name = "Eis-Drache";<br>System.out.println(meinMonster.name);</code>
-                        <p class="mt-2 text-sm italic">Welcher Name hat nun das ERSTE Monster? Was genau bedeutet das '=' bei Referenzvariablen?</p>
+                        <p>Tippe folgenden Code in der main-Methode ab:</p>
+                        <div class="code-block bg-black mt-2 mb-2">
+Monster zweitesMonster = meinMonster;
+zweitesMonster.name = <span class="str">"Eis-Drache"</span>;
+
+System.out.println(meinMonster.name);
+                        </div>
+                        <p class="mt-2 text-sm italic text-indigo-300">Welcher Name hat nun das ERSTE Monster? Was genau bedeutet das '=' bei Referenzvariablen?</p>
                     </div>
 
                     <!-- STOPP-SCHILD -->
@@ -164,16 +184,34 @@ meinMonster.name = <span class="str">"Feuer-Blob"</span>;   <span class="comment
                 <div class="space-y-6 text-gray-300">
                     <div class="bg-gray-700 p-5 rounded-lg border-l-4 border-blue-500">
                         <h3 class="text-xl font-bold text-white mb-2">🧠 Der Wissens-Snack</h3>
-                        <p>Bisher sind unsere Objekte reine Datenspeicher. Sie brauchen <strong>Verhalten</strong>. Das lösen wir mit Methoden. Besonders spannend: Wir können die Referenz eines anderen Objekts als Parameter übergeben, damit die Objekte miteinander interagieren (z.B. kämpfen) können!</p>
+                        <p>Bisher sind unsere Objekte reine Datenspeicher. Sie brauchen <strong>Verhalten (Fähigkeiten)</strong>. Das lösen wir mit Methoden. Besonders spannend wird es, wenn wir die Referenz eines <em>anderen</em> Objekts als Parameter übergeben – so können Objekte miteinander interagieren!</p>
+
+                        <!-- Alltagsbeispiel -->
+                        <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
+                            <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
+                            <p class="text-sm mb-3">Zwei Bankkonten tauschen Geld aus. Konto A ruft seine Methode <code>ueberweisen(...)</code> auf und übergibt Konto B als Ziel-Objekt.</p>
+                            <div class="code-block mt-0 mb-0">
+<span class="kw">public class</span> Bankkonto {
+    <span class="kw">int</span> kontostand;
+
+    <span class="comment">// Methode, die ein anderes Konto-Objekt als Parameter erwartet</span>
+    <span class="kw">public void</span> <span class="method">ueberweisen</span>(Bankkonto zielKonto, <span class="kw">int</span> betrag) {
+        <span class="kw">this</span>.kontostand = <span class="kw">this</span>.kontostand - betrag;
+        zielKonto.kontostand = zielKonto.kontostand + betrag;
+    }
+}
+                            </div>
+                        </div>
                     </div>
 
+                    <h3 class="text-xl font-bold text-white mt-8 mb-2">Dein Code für die Arena</h3>
                     <div class="code-block">
 <span class="kw">public void</span> <span class="method">angreifen</span>(Monster gegner) {
-<span class="comment">// Eigene Kraft vom Leben des gegnerischen Objekts abziehen</span>
-gegner.lebenspunkte = gegner.lebenspunkte - angriffskraft;
+    <span class="comment">// Eigene Kraft vom Leben des gegnerischen Objekts abziehen</span>
+    gegner.lebenspunkte = gegner.lebenspunkte - <span class="kw">this</span>.angriffskraft;
 }
 
-<span class="comment">// Aufruf in der Arena: m1 führt aus, m2 ist das Ziel</span>
+<span class="comment">// Aufruf in der Arena: m1 führt die Aktion aus, m2 ist das Ziel</span>
 m1.<span class="method">angreifen</span>(m2);
                     </div>
 
@@ -181,8 +219,8 @@ m1.<span class="method">angreifen</span>(m2);
                         <h3 class="text-xl font-bold text-white mb-4">💻 Deine Aufgaben in IntelliJ</h3>
                         <ol class="list-decimal pl-5 space-y-3 bg-gray-900 p-6 rounded-lg border border-gray-700">
                             <li>Baue die Methoden <code>heilen()</code> und <code>angreifen(Monster gegner)</code> in deine <code>Monster</code>-Klasse ein.</li>
-                            <li>Erstelle in der <code>Arena</code> zwei verschiedene Monster.</li>
-                            <li>Lass sie abwechselnd angreifen und heilen.</li>
+                            <li>Erstelle in der <code>Arena</code> zwei verschiedene Monster-Instanzen.</li>
+                            <li>Lass sie in der <code>main</code>-Methode abwechselnd angreifen und heilen.</li>
                             <li>Nutze <code>System.out.println(...)</code>, um den Kampfverlauf und die verbleibenden Lebenspunkte auf der Konsole zu protokollieren.</li>
                         </ol>
                     </div>
@@ -211,39 +249,59 @@ m1.<span class="method">angreifen</span>(m2);
                 <div class="space-y-6 text-gray-300">
                     <div class="bg-gray-700 p-5 rounded-lg border-l-4 border-blue-500">
                         <h3 class="text-xl font-bold text-white mb-2">🧠 Der Wissens-Snack</h3>
-                        <p>Fehlerquelle: Wir könnten vergessen, einem Objekt nach dem <code>new</code> Werte zu geben. Ein <strong>Konstruktor</strong> erzwingt einen sicheren Startzustand bei der Erschaffung.</p>
-                        <ul class="list-disc pl-5 mt-2 space-y-1">
-                            <li>Er wird genau einmal bei <code>new</code> aufgerufen.</li>
-                            <li>Er heißt exakt wie die Klasse und hat <strong>keinen</strong> Rückgabetyp.</li>
-                            <li>Wir nutzen <code>this</code>, um Klassenattribute von übergebenen Parametern zu unterscheiden.</li>
+                        <p>Ein Objekt sollte nie "unfertig" sein. Ein <strong>Konstruktor</strong> erzwingt einen definierten Startzustand bei der Erschaffung.</p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1 mb-4">
+                            <li>Er wird genau <strong>einmal</strong> bei dem <code>new</code>-Befehl aufgerufen.</li>
+                            <li>Er heißt <strong>exakt wie die Klasse</strong> und hat keinen Rückgabetyp.</li>
+                            <li>Wir nutzen <code>this</code>, um unsere eigenen Attribute von den übergebenen Parametern zu unterscheiden.</li>
                         </ul>
+
+                        <!-- Alltagsbeispiel -->
+                        <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
+                            <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
+                            <p class="text-sm mb-3">Ein Benutzer-Account darf im System gar nicht erst existieren, wenn er keine E-Mail hat. Der Konstruktor zwingt uns, die Daten sofort bei der Erstellung mitzuliefern.</p>
+                            <div class="code-block mt-0 mb-0">
+<span class="kw">public class</span> Benutzer {
+    <span class="type">String</span> email;
+
+    <span class="comment">// Der Konstruktor zwingt zur sofortigen Übergabe</span>
+    <span class="kw">public</span> Benutzer(<span class="type">String</span> email) {
+        <span class="kw">this</span>.email = email;
+    }
+}
+
+<span class="comment">// Instanziierung ist jetzt nur noch mit Parameter möglich!</span>
+Benutzer user1 = <span class="kw">new</span> Benutzer(<span class="str">"test@schule.de"</span>);
+                            </div>
+                        </div>
                     </div>
 
+                    <h3 class="text-xl font-bold text-white mt-8 mb-2">Dein Code für die Arena</h3>
                     <div class="code-block">
 <span class="kw">public class</span> Monster {
-<span class="type">String</span> name;
-<span class="kw">int</span> lebenspunkte;
+    <span class="type">String</span> name;
+    <span class="kw">int</span> lebenspunkte;
 
-<span class="comment">// Der Konstruktor</span>
-<span class="kw">public</span> Monster(<span class="type">String</span> name, <span class="kw">int</span> lebenspunkte) {
-    <span class="kw">this</span>.name = name;               <span class="comment">// mein Attribut = Parameter</span>
-    <span class="kw">this</span>.lebenspunkte = lebenspunkte;
-}
+    <span class="comment">// Der Konstruktor für unsere Monster</span>
+    <span class="kw">public</span> Monster(<span class="type">String</span> name, <span class="kw">int</span> lebenspunkte) {
+        <span class="kw">this</span>.name = name;
+        <span class="kw">this</span>.lebenspunkte = lebenspunkte;
+    }
 }
                     </div>
 
                     <div class="mt-8">
                         <h3 class="text-xl font-bold text-white mb-4">💻 Deine Aufgaben in IntelliJ</h3>
                         <ol class="list-decimal pl-5 space-y-3 bg-gray-900 p-6 rounded-lg border border-gray-700">
-                            <li>Lösche in der Arena deine bisherigen manuellen Zuweisungen (<code>m1.name = ...</code>).</li>
+                            <li>Lösche in der Arena deine bisherigen, zeilenweisen Zuweisungen (<code>m1.name = ...</code>).</li>
                             <li><strong>Shortcut:</strong> Klicke in der Klasse <code>Monster</code> in eine leere Zeile, drücke <code>Alt + Einfügen</code> (Mac: <code>Cmd + N</code>) -> <code>Constructor</code>. Markiere alle Attribute und drücke Enter.</li>
-                            <li>Repariere die <code>Arena</code>: Übergebe die Startwerte nun zwingend in den Klammern bei <code>new Monster(...)</code>.</li>
+                            <li>Repariere die <code>Arena</code>: Du musst die Startwerte nun zwingend in den Klammern bei <code>new Monster(...)</code> übergeben.</li>
                         </ol>
                     </div>
 
                     <div class="bg-indigo-900 border border-indigo-500 p-5 rounded-lg mt-6">
                         <h4 class="text-lg font-bold text-indigo-200 mb-2">⭐ Bonusaufgabe für Schnelle: Überladung</h4>
-                        <p>Eine Klasse kann mehrere Konstruktoren besitzen. Schreibe manuell einen zweiten Konstruktor, der *nur* den Namen als Parameter verlangt und die Lebenspunkte des Monsters im Codeblock automatisch auf 100 setzt.</p>
+                        <p>Eine Klasse kann mehrere Konstruktoren besitzen. Schreibe manuell einen zweiten Konstruktor, der *nur* den Namen als Parameter verlangt und die Lebenspunkte des Monsters im Codeblock automatisch auf den Standardwert 100 setzt.</p>
                     </div>
 
                     <!-- STOPP-SCHILD -->
@@ -265,17 +323,41 @@ m1.<span class="method">angreifen</span>(m2);
                 <div class="space-y-6 text-gray-300">
                     <div class="bg-gray-700 p-5 rounded-lg border-l-4 border-blue-500">
                         <h3 class="text-xl font-bold text-white mb-2">🧠 Der Wissens-Snack</h3>
-                        <p><strong>Geheimnisprinzip:</strong> Direkter Zugriff auf Attribute muss verhindert werden, sonst könnte jemand in der Arena schreiben: <code>m1.lebenspunkte = -500;</code>. <br>Wir setzen Attribute auf <code>private</code> und erlauben den Zugriff nur über kontrollierte <code>public</code> Methoden, sogenannte <strong>Getter und Setter</strong>. Zudem organisieren wir das Projekt in Ordnern (Packages).</p>
+                        <p><strong>Geheimnisprinzip:</strong> Direkter Zugriff auf Attribute muss verhindert werden, da man die Daten sonst von außen auf unsinnige Werte setzen könnte. Wir schützen Attribute mit <code>private</code> und erlauben den Zugriff nur über kontrollierte <code>public</code> Methoden (Getter und Setter).</p>
+
+                        <!-- Alltagsbeispiel -->
+                        <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
+                            <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
+                            <p class="text-sm mb-3">Bei einem Smartphone darf der Akku nie auf über 100% geladen werden. Ein direkter Zugriff (<code>meinHandy.akku = 500;</code>) wird durch <code>private</code> blockiert. Der Setter ist der "Türsteher".</p>
+                            <div class="code-block mt-0 mb-0">
+<span class="kw">public class</span> Smartphone {
+    <span class="kw">private int</span> akkuStand; <span class="comment">// Sicher versteckt</span>
+
+    <span class="comment">// Der Setter kontrolliert die Eingabe</span>
+    <span class="kw">public void</span> <span class="method">ladeAkku</span>(<span class="kw">int</span> ladung) {
+        <span class="kw">if</span> (<span class="kw">this</span>.akkuStand + ladung <= 100) {
+            <span class="kw">this</span>.akkuStand = <span class="kw">this</span>.akkuStand + ladung;
+        }
+    }
+}
+                            </div>
+                        </div>
                     </div>
 
+                    <h3 class="text-xl font-bold text-white mt-8 mb-2">Dein Code für die Arena</h3>
                     <div class="code-block">
 <span class="kw">private int</span> lebenspunkte; <span class="comment">// 🔐 Streng geheim!</span>
 
-<span class="comment">// Der Türsteher (Setter)</span>
-<span class="kw">public void</span> <span class="method">setLebenspunkte</span>(<span class="kw">int</span> neuerWert) {
-<span class="kw">if</span> (neuerWert >= 0) {  <span class="comment">// Sicherheits-Check!</span>
-    <span class="kw">this</span>.lebenspunkte = neuerWert;
+<span class="comment">// Getter (Lesen)</span>
+<span class="kw">public int</span> <span class="method">getLebenspunkte</span>() {
+    <span class="kw">return this</span>.lebenspunkte;
 }
+
+<span class="comment">// Setter (Ändern kontrolliert erlauben)</span>
+<span class="kw">public void</span> <span class="method">setLebenspunkte</span>(<span class="kw">int</span> neuerWert) {
+    <span class="kw">if</span> (neuerWert >= 0) {  <span class="comment">// Check: Leben darf nicht negativ sein</span>
+        <span class="kw">this</span>.lebenspunkte = neuerWert;
+    }
 }
                     </div>
 
@@ -284,9 +366,9 @@ m1.<span class="method">angreifen</span>(m2);
                         <ol class="list-decimal pl-5 space-y-3 bg-gray-900 p-6 rounded-lg border border-gray-700">
                             <li>Erstelle im Projektbaum zwei neue Packages (Ordner): <code>arena</code> und <code>wesen</code>.</li>
                             <li>Verschiebe <code>Arena.java</code> nach <code>arena</code> und <code>Monster.java</code> nach <code>wesen</code>.</li>
-                            <li>Setze alle Attribute in <code>Monster</code> auf <strong><code>private</code></strong>. (In der Arena entstehen nun Fehler - das ist gewollt!).</li>
+                            <li>Setze alle Attribute in <code>Monster</code> auf <strong><code>private</code></strong>. (In der Arena entstehen nun absichtlich Fehler).</li>
                             <li><strong>Shortcut:</strong> Generiere mit <code>Alt + Einfügen</code> -> <code>Getter and Setter</code> die Methoden für alle Attribute.</li>
-                            <li>Repariere die Arena, indem du dort nun die Methoden (z.B. <code>getName()</code>) statt der direkten Attribute nutzt.</li>
+                            <li>Repariere die Arena, indem du dort nun die Methoden (z.B. <code>m1.getName()</code>) statt der direkten Attribute nutzt.</li>
                         </ol>
                     </div>
 
@@ -314,24 +396,45 @@ m1.<span class="method">angreifen</span>(m2);
                 <div class="space-y-6 text-gray-300">
                     <div class="bg-gray-700 p-5 rounded-lg border-l-4 border-blue-500">
                         <h3 class="text-xl font-bold text-white mb-2">🧠 Der Wissens-Snack</h3>
-                        <p>Um Code-Wiederholungen zu vermeiden, können spezielle Monster-Klassen von unserer Basis-Klasse <strong>erben</strong> (Schlüsselwort: <code>extends</code>). <br>Wichtig: Damit die Kind-Klasse auf die Attribute der Eltern zugreifen darf, müssen diese in der Basisklasse von <code>private</code> auf <code>protected</code> geändert werden! Existierende Methoden können mit <code>@Override</code> neu geschrieben werden.</p>
+                        <p>Um doppelten Code zu vermeiden, können spezielle Klassen von einer Basis-Klasse <strong>erben</strong> (Schlüsselwort: <code>extends</code>). <br>Damit die erbende Klasse auf die geschützten Attribute der Basisklasse zugreifen kann, werden diese von <code>private</code> auf <code>protected</code> gesetzt.</p>
+
+                        <!-- Alltagsbeispiel -->
+                        <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
+                            <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
+                            <p class="text-sm mb-3">Ein Elektro-Auto hat alles, was ein normales Fahrzeug auch hat (z.B. Geschwindigkeit), bringt aber noch eine Batterie-Kapazität mit.</p>
+                            <div class="code-block mt-0 mb-0">
+<span class="kw">public class</span> Fahrzeug {
+    <span class="kw">protected int</span> geschwindigkeit; <span class="comment">// protected erlaubt Zugriff durch Kinder</span>
+}
+
+<span class="kw">public class</span> ElektroAuto <span class="kw">extends</span> Fahrzeug {
+    <span class="kw">private int</span> batterieKapazitaet; <span class="comment">// Eigenes Attribut</span>
+
+    <span class="kw">public void</span> <span class="method">beschleunigen</span>() {
+        <span class="comment">// Kann auf geerbte Attribute zugreifen!</span>
+        <span class="kw">this</span>.geschwindigkeit = <span class="kw">this</span>.geschwindigkeit + 10;
+    }
+}
+                            </div>
+                        </div>
                     </div>
 
+                    <h3 class="text-xl font-bold text-white mt-8 mb-2">Dein Code für die Arena</h3>
                     <div class="code-block">
 <span class="kw">public class</span> FeuerMonster <span class="kw">extends</span> Monster {
-<span class="kw">private int</span> feuerSchaden;
+    <span class="kw">private int</span> feuerSchaden;
 
-<span class="kw">public</span> FeuerMonster(<span class="type">String</span> name, <span class="kw">int</span> lp, <span class="kw">int</span> feuerSchaden) {
-    <span class="kw">super</span>(name, lp); <span class="comment">// Ruft den Konstruktor von Monster auf</span>
-    <span class="kw">this</span>.feuerSchaden = feuerSchaden;
-}
+    <span class="kw">public</span> FeuerMonster(<span class="type">String</span> name, <span class="kw">int</span> lp, <span class="kw">int</span> feuerSchaden) {
+        <span class="kw">super</span>(name, lp); <span class="comment">// Ruft den Konstruktor der Basisklasse (Monster) auf!</span>
+        <span class="kw">this</span>.feuerSchaden = feuerSchaden;
+    }
 }
                     </div>
 
                     <div class="mt-8">
                         <h3 class="text-xl font-bold text-white mb-4">💻 Deine Aufgaben in IntelliJ</h3>
                         <ol class="list-decimal pl-5 space-y-3 bg-gray-900 p-6 rounded-lg border border-gray-700">
-                            <li>Ändere die Modifikatoren in <code>Monster</code> von <code>private</code> auf <code>protected</code>.</li>
+                            <li>Ändere die Modifikatoren in deiner Klasse <code>Monster</code> von <code>private</code> auf <code>protected</code>.</li>
                             <li>Erstelle die Klasse <code>FeuerMonster</code> und lass sie erben (<code>extends Monster</code>).</li>
                             <li>Lass in deiner Arena ein klassisches Monster gegen dein neues Feuermonster antreten.</li>
                         </ol>
@@ -339,15 +442,15 @@ m1.<span class="method">angreifen</span>(m2);
 
                     <div class="bg-indigo-900 border border-indigo-500 p-5 rounded-lg mt-6">
                         <h4 class="text-lg font-bold text-indigo-200 mb-2">⭐ Bonusaufgabe für Schnelle</h4>
-                        <p>Erstelle ein <code>WasserMonster</code>. Überschreibe dessen <code>heilen()</code>-Methode (mit <code>@Override</code>) so, dass es sich doppelt so stark heilt wie ein normales Monster!</p>
+                        <p>Erstelle ein <code>WasserMonster</code>. Überschreibe dessen <code>heilen()</code>-Methode (Nutze die Annotation <code>@Override</code> über der Methode) so, dass es sich doppelt so stark heilt wie ein normales Monster!</p>
                     </div>
 
                     <!-- STOPP-SCHILD -->
                     <div class="bg-red-600 text-white p-6 rounded-xl mt-12 border-l-8 border-red-900 shadow-lg flex items-center gap-6">
                         <div class="text-5xl">🛑</div>
                         <div>
-                            <h3 class="text-2xl font-bold uppercase tracking-wide">Stopp-Schild: Pausiere hier!</h3>
-                            <p class="mt-1 text-red-100 font-medium">Hole dir nun das Arbeitsblatt für diese Station bei der Lehrkraft, damit wir die Ergebnisse gemeinsam sichern können.</p>
+                            <h3 class="text-2xl font-bold uppercase tracking-wide">Ziel erreicht!</h3>
+                            <p class="mt-1 text-red-100 font-medium">Hole dir nun das finale Arbeitsblatt, damit wir den Stammbaum (UML) gemeinsam sichern können.</p>
                         </div>
                     </div>
                 </div>
