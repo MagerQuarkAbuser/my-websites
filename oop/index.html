@@ -31,7 +31,7 @@
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Hover-Effekte für die Karte (Monster-Arena Style - ohne Springen!) */
+        /* Hover-Effekte für die Karte (Monster-Arena Style - ohne Springen) */
         .station-group { cursor: pointer; }
         .station-group circle { transition: all 0.2s ease-in-out; }
         .station-group:hover circle { filter: drop-shadow(0 0 12px #dc2626); stroke: #fca5a5; }
@@ -444,20 +444,35 @@ System.out.println(m1.<span class="method">getLebenspunkte</span>()); <span clas
                         <h3 class="text-xl font-bold text-white mb-2">🧠 Der Wissens-Snack</h3>
                         <p>Um doppelten Code zu vermeiden, können spezielle Klassen von einer Basis-Klasse <strong>erben</strong> (Schlüsselwort: <code>extends</code>). <br>Damit die erbende Klasse auf die geschützten Attribute der Basisklasse zugreifen kann, werden diese von <code>private</code> auf <code>protected</code> gesetzt.</p>
 
+                        <!-- Die super()-Erklärung -->
+                        <div class="bg-red-950/60 p-4 rounded mt-4 border border-red-700">
+                            <h4 class="text-sm font-bold text-red-300 mb-2 uppercase">🔑 Was bedeutet der Befehl super()?</h4>
+                            <p class="text-sm mb-2">Das Wort <code>super</code> bezieht sich immer auf die <strong>Superklasse (die Elternklasse)</strong>.</p>
+                            <ul class="list-disc pl-5 text-sm space-y-1 mb-2">
+                                <li>Wenn ein <code>FeuerMonster</code> erschaffen wird, muss zuerst das grundlegende <code>Monster</code> initialisiert werden.</li>
+                                <li>Mit <code>super(name, lp, angriffskraft);</code> rufen wir direkt den Konstruktor der Elternklasse auf und übergeben ihm seine benötigten Basis-Werte.</li>
+                                <li><strong class="text-red-200">Eiserne Java-Regel:</strong> Der Aufruf von <code>super(...)</code> muss <strong>immer die allererste Zeile</strong> im Konstruktor der Kindklasse sein!</li>
+                            </ul>
+                        </div>
+
                         <!-- Alltagsbeispiel -->
                         <div class="bg-gray-800 p-4 rounded mt-5 border border-gray-600">
                             <h4 class="text-sm font-bold text-gray-400 mb-2 uppercase">💡 Alltags-Beispiel zur Veranschaulichung</h4>
-                            <p class="text-sm mb-3">Ein Elektro-Auto hat alles, was ein normales Fahrzeug auch hat (z.B. Geschwindigkeit), bringt aber noch eine Batterie-Kapazität mit.</p>
+                            <p class="text-sm mb-3">Ein Elektro-Auto erbt vom normalen Fahrzeug. Im Konstruktor schickt es die Marke an die Basisklasse nach oben:</p>
 <pre class="code-block mt-0 mb-0"><code><span class="kw">public class</span> Fahrzeug {
-    <span class="kw">protected int</span> geschwindigkeit; <span class="comment">// protected erlaubt Zugriff durch Kinder</span>
+    <span class="kw">protected</span> <span class="type">String</span> marke;
+
+    <span class="kw">public</span> Fahrzeug(<span class="type">String</span> marke) {
+        <span class="kw">this</span>.marke = marke;
+    }
 }
 
 <span class="kw">public class</span> ElektroAuto <span class="kw">extends</span> Fahrzeug {
-    <span class="kw">private int</span> batterieKapazitaet; <span class="comment">// Eigenes Attribut</span>
+    <span class="kw">private int</span> batterieKapazitaet;
 
-    <span class="kw">public void</span> <span class="method">beschleunigen</span>() {
-        <span class="comment">// Kann auf geerbte Attribute zugreifen!</span>
-        <span class="kw">this</span>.geschwindigkeit = <span class="kw">this</span>.geschwindigkeit + 10;
+    <span class="kw">public</span> ElektroAuto(<span class="type">String</span> marke, <span class="type">int</span> batterie) {
+        <span class="kw">super</span>(marke); <span class="comment">// Ruft Fahrzeug(marke) auf - MUSS in Zeile 1 stehen!</span>
+        <span class="kw">this</span>.batterieKapazitaet = batterie;
     }
 }</code></pre>
                         </div>
@@ -467,9 +482,9 @@ System.out.println(m1.<span class="method">getLebenspunkte</span>()); <span clas
 <pre class="code-block"><code><span class="kw">public class</span> FeuerMonster <span class="kw">extends</span> Monster {
     <span class="kw">private int</span> feuerSchaden;
 
-    <span class="kw">public</span> FeuerMonster(<span class="type">String</span> name, <span class="kw">int</span> lp, <span class="kw">int</span> feuerSchaden) {
-        <span class="kw">super</span>(name, lp, 15); <span class="comment">// Ruft den Konstruktor der Basisklasse (Monster) auf!</span>
-        <span class="kw">this</span>.feuerSchaden = feuerSchaden;
+    <span class="kw">public</span> FeuerMonster(<span class="type">String</span> name, <span class="kw">int</span> lp, <span class="kw">int</span> angriff, <span class="kw">int</span> feuerSchaden) {
+        <span class="kw">super</span>(name, lp, angriff); <span class="comment">// 1. Zeile: Basis-Werte an den Monster-Konstruktor geben</span>
+        <span class="kw">this</span>.feuerSchaden = feuerSchaden; <span class="comment">// Danach: Eigenes Zusatzattribut setzen</span>
     }
 }</code></pre>
 
@@ -478,6 +493,7 @@ System.out.println(m1.<span class="method">getLebenspunkte</span>()); <span clas
                         <ol class="list-decimal pl-5 space-y-3 bg-gray-900 p-6 rounded-lg border border-gray-700">
                             <li>Ändere die Modifikatoren in deiner Klasse <code>Monster</code> von <code>private</code> auf <code>protected</code>.</li>
                             <li>Erstelle die Klasse <code>FeuerMonster</code> und lass sie erben (<code>extends Monster</code>).</li>
+                            <li>Schreibe den Konstruktor für <code>FeuerMonster</code> und rufe in der ersten Zeile <code>super(...)</code> auf.</li>
                             <li>Lass in deiner Arena ein klassisches Monster gegen dein neues Feuermonster antreten.</li>
                         </ol>
                     </div>
