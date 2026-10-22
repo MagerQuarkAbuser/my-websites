@@ -31,7 +31,7 @@ classDiagram
         -name : String
         -preis : double
         -bestand : int
-        +Artikel(artNr: int, name: String, preis: double, bestand: int)
+        #Artikel(artNr: int, name: String, preis: double, bestand: int)
         +istVerfuegbar() : boolean
         +reduziereBestand(anzahl: int) : void
     }
@@ -41,7 +41,7 @@ classDiagram
         -datum : String
         -gesamtSumme : double
         -status : String
-        +Bestellung(bestellNummer: int, datum: String)
+        #Bestellung(bestellNummer: int, datum: String)
         +abschliessen() : void
         +druckeRechnung() : void
     }
