@@ -1,43 +1,54 @@
 ```mermaid
 classDiagram
-    class Nutzer {
-        <<abstract>>
-        #id : int
+    class Kunde {
+        -id : int
+        -name : String
+        -email : String
+        -passwort : String
+        +Kunde(id: int, name: String, email: String, passwort: String)
+        +login() : boolean
+        +aenderePasswort(neuesPasswort: String) : void
     }
 
-    class Kunde {
-        -passwort : String
-        +login() : boolean
+    class PremiumKunde {
+        -rabattLevel : int
+        -premiumGueltigBis : String
+        +PremiumKunde(id: int, name: String, email: String, passwort: String, rabattLevel: int)
+        +berechneRabatt() : double
+        +verlaengerePremium() : void
     }
 
     class Warenkorb {
-        +artikelHinzufuegen(artikel: Artikel)
+        -maxArtikel : int
+        +Warenkorb(maxArtikel: int)
+        +artikelHinzufuegen(artikel: Artikel) : void
+        +warenkorbLeeren() : void
+        +berechneZwischensumme() : double
     }
 
     class Artikel {
+        -artikelNummer : int
         -name : String
         -preis : double
+        -bestand : int
+        +Artikel(artNr: int, name: String, preis: double, bestand: int)
+        +istVerfuegbar() : boolean
+        +reduziereBestand(anzahl: int) : void
     }
 
     class Bestellung {
+        -bestellNummer : int
+        -datum : String
         -gesamtSumme : double
-        +abschliessen(zahlungsmethode: IZahlung)
-    }
-
-    class IZahlung {
-        <<interface>>
-        +prozessieren(betrag: double)
-    }
-
-    class PayPal {
-        +prozessieren(betrag: double)
+        -status : String
+        +Bestellung(bestellNummer: int, datum: String)
+        +abschliessen() : void
+        +druckeRechnung() : void
     }
 
     %% Beziehungen
-    Kunde --|> Nutzer : Generalisierung
+    PremiumKunde --|> Kunde : Vererbung (Generalisierung)
     Kunde "1" *-- "1" Warenkorb : Komposition
     Warenkorb "0..1" o-- "0..*" Artikel : Aggregation
     Kunde "1" --> "0..*" Bestellung : Gerichtete Assoziation
-    PayPal ..|> IZahlung : Realisierung
-    Bestellung ..> IZahlung : Abhängigkeit
 ```
