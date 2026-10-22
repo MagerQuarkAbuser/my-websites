@@ -27,11 +27,11 @@ classDiagram
     }
 
     class Artikel {
-        -artikelNummer : int
-        -name : String
-        -preis : double
+        #artikelNummer : int
+        +name : String
+        +preis : double
         -bestand : int
-        #Artikel(artNr: int, name: String, preis: double, bestand: int)
+        +Artikel(artNr: int, name: String, preis: double, bestand: int)
         +istVerfuegbar() : boolean
         +reduziereBestand(anzahl: int) : void
     }
