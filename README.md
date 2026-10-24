@@ -47,7 +47,7 @@ classDiagram
     }
 
     %% Beziehungen
-    PremiumKunde --|> Kunde
+    PremiumKunde --|> Kunde : Vererbung
     Kunde "1" *-- "1" Warenkorb : Komposition
     Warenkorb "0..1" o-- "0..*" Artikel : Aggregation
     Kunde "1" --> "0..*" Bestellung : Gerichtete Assoziation
