@@ -1,54 +1,41 @@
-```mermaid
 classDiagram
-    class Kunde {
-        -id : int
-        -name : String
-        -email : String
-        -passwort : String
-        +Kunde(id: int, name: String, email: String, passwort: String)
-        +login() : boolean
-        +aenderePasswort(neuesPasswort: String) : void
+    class Tierarztpraxis {
+        - name: String
+        - adresse: String
     }
 
-    class PremiumKunde {
-        -rabattLevel : int
-        -premiumGueltigBis : String
-        +PremiumKunde(id: int, name: String, email: String, passwort: String, rabattLevel: int)
-        +berechneRabatt() : double
-        +verlaengerePremium() : void
+    class Tierarzt {
+        - name: String
+        - fachgebiet: String
+        + behandeln(): void
     }
 
-    class Warenkorb {
-        -maxArtikel : int
-        +Warenkorb(maxArtikel: int)
-        +artikelHinzufuegen(artikel: Artikel) : void
-        +warenkorbLeeren() : void
-        +berechneZwischensumme() : double
+    class Haustier {
+        # name: String
+        # alter: int
+        # gewicht: double
+        + fressen(): void
     }
 
-    class Artikel {
-        #artikelNummer : int
-        +name : String
-        +preis : double
-        -bestand : int
-        +Artikel(artNr: int, name: String, preis: double, bestand: int)
-        +istVerfuegbar() : boolean
-        +reduziereBestand(anzahl: int) : void
+    class Hund {
+        - rasse: String
+        + bellen(): void
     }
 
-    class Bestellung {
-        -bestellNummer : int
-        -datum : String
-        -gesamtSumme : double
-        -status : String
-        #Bestellung(bestellNummer: int, datum: String)
-        +abschliessen() : void
-        +druckeRechnung() : void
+    class Katze {
     }
 
-    %% Beziehungen
-    PremiumKunde --|> Kunde : Vererbung
-    Kunde "1" *-- "1" Warenkorb : Komposition
-    Warenkorb "0..1" o-- "0..*" Artikel : Aggregation
-    Kunde "1" --> "0..*" Bestellung : Gerichtete Assoziation
-```
+    class Tierhalter {
+        - name: String
+        - telefonnummer: String
+        + rechnungBezahlen(): void
+    }
+
+    %% Assoziationen (normale Linien, keine Rauten für Aggregation/Komposition)
+    Tierarztpraxis "1" -- "1..*" Tierarzt : hat angestellte
+    Tierarztpraxis "1" -- "0..*" Haustier : betreut
+    Tierhalter "1" -- "1..*" Haustier : besitzt
+
+    %% Vererbungen (hohler Pfeil)
+    Haustier <|-- Hund
+    Haustier <|-- Katze
