@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abstimmungen - Sunset Glow</title>
+    <style>
+        :root {
+            --coral: #FF7F50;
+            --peach: #FFDAB9;
+            --amber: #FFBF00;
+            --white: #ffffff;
+            --bg: #FFF9F5;
+            --text: #4A4A4A;
+            --shadow: rgba(255, 127, 80, 0.2);
+            --gradient: linear-gradient(135deg, #FF7F50, #FFBF00);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow);
+            width: 100%;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .poll-option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 2px solid var(--peach);
+            border-radius: 12px;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poll-option:hover {
+            border-color: var(--coral);
+            background: rgba(255, 218, 185, 0.2);
+        }
+
+        .poll-option.selected {
+            background: var(--gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: var(--gradient);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        /* Results Styling */
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 24px;
+            background: #eee;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            width: 0%;
+            transition: width 1s ease-out;
+        }
+
+        /* Teacher View */
+        .teacher-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #4A4A4A;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+        }
+
+        .admin-controls {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px dashed #ccc;
+            text-align: center;
+        }
+
+        .admin-link {
+            color: var(--coral);
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .reset-btn {
+            background: #ff4757;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: auto;
+            padding: 40px 0;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .voted-msg {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .voted-msg h2 {
+            color: var(--coral);
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Abstimmungen</h1>
+        <p>Deine Stimme zählt im Sunset Glow</p>
+    </header>
+
+    <div class="container">
+        <!-- View: Voting -->
+        <div id="view-vote" class="view active">
+            <h2 style="margin-bottom: 20px;">Wähle eine Option:</h2>
+            <div id="options-container">
+                <button class="poll-option" onclick="selectOption(0)">Option A: Projekttag Outdoor</button>
+                <button class="poll-option" onclick="selectOption(1)">Option B: Coding Workshop</button>
+                <button class="poll-option" onclick="selectOption(2)">Option C: Sportturnier</button>
+                <button class="poll-option" onclick="selectOption(3)">Option D: Kino-Nachmittag</button>
+            </div>
+            <button id="submit-vote" class="btn" onclick="submitVote()" disabled>Abstimmen</button>
+            <div class="admin-controls">
+                <span class="admin-link" onclick="toggleView('view-teacher-login')">Lehrer-Bereich</span>
+            </div>
+        </div>
+
+        <!-- View: Results -->
+        <div id="view-results" class="view">
+            <h2 style="margin-bottom: 20px;">Aktuelle Ergebnisse</h2>
+            <div id="results-display">
+                <!-- Bars will be injected here -->
+            </div>
+            <div class="voted-msg">
+                <p>Vielen Dank für deine Teilnahme!</p>
+            </div>
+            <div class="admin-controls">
+                <span class="admin-link" onclick="toggleView('view-teacher-login')">Lehrer-Bereich</span>
+            </div>
+        </div>
+
+        <!-- View: Teacher Login (Simulated) -->
+        <div id="view-teacher-login" class="view">
+            <h2 style="margin-bottom: 20px;">Lehrer Login</h2>
+            <input type="password" id="admin-pw" placeholder="Passwort (Standard: 1234)" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ccc; margin-bottom:15px;">
+            <button class="btn" onclick="checkLogin()">Einloggen</button>
+            <button class="btn btn-secondary" onclick="toggleView('view-vote')">Zurück</button>
+        </div>
+
+        <!-- View: Teacher Dashboard -->
+        <div id="view-teacher-dashboard" class="view">
+            <span class="teacher-badge">Admin Modus</span>
+            <h2 style="margin-bottom: 20px;">Umfrage-Verwaltung</h2>
+            <div id="admin-results-display">
+                <!-- Admin results -->
+            </div>
+            <button class="btn reset-btn" onclick="resetPoll()">Umfrage komplett zurücksetzen</button>
+            <button class="btn btn-secondary" onclick="toggleView('view-vote')">Abmelden</button>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2023 Abstimmungs-Tool | Sunset Glow Edition
+    </footer>
+
+    <script>
+        // Initial Data
+        const options = [
+            "Projekttag Outdoor",
+            "Coding Workshop",
+            "Sportturnier",
+            "Kino-Nachmittag"
+        ];
+
+        let pollData = JSON.parse(localStorage.getItem('pollData')) || [0, 0, 0, 0];
+        let selectedIdx = -1;
+
+        // Check if user already voted
+        window.onload = () => {
+            if (localStorage.getItem('hasVoted') === 'true') {
+                showResults();
+            }
+        };
+
+        function toggleView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            
+            if(viewId === 'view-results' || viewId === 'view-teacher-dashboard') {
+                renderResults(viewId === 'view-results' ? 'results-display' : 'admin-results-display');
+            }
+        }
+
+        function selectOption(idx) {
+            selectedIdx = idx;
+            document.querySelectorAll('.poll-option').forEach((btn, i) => {
+                btn.classList.toggle('selected', i === idx);
+            });
+            document.getElementById('submit-vote').disabled = false;
+        }
+
+        function submitVote() {
+            if (selectedIdx === -1) return;
+
+            pollData[selectedIdx]++;
+            localStorage.setItem('pollData', JSON.stringify(pollData));
+            localStorage.setItem('hasVoted', 'true');
+            
+            showResults();
+        }
+
+        function showResults() {
+            toggleView('view-results');
+        }
+
+        function renderResults(containerId) {
+            const container = document.getElementById(containerId);
+            const totalVotes = pollData.reduce((a, b) => a + b, 0);
+            
+            let html = '';
+            options.forEach((opt, i) => {
+                const count = pollData[i];
+                const percent = totalVotes === 0 ? 0 : Math.round((count / totalVotes) * 100);
+                
+                html += `
+                    <div class="result-item">
+                        <div class="result-label">
+                            <span>${opt}</span>
+                            <span>${count} Stimmen (${percent}%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percent}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function checkLogin() {
+            const pw = document.getElementById('admin-pw').value;
+            if (pw === '1234') {
+                toggleView('view-teacher-dashboard');
+                document.getElementById('admin-pw').value = '';
+            } else {
+                alert('Falsches Passwort! (Tipp: 1234)');
+            }
+        }
+
+        function resetPoll() {
+            if (confirm('Möchten Sie wirklich alle Ergebnisse löschen und die Umfrage für alle neu freigeben?')) {
+                pollData = [0, 0, 0, 0];
+                localStorage.setItem('pollData', JSON.stringify(pollData));
+                localStorage.removeItem('hasVoted');
+                
+                // Reset UI
+                selectedIdx = -1;
+                document.querySelectorAll('.poll-option').forEach(btn => btn.classList.remove('selected'));
+                document.getElementById('submit-vote').disabled = true;
+                
+                alert('Umfrage wurde zurückgesetzt!');
+                toggleView('view-vote');
+            }
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abstimmungen - Sunset Glow</title>
+    <style>
+        :root {
+            --coral: #FF7F50;
+            --peach: #FFDAB9;
+            --amber: #FFBF00;
+            --white: #ffffff;
+            --bg: #FFF9F5;
+            --text: #4A4A4A;
+            --shadow: rgba(255, 127, 80, 0.2);
+            --gradient: linear-gradient(135deg, #FF7F50, #FFBF00);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow);
+            width: 100%;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .poll-option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 2px solid var(--peach);
+            border-radius: 12px;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poll-option:hover {
+            border-color: var(--coral);
+            background: rgba(255, 218, 185, 0.2);
+        }
+
+        .poll-option.selected {
+            background: var(--gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: var(--gradient);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        /* Results Styling */
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 24px;
+            background: #eee;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            width: 0%;
+            transition: width 1s ease-out;
+        }
+
+        /* Teacher View */
+        .teacher-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #4A4A4A;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+        }
+
+        .admin-controls {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px dashed #ccc;
+            text-align: center;
+        }
+
+        .admin-link {
+            color: var(--coral);
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .reset-btn {
+            background: #ff4757;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: auto;
+            padding: 40px 0;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .voted-msg {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .voted-msg h2 {
+            color: var(--coral);
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Abstimmungen</h1>
+        <p>Deine Stimme zählt im Sunset Glow</p>
+    </header>
+
+    <div class="container">
+        <!-- View: Voting -->
+        <div id="view-vote" class="view active">
+            <h2 style="margin-bottom: 20px;">Wähle eine Option:</h2>
+            <div id="options-container">
+                <button class="poll-option" onclick="selectOption(0)">Option A: Projekttag Outdoor</button>
+                <button class="poll-option" onclick="selectOption(1)">Option B: Coding Workshop</button>
+                <button class="poll-option" onclick="selectOption(2)">Option C: Sportturnier</button>
+                <button class="poll-option" onclick="selectOption(3)">Option D: Kino-Nachmittag</button>
+            </div>
+            <button id="submit-vote" class="btn" onclick="submitVote()" disabled>Abstimmen</button>
+            <div class="admin-controls">
+                <span class="admin-link" onclick="toggleView('view-teacher-login')">Lehrer-Bereich</span>
+            </div>
+        </div>
+
+        <!-- View: Results -->
+        <div id="view-results" class="view">
+            <h2 style="margin-bottom: 20px;">Aktuelle Ergebnisse</h2>
+            <div id="results-display">
+                <!-- Bars will be injected here -->
+            </div>
+            <div class="voted-msg">
+                <p>Vielen Dank für deine Teilnahme!</p>
+            </div>
+            <div class="admin-controls">
+                <span class="admin-link" onclick="toggleView('view-teacher-login')">Lehrer-Bereich</span>
+            </div>
+        </div>
+
+        <!-- View: Teacher Login (Simulated) -->
+        <div id="view-teacher-login" class="view">
+            <h2 style="margin-bottom: 20px;">Lehrer Login</h2>
+            <input type="password" id="admin-pw" placeholder="Passwort (Standard: 1234)" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ccc; margin-bottom:15px;">
+            <button class="btn" onclick="checkLogin()">Einloggen</button>
+            <button class="btn btn-secondary" onclick="toggleView('view-vote')">Zurück</button>
+        </div>
+
+        <!-- View: Teacher Dashboard -->
+        <div id="view-teacher-dashboard" class="view">
+            <span class="teacher-badge">Admin Modus</span>
+            <h2 style="margin-bottom: 20px;">Umfrage-Verwaltung</h2>
+            <div id="admin-results-display">
+                <!-- Admin results -->
+            </div>
+            <button class="btn reset-btn" onclick="resetPoll()">Umfrage komplett zurücksetzen</button>
+            <button class="btn btn-secondary" onclick="toggleView('view-vote')">Abmelden</button>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2023 Abstimmungs-Tool | Sunset Glow Edition
+    </footer>
+
+    <script>
+        // Initial Data
+        const options = [
+            "Projekttag Outdoor",
+            "Coding Workshop",
+            "Sportturnier",
+            "Kino-Nachmittag"
+        ];
+
+        // Load data from localStorage
+        let pollData = JSON.parse(localStorage.getItem('pollData')) || [0, 0, 0, 0];
+        let selectedIdx = -1;
+
+        // Check if user already voted on load
+        window.onload = () => {
+            if (localStorage.getItem('hasVoted') === 'true') {
+                showResults();
+            }
+        };
+
+        function toggleView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            
+            if(viewId === 'view-results' || viewId === 'view-teacher-dashboard') {
+                renderResults(viewId === 'view-results' ? 'results-display' : 'admin-results-display');
+            }
+        }
+
+        function selectOption(idx) {
+            selectedIdx = idx;
+            document.querySelectorAll('.poll-option').forEach((btn, i) => {
+                btn.classList.toggle('selected', i === idx);
+            });
+            document.getElementById('submit-vote').disabled = false;
+        }
+
+        function submitVote() {
+            if (selectedIdx === -1) return;
+
+            // Update local data
+            pollData[selectedIdx]++;
+            localStorage.setItem('pollData', JSON.stringify(pollData));
+            localStorage.setItem('hasVoted', 'true');
+            
+            showResults();
+        }
+
+        function showResults() {
+            toggleView('view-results');
+        }
+
+        function renderResults(containerId) {
+            const container = document.getElementById(containerId);
+            const totalVotes = pollData.reduce((a, b) => a + b, 0);
+            
+            let html = '';
+            options.forEach((opt, i) => {
+                const count = pollData[i];
+                const percent = totalVotes === 0 ? 0 : Math.round((count / totalVotes) * 100);
+                
+                html += `
+                    <div class="result-item">
+                        <div class="result-label">
+                            <span>${opt}</span>
+                            <span>${count} Stimmen (${percent}%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percent}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function checkLogin() {
+            const pw = document.getElementById('admin-pw').value;
+            if (pw === '1234') {
+                toggleView('view-teacher-dashboard');
+                document.getElementById('admin-pw').value = '';
+            } else {
+                alert('Falsches Passwort! (Tipp: 1234)');
+            }
+        }
+
+        function resetPoll() {
+            if (confirm('Möchten Sie wirklich alle Ergebnisse löschen? Dies erlaubt allen Benutzern (auf diesem Gerät), erneut abzustimmen.')) {
+                pollData = [0, 0, 0, 0];
+                localStorage.setItem('pollData', JSON.stringify(pollData));
+                localStorage.removeItem('hasVoted');
+                
+                // Reset UI
+                selectedIdx = -1;
+                document.querySelectorAll('.poll-option').forEach(btn => btn.classList.remove('selected'));
+                document.getElementById('submit-vote').disabled = true;
+                
+                alert('Umfrage wurde zurückgesetzt!');
+                toggleView('view-vote');
+            }
+        }
+    </script>
+</body>
+</html>
