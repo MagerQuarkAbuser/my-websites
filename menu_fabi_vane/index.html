@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Exclusivité Culinaire | La Carte</title>
+    <style>
+        :root {
+            --midnight-navy: #0a0e1a;
+            --deep-indigo: #1a1f3c;
+            --royal-indigo: #3f51b5;
+            --silver-accent: #c0c0c0;
+            --platinum: #e5e4e2;
+            --text-muted: #8e9aaf;
+            --gold-glow: rgba(192, 192, 192, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--midnight-navy);
+            color: var(--platinum);
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            padding: 60px 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, var(--deep-indigo), var(--midnight-navy));
+            border-bottom: 1px solid rgba(192, 192, 192, 0.1);
+        }
+
+        .logo {
+            font-size: 0.8rem;
+            letter-spacing: 0.5rem;
+            text-transform: uppercase;
+            color: var(--silver-accent);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--platinum), var(--silver-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .menu-container {
+            max-width: 800px;
+            width: 90%;
+            margin: 60px auto;
+            padding: 40px;
+            border: 1px solid rgba(192, 192, 192, 0.15);
+            position: relative;
+            background: rgba(26, 31, 60, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-container::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(192, 192, 192, 0.05);
+            pointer-events: none;
+        }
+
+        .course {
+            margin-bottom: 80px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease-out;
+        }
+
+        .course.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .course-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            color: var(--royal-indigo);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .course-title::before, .course-title::after {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: var(--royal-indigo);
+            margin: 0 15px;
+        }
+
+        .dish-name {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--platinum);
+        }
+
+        .dish-description {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto;
+            font-style: italic;
+            line-height: 1.8;
+        }
+
+        .price {
+            margin-top: 15px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.8rem;
+            color: var(--silver-accent);
+            letter-spacing: 2px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 40px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .ornament {
+            color: var(--royal-indigo);
+            font-size: 1.5rem;
+            margin: 40px 0;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2rem; }
+            .menu-container { padding: 20px; }
+            .dish-name { font-size: 1.5rem; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--midnight-navy); }
+        ::-webkit-scrollbar-thumb { background: var(--deep-indigo); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <span class="logo">Résidence de Prestige</span>
+        <h1>La Gastronomie Nocturne</h1>
+        <p class="subtitle">Eine kuratierte Assemblage für den anspruchsvollen Gaumen</p>
+    </header>
+
+    <div class="menu-container">
+        
+        <!-- Vorspeise -->
+        <section class="course" id="appetizer">
+            <div class="course-title">Le Prélude</div>
+            <h2 class="dish-name">L’Inspiration de Moni</h2>
+            <p class="dish-description">
+                Eine flüchtige Komposition aus handverlesenen, saisonalen Blatt-Fragmenten und botanischen Akzenten. Dekonstruiertes "Salatzeugs" in einer Emulsion von flüssigem Gold und einer Ahnung von Aceto-Reduktion.
+            </p>
+            <div class="price">SUR DEMANDE</div>
+        </section>
+
+        <div class="ornament">✦</div>
+
+        <!-- Hauptgang -->
+        <section class="course" id="main">
+            <div class="course-title">La Pièce de Résistance</div>
+            <h2 class="dish-name">Symphonie de Bolognese "Tradition Éternelle"</h2>
+            <p class="dish-description">
+                Al dente perfektionierte Hartweizen-Skulpturen, umschmeichelt von einer 72-Stunden-Reduktion feinster Ragus-Provenienz. Gekrönt von kristallinen Splittern eines 36 Monate gereiften Parmigiano Reggiano, der in hauchzarten Schneeflocken über dem Ensemble ruht.
+            </p>
+            <div class="price">ÉDITION LIMITÉE</div>
+        </section>
+
+        <div class="ornament">✦</div>
+
+        <!-- Nachspeise -->
+        <section class="course" id="dessert">
+            <div class="course-title">L’Apogée Finale</div>
+            <h2 class="dish-name">Crispy Potato Essence "L’Art de Sel"</h2>
+            <p class="dish-description">
+                Hauchdünne, goldgelb extrahierte Solanum-tuberosum-Scheiben, in einer geschützten Atmosphäre gereift und mit einer präzisen Prise atlantischem Fleur de Sel veredelt. Serviert in einer minimalistischen Assemblage für das ultimative auditive Knusper-Erlebnis.
+            </p>
+            <div class="price">COMPLIMENTAIRE</div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2023 Maison de Dîner | Uniquement pour les invités sélectionnés</p>
+        <p style="margin-top: 10px; font-size: 0.6rem; opacity: 0.5;">Dresscode: Black Tie & Silver Accents</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const courses = document.querySelectorAll('.course');
+            
+            const observerOptions = {
+                threshold: 0.2
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            courses.forEach(course => {
+                observer.observe(course);
+            });
+
+            // Initial trigger for visible elements
+            setTimeout(() => {
+                window.scrollTo(0, 1);
+            }, 100);
+        });
+    </script>
+</body>
+</html>
