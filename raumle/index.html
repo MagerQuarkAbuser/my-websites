@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Der Räumle | Offizieller Merchandise Shop</title>
+    <style>
+        :root {
+            --coral: #FF7F50;
+            --peach: #FFDAB9;
+            --amber: #FFBF00;
+            --sunset-grad: linear-gradient(135deg, #FF7F50, #FFDAB9, #FFBF00);
+            --light-bg: #FFF9F5;
+            --text-dark: #2D2D2D;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            border-radius: 5px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: var(--sunset-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--coral);
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -15px;
+            background: var(--coral);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 50%;
+        }
+
+        .hero {
+            height: 80vh;
+            background: var(--sunset-grad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 0 20px;
+            margin-top: 60px;
+            clip-path: ellipse(150% 100% at 50% 0%);
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .hero-content p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .btn {
+            padding: 12px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--white);
+            color: var(--coral);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .section-title {
+            text-align: center;
+            margin: 80px 0 40px;
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--sunset-grad);
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 0 5% 80px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .product-img-container {
+            height: 300px;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-img-container img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover .product-img-container img {
+            transform: scale(1.1);
+        }
+
+        .product-info {
+            padding: 20px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-category {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            color: var(--coral);
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .add-to-cart {
+            background: var(--sunset-grad);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .about {
+            background: white;
+            padding: 100px 5%;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .about-image img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        footer {
+            background: #2d2d2d;
+            color: white;
+            padding: 60px 5% 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+            color: var(--peach);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        /* Cart Sidebar */
+        #cart-sidebar {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 350px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            z-index: 2000;
+            transition: right 0.3s ease;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #cart-sidebar.active {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--peach);
+            padding-bottom: 10px;
+        }
+
+        .close-cart {
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .cart-total {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--peach);
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .checkout-btn {
+            margin-top: 20px;
+            background: var(--sunset-grad);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1500;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 2.5rem; }
+            nav ul { display: none; }
+            .about { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="logo-container">
+            <img src="https://github.com/user-attachments/assets/319c697b-f7af-4419-8c4e-d94eb155e057" alt="Der Räumle Logo" class="logo-img">
+            <span class="logo-text">Der Räumle</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="#about">Über uns</a></li>
+                <li><a href="#contact">Kontakt</a></li>
+            </ul>
+        </nav>
+        <div class="cart-icon" onclick="toggleCart()">
+            🛒 <span class="cart-count" id="cart-count">0</span>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Dein Style, Dein Räumle.</h1>
+            <p>Exklusives Merchandise für echte Fans. Von Adiletten bis zum Feierabend-Bier.</p>
+            <a href="#shop" class="btn btn-primary">Jetzt Shoppen</a>
+        </div>
+    </section>
+
+    <h2 class="section-title" id="shop">Unsere Kollektion</h2>
+    
+    <div class="products-grid" id="products-container">
+        <!-- Products will be injected by JS -->
+    </div>
+
+    <section class="about" id="about">
+        <div class="about-image">
+            <img src="https://github.com/user-attachments/assets/319c697b-f7af-4419-8c4e-d94eb155e057" alt="Der Räumle Brand">
+        </div>
+        <div class="about-text">
+            <h2 style="margin-bottom: 20px;">Was ist "Der Räumle"?</h2>
+            <p>Der Räumle ist mehr als nur ein Name – es ist ein Lebensgefühl. Was als kleine Idee begann, ist heute eine Marke für alle, die das Besondere im Alltäglichen suchen. Unsere Produkte vereinen Qualität mit dem unverwechselbaren Räumle-Vibe.</p>
+            <p style="margin-top: 15px;">Jedes Teil in unserem Shop wurde mit Liebe zum Detail entworfen, um dir den perfekten Sunset-Glow in deinen Alltag zu bringen.</p>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Der Räumle</h3>
+                <p>Dein offizieller Partner für Premium Merchandise und gute Laune.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#shop">Shop</a></li>
+                    <li><a href="#about">Über uns</a></li>
+                    <li><a href="#">Impressum</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Kontakt</h3>
+                <ul>
+                    <li>Email: info@der-raeumle.de</li>
+                    <li>Instagram: @der_raeumle</li>
+                    <li>TikTok: @der_raeumle_official</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2023 Der Räumle. Alle Rechte vorbehalten. Designed with Sunset Glow.
+        </div>
+    </footer>
+
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    
+    <div id="cart-sidebar">
+        <div class="cart-header">
+            <h2>Warenkorb</h2>
+            <span class="close-cart" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cart-items-list">
+            <!-- Cart items injected by JS -->
+        </div>
+        <div class="cart-total">
+            <span>Gesamt:</span>
+            <span id="cart-total-price">0.00 €</span>
+        </div>
+        <button class="checkout-btn" onclick="alert('Vielen Dank für deine Bestellung! (Demo)')">Zur Kasse</button>
+    </div>
+
+    <script>
+        const logoUrl = "https://github.com/user-attachments/assets/319c697b-f7af-4419-8c4e-d94eb155e057";
+        
+        const products = [
+            { id: 1, name: "Räumle Adiletten 'Sunset'", price: 29.99, category: "Footwear", img: logoUrl },
+            { id: 2, name: "Premium T-Shirt Weiß", price: 24.90, category: "Clothing", img: logoUrl },
+            { id: 3, name: "Räumle Beanie Amber", price: 19.95, category: "Headwear", img: logoUrl },
+            { id: 4, name: "Glücks-Unterhose", price: 14.50, category: "Underwear", img: logoUrl },
+            { id: 5, name: "6er Träger Feierabend-Bier", price: 12.99, category: "Drinks", img: logoUrl },
+            { id: 6, name: "Sunset Glow Hoodie", price: 49.99, category: "Clothing", img: logoUrl },
+            { id: 7, name: "Räumle Kaffeetasse", price: 12.00, category: "Accessoires", img: logoUrl },
+            { id: 8, name: "Snapback Cap Black", price: 27.50, category: "Headwear", img: logoUrl }
+        ];
+
+        let cart = [];
+
+        function initProducts() {
+            const container = document.getElementById('products-container');
+            container.innerHTML = products.map(p => `
+                <div class="product-card">
+                    <div class="product-img-container">
+                        <img src="${p.img}" alt="${p.name}">
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <div class="product-category">${p.category}</div>
+                            <div class="product-title">${p.name}</div>
+                        </div>
+                        <div>
+                            <div class="product-price">${p.price.toFixed(2)} €</div>
+                            <button class="add-to-cart" onclick="addToCart(${p.id})">In den Warenkorb</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            updateCartUI();
+            
+            // Small animation effect
+            const cartIcon = document.querySelector('.cart-icon');
+            cartIcon.style.transform = 'scale(1.2)';
+            setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
+        }
+
+        function updateCartUI() {
+            const cartCount = document.getElementById('cart-count');
+            const cartList = document.getElementById('cart-items-list');
+            const totalPrice = document.getElementById('cart-total-price');
+            
+            cartCount.innerText = cart.length;
+            
+            cartList.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <img src="${item.img}" alt="${item.name}">
+                    <div style="flex-grow:1">
+                        <div style="font-weight:bold; font-size:0.9rem">${item.name}</div>
+                        <div style="color:var(--coral)">${item.price.toFixed(2)} €</div>
+                    </div>
+                    <span style="cursor:pointer; color:#ff4444" onclick="removeFromCart(${index})">&times;</span>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            totalPrice.innerText = total.toFixed(2) + ' €';
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        window.onload = initProducts;
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Der Räumle | Offizieller Merchandise Shop</title>
+    <style>
+        :root {
+            --coral: #FF7F50;
+            --peach: #FFDAB9;
+            --amber: #FFBF00;
+            --sunset-grad: linear-gradient(135deg, #FF7F50, #FFDAB9, #FFBF00);
+            --light-bg: #FFF9F5;
+            --text-dark: #2D2D2D;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            border-radius: 5px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: var(--sunset-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--coral);
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -15px;
+            background: var(--coral);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 50%;
+        }
+
+        .hero {
+            height: 80vh;
+            background: var(--sunset-grad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 0 20px;
+            margin-top: 60px;
+            clip-path: ellipse(150% 100% at 50% 0%);
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .hero-content p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .btn {
+            padding: 12px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--white);
+            color: var(--coral);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .section-title {
+            text-align: center;
+            margin: 80px 0 40px;
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--sunset-grad);
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 0 5% 80px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .product-img-container {
+            height: 300px;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-img-container img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover .product-img-container img {
+            transform: scale(1.1);
+        }
+
+        .product-info {
+            padding: 20px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-category {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            color: var(--coral);
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .add-to-cart {
+            background: var(--sunset-grad);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .about {
+            background: white;
+            padding: 100px 5%;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .about-image img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        footer {
+            background: #2d2d2d;
+            color: white;
+            padding: 60px 5% 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+            color: var(--peach);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        /* Cart Sidebar */
+        #cart-sidebar {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 350px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            z-index: 2000;
+            transition: right 0.3s ease;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #cart-sidebar.active {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--peach);
+            padding-bottom: 10px;
+        }
+
+        .close-cart {
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .cart-total {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--peach);
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .checkout-btn {
+            margin-top: 20px;
+            background: var(--sunset-grad);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1500;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 2.5rem; }
+            nav ul { display: none; }
+            .about { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="logo-container">
+            <img src="https://github.com/user-attachments/assets/319c697b-f7af-4419-8c4e-d94eb155e057" alt="Der Räumle Logo" class="logo-img">
+            <span class="logo-text">Der Räumle</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="#about">Über uns</a></li>
+                <li><a href="#contact">Kontakt</a></li>
+            </ul>
+        </nav>
+        <div class="cart-icon" onclick="toggleCart()">
+            🛒 <span class="cart-count" id="cart-count">0</span>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Dein Style, Dein Räumle.</h1>
+            <p>Exklusives Merchandise für echte Fans. Von Adiletten bis zum Feierabend-Bier.</p>
+            <a href="#shop" class="btn btn-primary">Jetzt Shoppen</a>
+        </div>
+    </section>
+
+    <h2 class="section-title" id="shop">Unsere Kollektion</h2>
+    
+    <div class="products-grid" id="products-container">
+        <!-- Products will be injected by JS -->
+    </div>
+
+    <section class="about" id="about">
+        <div class="about-image">
+            <img src="https://github.com/user-attachments/assets/319c697b-f7af-4419-8c4e-d94eb155e057" alt="Der Räumle Brand">
+        </div>
+        <div class="about-text">
+            <h2 style="margin-bottom: 20px;">Was ist "Der Räumle"?</h2>
+            <p>Der Räumle ist mehr als nur ein Name – es ist ein Lebensgefühl. Was als kleine Idee begann, ist heute eine Marke für alle, die das Besondere im Alltäglichen suchen. Unsere Produkte vereinen Qualität mit dem unverwechselbaren Räumle-Vibe.</p>
+            <p style="margin-top: 15px;">Jedes Teil in unserem Shop wurde mit Liebe zum Detail entworfen, um dir den perfekten Sunset-Glow in deinen Alltag zu bringen.</p>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Der Räumle</h3>
+                <p>Dein offizieller Partner für Premium Merchandise und gute Laune.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#shop">Shop</a></li>
+                    <li><a href="#about">Über uns</a></li>
+                    <li><a href="#">Impressum</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Kontakt</h3>
+                <ul>
+                    <li>Email: info@der-raeumle.de</li>
+                    <li>Instagram: @der_raeumle</li>
+                    <li>TikTok: @der_raeumle_official</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2023 Der Räumle. Alle Rechte vorbehalten. Designed with Sunset Glow.
+        </div>
+    </footer>
+
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    
+    <div id="cart-sidebar">
+        <div class="cart-header">
+            <h2>Warenkorb</h2>
+            <span class="close-cart" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cart-items-list">
+            <!-- Cart items injected by JS -->
+        </div>
+        <div class="cart-total">
+            <span>Gesamt:</span>
+            <span id="cart-total-price">0.00 €</span>
+        </div>
+        <button class="checkout-btn" onclick="alert('Vielen Dank für deine Bestellung! (Demo)')">Zur Kasse</button>
+    </div>
+
+    <script>
+        const logoUrl = "https://github.com/user-attachments/assets/319c697b-f7af-4419-8c4e-d94eb155e057";
+        
+        const products = [
+            { id: 1, name: "Räumle Adiletten 'Sunset'", price: 29.99, category: "Footwear", img: logoUrl },
+            { id: 2, name: "Premium T-Shirt Weiß", price: 24.90, category: "Clothing", img: logoUrl },
+            { id: 3, name: "Räumle Beanie Amber", price: 19.95, category: "Headwear", img: logoUrl },
+            { id: 4, name: "Glücks-Unterhose", price: 14.50, category: "Underwear", img: logoUrl },
+            { id: 5, name: "6er Träger Feierabend-Bier", price: 12.99, category: "Drinks", img: logoUrl },
+            { id: 6, name: "Sunset Glow Hoodie", price: 49.99, category: "Clothing", img: logoUrl },
+            { id: 7, name: "Räumle Kaffeetasse", price: 12.00, category: "Accessoires", img: logoUrl },
+            { id: 8, name: "Snapback Cap Black", price: 27.50, category: "Headwear", img: logoUrl }
+        ];
+
+        let cart = [];
+
+        function initProducts() {
+            const container = document.getElementById('products-container');
+            container.innerHTML = products.map(p => `
+                <div class="product-card">
+                    <div class="product-img-container">
+                        <img src="${p.img}" alt="${p.name}">
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <div class="product-category">${p.category}</div>
+                            <div class="product-title">${p.name}</div>
+                        </div>
+                        <div>
+                            <div class="product-price">${p.price.toFixed(2)} €</div>
+                            <button class="add-to-cart" onclick="addToCart(${p.id})">In den Warenkorb</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            updateCartUI();
+            
+            // Small animation effect
+            const cartIcon = document.querySelector('.cart-icon');
+            cartIcon.style.transform = 'scale(1.2)';
+            setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
+        }
+
+        function updateCartUI() {
+            const cartCount = document.getElementById('cart-count');
+            const cartList = document.getElementById('cart-items-list');
+            const totalPrice = document.getElementById('cart-total-price');
+            
+            cartCount.innerText = cart.length;
+            
+            cartList.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <img src="${item.img}" alt="${item.name}">
+                    <div style="flex-grow:1">
+                        <div style="font-weight:bold; font-size:0.9rem">${item.name}</div>
+                        <div style="color:var(--coral)">${item.price.toFixed(2)} €</div>
+                    </div>
+                    <span style="cursor:pointer; color:#ff4444" onclick="removeFromCart(${index})">&times;</span>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            totalPrice.innerText = total.toFixed(2) + ' €';
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        window.onload = initProducts;
+    </script>
+</body>
+</html>
